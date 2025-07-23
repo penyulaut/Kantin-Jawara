@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../utils/navigation_helper.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,9 +29,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navigate based on auth status
     if (isLoggedIn && authController.currentUser != null) {
-      // User sudah login, langsung ke home
+      // User sudah login, navigasi berdasarkan role
       print('User already logged in: ${authController.currentUser?.name}');
-      Get.offAllNamed('/home');
+      print('User role: ${authController.currentUser?.role}');
+
+      // Use NavigationHelper for secure navigation
+      NavigationHelper.navigateToDashboard();
     } else {
       // User belum login, ke login screen
       print('User not logged in, redirecting to login');
