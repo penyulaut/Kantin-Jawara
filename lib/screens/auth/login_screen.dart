@@ -11,187 +11,193 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
   final AuthController _authController = Get.find<AuthController>();
+  bool obscurePassword = true;
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
+    emailCtrl.dispose();
+    passCtrl.dispose();
     super.dispose();
   }
 
-  String? _validateEmail(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Email is required';
-    }
-    if (!GetUtils.isEmail(value)) {
-      return 'Please enter a valid email';
-    }
-    return null;
+  Widget socialButton(String text, IconData icon) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.15),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: TextButton.icon(
+          onPressed: () {},
+          icon: Icon(icon, color: icon == Icons.facebook ? Colors.blue : null),
+          label: Text(text),
+        ),
+      ),
+    );
   }
 
-  String? _validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Password is required';
-    }
-    if (value.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-    return null;
+  Widget inputField({
+    required String hint,
+    required TextEditingController controller,
+    IconData? icon,
+    bool obscure = false,
+    VoidCallback? toggleObscure,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: TextField(
+        controller: controller,
+        obscureText: obscure,
+        onChanged: (_) {
+          if (_authController.errorMessage.isNotEmpty) {
+            _authController.clearError();
+          }
+        },
+        decoration: InputDecoration(
+          hintText: hint,
+          border: const OutlineInputBorder(),
+          suffixIcon: toggleObscure != null
+              ? IconButton(
+                  icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
+                  onPressed: toggleObscure,
+                )
+              : Icon(icon),
+        ),
+      ),
+    );
   }
 
   void _handleLogin() {
-    if (_formKey.currentState!.validate()) {
-      _authController.login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
+    if (emailCtrl.text.isEmpty || passCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email dan password wajib diisi')),
       );
+      return;
     }
+
+    _authController.login(
+      email: emailCtrl.text.trim(),
+      password: passCtrl.text,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
+      backgroundColor: Colors.white,
+      body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                'Selamat Datang',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Silahkan Login dengan Akun Anda',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 32),
 
-                // Header
-                const Text(
-                  'Welcome Back!',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to continue to Kantin Jawara',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 60),
+              // Social Login
+              Row(
+                children: [
+                  socialButton('Google', Icons.g_mobiledata),
+                  socialButton('Facebook', Icons.facebook),
+                ],
+              ),
 
-                // Email Field
-                TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: _validateEmail,
-                  onChanged: (value) {
-                    // Clear error saat user mengetik
-                    if (_authController.errorMessage.isNotEmpty) {
-                      _authController.clearError();
-                    }
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'Enter your email',
-                    prefixIcon: Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-                // Password Field
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  validator: _validatePassword,
-                  onChanged: (value) {
-                    // Clear error saat user mengetik
-                    if (_authController.errorMessage.isNotEmpty) {
-                      _authController.clearError();
-                    }
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Enter your password',
-                    prefixIcon: Icon(Icons.lock_outline),
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 40),
+              // Email & Password Fields
+              inputField(hint: 'Email', controller: emailCtrl),
+              inputField(
+                hint: 'Password',
+                controller: passCtrl,
+                icon: Icons.visibility_off,
+                obscure: obscurePassword,
+                toggleObscure: () {
+                  setState(() => obscurePassword = !obscurePassword);
+                },
+              ),
 
-                // Login Button
-                Obx(
-                  () => SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: _authController.isLoading
-                          ? null
-                          : _handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
+              const SizedBox(height: 20),
+
+              // Login Button
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _authController.isLoading ? null : _handleLogin,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 25),
+                      backgroundColor: const Color(0xFFFFC107),
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
                       ),
-                      child: _authController.isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(fontSize: 16),
-                            ),
+                      elevation: 6,
+                      shadowColor: Colors.grey.shade300,
                     ),
+                    child: _authController.isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text(
+                            'Login',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                   ),
                 ),
-                const SizedBox(height: 24),
-
-                // Error Message
-                Obx(
-                  () => _authController.errorMessage.isNotEmpty
-                      ? Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.red[50],
-                            border: Border.all(color: Colors.red[300]!),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            _authController.errorMessage,
-                            style: TextStyle(color: Colors.red[700]),
-                          ),
-                        )
-                      : const SizedBox.shrink(),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  _authController.clearErrorOnNavigation();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                  );
+                },
+                child: Text(
+                  'Belum Memiliki Akun? Ayo Daftar',
+                  style: TextStyle(fontSize: 14, color: Colors.blue),
                 ),
-                const SizedBox(height: 40),
+              ),
 
-                // Sign Up Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        // Clear error message sebelum navigasi
-                        _authController.clearErrorOnNavigation();
-                        Get.to(() => const RegisterScreen());
-                      },
+              const SizedBox(height: 16),
+
+              // Error message
+              Obx(() => _authController.errorMessage.isNotEmpty
+                  ? Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red[50],
+                        border: Border.all(color: Colors.red),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                       child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: Colors.blue[600],
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        _authController.errorMessage,
+                        style: TextStyle(color: Colors.red[800]),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    )
+                  : const SizedBox.shrink()),
+
+              const SizedBox(height: 30),
+            ],
           ),
         ),
       ),
