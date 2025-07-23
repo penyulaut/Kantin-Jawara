@@ -24,10 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final resp = await http.post(
       Uri.parse('https://semenjana.biz.id/kaja/api/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': emailCtrl.text,
-        'password': passCtrl.text,
-      }),
+      body: jsonEncode({'email': emailCtrl.text, 'password': passCtrl.text}),
     );
     setState(() => loading = false);
     if (resp.statusCode == 200) {
@@ -41,9 +38,9 @@ class _LoginScreenState extends State<LoginScreen> {
         MaterialPageRoute(builder: (_) => const MapsPage()),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: ${resp.body}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login failed: ${resp.body}')));
     }
   }
 
@@ -87,12 +84,10 @@ class _LoginScreenState extends State<LoginScreen> {
           hintText: hint,
           suffixIcon: toggleObscure != null
               ? IconButton(
-                  icon: Icon(
-                      obscure ? Icons.visibility_off : Icons.visibility),
+                  icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
                   onPressed: toggleObscure,
                 )
               : Icon(icon),
-         
         ),
       ),
     );
@@ -110,8 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const Text(
                 'Selamat Datang',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               const SizedBox(height: 4),
               const Text(
@@ -132,10 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
 
               // Email & Password Fields
-              inputField(
-                hint: 'Email',
-                controller: emailCtrl,
-              ),
+              inputField(hint: 'Email', controller: emailCtrl),
               inputField(
                 hint: 'Password',
                 controller: passCtrl,
@@ -183,21 +174,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 12),
               TextButton(
-              onPressed: () {
-                // TODO: Arahkan ke halaman register
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RegisterScreen()),
-                );
-              },
-              child: Text(
-                'Belum Memiliki Akun? Ayo Daftar',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.blue,
+                onPressed: () {
+                  // TODO: Arahkan ke halaman register
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterScreen()),
+                  );
+                },
+                child: Text(
+                  'Belum Memiliki Akun? Ayo Daftar',
+                  style: TextStyle(fontSize: 14, color: Colors.blue),
                 ),
               ),
-            ),
 
               const SizedBox(height: 30),
             ],
