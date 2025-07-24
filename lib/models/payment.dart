@@ -21,8 +21,8 @@ class Payment {
 
   factory Payment.fromJson(Map<String, dynamic> json) {
     return Payment(
-      id: json['id'],
-      transactionId: json['transaction_id'],
+      id: int.tryParse(json['id'].toString()),
+      transactionId: int.tryParse(json['transaction_id'].toString()),
       amount: double.tryParse(json['amount'].toString()) ?? 0.0,
       method: json['method'] ?? '',
       paidAt: json['paid_at'] != null ? DateTime.parse(json['paid_at']) : null,

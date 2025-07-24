@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/add_payment_method_controller.dart';
 import '../../controllers/payment_controller.dart';
 import '../../models/payment_method.dart';
+import '../../utils/app_theme.dart';
 
 class AddPaymentMethodScreen extends StatelessWidget {
   const AddPaymentMethodScreen({super.key});
@@ -26,12 +27,24 @@ class AddPaymentMethodScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Payment Method'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppTheme.royalBlueDark, AppTheme.usafaBlue],
+            ),
+          ),
+        ),
+        foregroundColor: AppTheme.white,
       ),
       body: Obx(() {
         if (paymentController.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.royalBlueDark),
+            ),
+          );
         }
 
         if (paymentController.errorMessage.isNotEmpty) {
@@ -39,7 +52,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error, size: 64, color: Colors.red[300]),
+                Icon(Icons.error, size: 64, color: AppTheme.red),
                 const SizedBox(height: 16),
                 Text(
                   'Error: ${paymentController.errorMessage}',
@@ -49,6 +62,10 @@ class AddPaymentMethodScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => paymentController.fetchPaymentMethods(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.royalBlueDark,
+                    foregroundColor: AppTheme.white,
+                  ),
                   child: const Text('Retry'),
                 ),
               ],
@@ -69,7 +86,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
               const SizedBox(height: 8),
               const Text(
                 'Choose a payment method and enter your account details.',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
               ),
               const SizedBox(height: 24),
 
@@ -83,7 +100,9 @@ class AddPaymentMethodScreen extends StatelessWidget {
               Obx(
                 () => Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(
+                      color: AppTheme.royalBlueDark.withOpacity(0.3),
+                    ),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: DropdownButtonHideUnderline(
@@ -114,7 +133,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
                                     method.description!,
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.grey[600],
+                                      color: AppTheme.mediumGray,
                                     ),
                                   ),
                               ],
@@ -196,21 +215,31 @@ class AddPaymentMethodScreen extends StatelessWidget {
                                 'Success',
                                 'Payment method added successfully!',
                                 snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: Colors.green,
-                                colorText: Colors.white,
+                                backgroundColor: AppTheme.goldenPoppy,
+                                colorText: AppTheme.royalBlueDark,
                                 duration: const Duration(seconds: 2),
                               );
 
-                              // Delay sedikit untuk memberi waktu snackbar tampil
+                              // Auto close screen setelah sukses
                               await Future.delayed(
-                                const Duration(milliseconds: 800),
+                                const Duration(milliseconds: 500),
                               );
                               Get.back(result: true);
+                            } else {
+                              // Show error message
+                              Get.snackbar(
+                                'Error',
+                                'Failed to add payment method. Please try again.',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: AppTheme.white,
+                                duration: const Duration(seconds: 3),
+                              );
                             }
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppTheme.royalBlueDark,
+                      foregroundColor: AppTheme.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -226,7 +255,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                   valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
+                                    AppTheme.white,
                                   ),
                                 ),
                               ),
@@ -253,8 +282,8 @@ class AddPaymentMethodScreen extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: () => Get.back(),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.grey[600],
-                    side: BorderSide(color: Colors.grey[300]!),
+                    foregroundColor: AppTheme.mediumGray,
+                    side: BorderSide(color: AppTheme.lightGray),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

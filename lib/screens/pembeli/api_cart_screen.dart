@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/cart_controller.dart';
 import '../../models/menu.dart';
 import 'checkout_screen.dart';
+import '../../utils/app_theme.dart';
 
 class ApiCartScreen extends StatelessWidget {
   final CartController cartController = Get.find<CartController>();
@@ -14,7 +15,7 @@ class ApiCartScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -108,7 +109,7 @@ class ApiCartScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
+                  color: AppTheme.royalBlueDark.withOpacity(0.1),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     topRight: Radius.circular(8),
@@ -116,15 +117,15 @@ class ApiCartScreen extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.store, color: Colors.blue),
+                    Icon(Icons.store, color: AppTheme.royalBlueDark),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         merchantName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue,
+                          color: AppTheme.royalBlueDark,
                         ),
                       ),
                     ),
@@ -137,7 +138,7 @@ class ApiCartScreen extends StatelessWidget {
                         style: TextStyle(fontSize: 12),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: AppTheme.green,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -239,7 +240,10 @@ class ApiCartScreen extends StatelessWidget {
                             : null,
                         icon: const Icon(Icons.remove),
                         style: IconButton.styleFrom(
-                          backgroundColor: Colors.grey[200],
+                          backgroundColor: AppTheme.royalBlueDark.withOpacity(
+                            0.1,
+                          ),
+                          foregroundColor: AppTheme.royalBlueDark,
                           minimumSize: const Size(32, 32),
                         ),
                         constraints: const BoxConstraints(),
@@ -249,9 +253,10 @@ class ApiCartScreen extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           quantity.toString(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: AppTheme.royalBlueDark,
                           ),
                         ),
                       ),
@@ -261,7 +266,10 @@ class ApiCartScreen extends StatelessWidget {
                             : null,
                         icon: const Icon(Icons.add),
                         style: IconButton.styleFrom(
-                          backgroundColor: Colors.grey[200],
+                          backgroundColor: AppTheme.royalBlueDark.withOpacity(
+                            0.1,
+                          ),
+                          foregroundColor: AppTheme.royalBlueDark,
                           minimumSize: const Size(32, 32),
                         ),
                         constraints: const BoxConstraints(),
@@ -293,10 +301,10 @@ class ApiCartScreen extends StatelessWidget {
                 ),
                 Text(
                   'Rp ${(price * quantity).toStringAsFixed(0)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green,
+                    color: AppTheme.goldenPoppy,
                   ),
                 ),
               ],
@@ -336,7 +344,7 @@ class ApiCartScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
+                    color: AppTheme.goldenPoppy,
                   ),
                 ),
               ),
@@ -355,16 +363,13 @@ class ApiCartScreen extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () => _proceedToCheckout(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: AppTheme.royalBlueDark,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: const Text(
                 'Checkout All',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -410,7 +415,7 @@ class ApiCartScreen extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.red),
             onPressed: () async {
               final cartItem = cartController.cartItems[index];
               await cartController.removeFromCart(cartItem['id']);
@@ -433,7 +438,7 @@ class ApiCartScreen extends StatelessWidget {
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.red),
             onPressed: () async {
               await cartController.clearCart();
               Get.back();

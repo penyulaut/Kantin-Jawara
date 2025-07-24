@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/merchant_payment_method_controller.dart';
 import '../../models/merchant_payment_method.dart';
 import 'add_payment_method_screen.dart';
+import '../../utils/app_theme.dart';
 
 class MerchantPaymentListScreen extends StatelessWidget {
   const MerchantPaymentListScreen({super.key});
@@ -21,8 +22,8 @@ class MerchantPaymentListScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Payment Methods'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        backgroundColor: AppTheme.royalBlueDark,
+        foregroundColor: AppTheme.white,
         actions: [
           IconButton(
             onPressed: () => controller.fetchMerchantPaymentMethods(),
@@ -42,88 +43,108 @@ class MerchantPaymentListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Obx(() {
-        if (controller.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.errorMessage.isNotEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error, size: 64, color: Colors.red[300]),
-                const SizedBox(height: 16),
-                Text(
-                  'Error: ${controller.errorMessage}',
-                  style: const TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => controller.fetchMerchantPaymentMethods(),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (controller.merchantPaymentMethods.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.payment_outlined, size: 64, color: Colors.grey[400]),
-                const SizedBox(height: 16),
-                Text(
-                  'No payment methods yet',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Add your first payment method to start accepting payments',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    final result = await Get.to(
-                      () => const AddPaymentMethodScreen(),
-                    );
-                    if (result == true) {
-                      controller.fetchMerchantPaymentMethods();
-                    }
-                  },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Payment Method'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () => controller.fetchMerchantPaymentMethods(),
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: controller.merchantPaymentMethods.length,
-            itemBuilder: (context, index) {
-              final paymentMethod = controller.merchantPaymentMethods[index];
-              return _buildPaymentMethodCard(paymentMethod, controller);
-            },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppTheme.lightGray, AppTheme.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-        );
-      }),
+        ),
+        child: Obx(() {
+          if (controller.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppTheme.royalBlueDark),
+            );
+          }
+
+          if (controller.errorMessage.isNotEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error, size: 64, color: AppTheme.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error: ${controller.errorMessage}',
+                    style: const TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => controller.fetchMerchantPaymentMethods(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.royalBlueDark,
+                      foregroundColor: AppTheme.white,
+                    ),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (controller.merchantPaymentMethods.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.payment_outlined,
+                    size: 64,
+                    color: AppTheme.mediumGray,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No payment methods yet',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: AppTheme.darkGray,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Add your first payment method to start accepting payments',
+                    style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final result = await Get.to(
+                        () => const AddPaymentMethodScreen(),
+                      );
+                      if (result == true) {
+                        controller.fetchMerchantPaymentMethods();
+                      }
+                    },
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add Payment Method'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.royalBlueDark,
+                      foregroundColor: AppTheme.white,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            color: AppTheme.royalBlueDark,
+            onRefresh: () => controller.fetchMerchantPaymentMethods(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: controller.merchantPaymentMethods.length,
+              itemBuilder: (context, index) {
+                final paymentMethod = controller.merchantPaymentMethods[index];
+                return _buildPaymentMethodCard(paymentMethod, controller);
+              },
+            ),
+          );
+        }),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Get.to(() => const AddPaymentMethodScreen());
@@ -131,8 +152,8 @@ class MerchantPaymentListScreen extends StatelessWidget {
             controller.fetchMerchantPaymentMethods();
           }
         },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppTheme.goldenPoppy,
+        child: const Icon(Icons.add, color: AppTheme.royalBlueDark),
       ),
     );
   }
@@ -143,161 +164,186 @@ class MerchantPaymentListScreen extends StatelessWidget {
   ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                // Payment Method Icon
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green[200]!),
-                  ),
-                  child: Icon(
-                    _getPaymentMethodIcon(
-                      paymentMethod.paymentMethod?.name ?? 'Cash',
-                    ),
-                    size: 24,
-                    color: Colors.green[700],
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                // Payment Method Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        paymentMethod.paymentMethod?.name ?? 'Unknown',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+      elevation: 3,
+      shadowColor: AppTheme.royalBlueDark.withOpacity(0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: [AppTheme.white, AppTheme.lightGray.withOpacity(0.3)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  // Payment Method Icon
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppTheme.royalBlueDark.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppTheme.royalBlueDark.withOpacity(0.3),
                       ),
-                      if (paymentMethod.paymentMethod?.description != null) ...[
-                        const SizedBox(height: 4),
+                    ),
+                    child: Icon(
+                      _getPaymentMethodIcon(
+                        paymentMethod.paymentMethod?.name ?? 'Cash',
+                      ),
+                      size: 24,
+                      color: AppTheme.royalBlueDark,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+
+                  // Payment Method Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          paymentMethod.paymentMethod!.description!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                          paymentMethod.paymentMethod?.name ?? 'Unknown',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                        if (paymentMethod.paymentMethod?.description !=
+                            null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            paymentMethod.paymentMethod!.description!,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.mediumGray,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
-                ),
-
-                // Status Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: paymentMethod.isActive
-                        ? Colors.green[100]
-                        : Colors.red[100],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    paymentMethod.isActive ? 'Active' : 'Inactive',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: paymentMethod.isActive
-                          ? Colors.green[700]
-                          : Colors.red[700],
                     ),
                   ),
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 12),
-
-            // Account Details
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.account_balance,
-                        size: 16,
-                        color: Colors.grey[600],
+                  // Status Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: paymentMethod.isActive
+                          ? AppTheme.goldenPoppy.withOpacity(0.1)
+                          : AppTheme.red.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      paymentMethod.isActive ? 'Active' : 'Inactive',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: paymentMethod.isActive
+                            ? AppTheme.goldenPoppy
+                            : AppTheme.red,
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Account Number: ${paymentMethod.details['account_number'] ?? 'N/A'}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(Icons.person, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Account Name: ${paymentMethod.details['account_name'] ?? 'N/A'}',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // Action Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _showEditDialog(paymentMethod, controller),
-                    icon: const Icon(Icons.edit, size: 16),
-                    label: const Text('Edit'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.blue[700],
-                      side: BorderSide(color: Colors.blue[300]!),
-                    ),
+              // Account Details
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.lightGray,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: AppTheme.mediumGray.withOpacity(0.3),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () =>
-                        _showDeleteDialog(paymentMethod, controller),
-                    icon: const Icon(Icons.delete, size: 16),
-                    label: const Text('Delete'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red[700],
-                      side: BorderSide(color: Colors.red[300]!),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.account_balance,
+                          size: 16,
+                          color: AppTheme.mediumGray,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Account Number: ${paymentMethod.details['account_number'] ?? 'N/A'}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          size: 16,
+                          color: AppTheme.mediumGray,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Account Name: ${paymentMethod.details['account_name'] ?? 'N/A'}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Action Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () =>
+                          _showEditDialog(paymentMethod, controller),
+                      icon: const Icon(Icons.edit, size: 16),
+                      label: const Text('Edit'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.royalBlueDark,
+                        side: BorderSide(
+                          color: AppTheme.royalBlueDark.withOpacity(0.5),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () =>
+                          _showDeleteDialog(paymentMethod, controller),
+                      icon: const Icon(Icons.delete, size: 16),
+                      label: const Text('Delete'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.red,
+                        side: BorderSide(color: AppTheme.red.withOpacity(0.5)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -367,9 +413,27 @@ class MerchantPaymentListScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               if (accountNumberController.text.isEmpty) {
-                Get.snackbar('Error', 'Please enter account number');
+                Get.snackbar(
+                  'Error',
+                  'Please enter account number',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: AppTheme.white,
+                );
                 return;
               }
+
+              // Show loading
+              Get.dialog(
+                const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppTheme.royalBlueDark,
+                    ),
+                  ),
+                ),
+                barrierDismissible: false,
+              );
 
               final success = await controller.updateMerchantPaymentMethod(
                 id: paymentMethod.id!,
@@ -381,20 +445,33 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 isActive: paymentMethod.isActive,
               );
 
+              // Close loading dialog
+              Get.back();
+
               if (success) {
+                // Close edit dialog
                 Get.back();
                 Get.snackbar(
                   'Success',
                   'Payment method updated successfully',
                   snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
+                  backgroundColor: AppTheme.goldenPoppy,
+                  colorText: AppTheme.royalBlueDark,
+                );
+              } else {
+                // Show error, keep dialog open
+                Get.snackbar(
+                  'Error',
+                  'Failed to update payment method',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: AppTheme.white,
                 );
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
+              backgroundColor: AppTheme.royalBlueDark,
+              foregroundColor: AppTheme.white,
             ),
             child: const Text('Update'),
           ),
@@ -417,24 +494,49 @@ class MerchantPaymentListScreen extends StatelessWidget {
           TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () async {
+              // Show loading
+              Get.dialog(
+                const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppTheme.royalBlueDark,
+                    ),
+                  ),
+                ),
+                barrierDismissible: false,
+              );
+
               final success = await controller.deleteMerchantPaymentMethod(
                 paymentMethod.id!,
               );
 
+              // Close loading dialog
+              Get.back();
+
               if (success) {
+                // Close delete dialog
                 Get.back();
                 Get.snackbar(
                   'Success',
                   'Payment method deleted successfully',
                   snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
+                  backgroundColor: AppTheme.goldenPoppy,
+                  colorText: AppTheme.royalBlueDark,
+                );
+              } else {
+                // Show error, keep dialog open
+                Get.snackbar(
+                  'Error',
+                  'Failed to delete payment method',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: AppTheme.white,
                 );
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppTheme.red,
+              foregroundColor: AppTheme.white,
             ),
             child: const Text('Delete'),
           ),

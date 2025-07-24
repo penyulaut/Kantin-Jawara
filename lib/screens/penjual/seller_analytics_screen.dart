@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/penjual_controller.dart';
+import '../../utils/app_theme.dart';
 
 class SellerAnalyticsScreen extends StatelessWidget {
   const SellerAnalyticsScreen({super.key});
@@ -12,7 +13,7 @@ class SellerAnalyticsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sales Analytics'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.green,
         foregroundColor: Colors.white,
       ),
       body: RefreshIndicator(
@@ -42,26 +43,26 @@ class SellerAnalyticsScreen extends StatelessWidget {
                       value:
                           'Rp ${controller.getTotalSales().toStringAsFixed(0)}',
                       icon: Icons.monetization_on,
-                      color: Colors.green,
+                      color: AppTheme.goldenPoppy,
                     ),
                     _buildSummaryCard(
                       title: 'Total Orders',
                       value: controller.getTotalOrders().toString(),
                       icon: Icons.shopping_bag,
-                      color: Colors.blue,
+                      color: AppTheme.royalBlueDark,
                     ),
                     _buildSummaryCard(
                       title: 'Today\'s Sales',
                       value:
                           'Rp ${controller.getTodaysSales().toStringAsFixed(0)}',
                       icon: Icons.today,
-                      color: Colors.orange,
+                      color: AppTheme.goldenPoppy,
                     ),
                     _buildSummaryCard(
                       title: 'Completed Orders',
                       value: controller.getTotalCompletedOrders().toString(),
                       icon: Icons.check_circle,
-                      color: Colors.purple,
+                      color: AppTheme.green,
                     ),
                   ],
                 ),
@@ -218,8 +219,8 @@ class SellerAnalyticsScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: Colors.green[100],
-          child: Icon(Icons.shopping_bag, color: Colors.green[700]),
+          backgroundColor: AppTheme.green.withOpacity(0.1),
+          child: Icon(Icons.shopping_bag, color: AppTheme.green),
         ),
         title: Text('Order #${transaction.id}'),
         subtitle: Text('Rp ${transaction.totalPrice.toStringAsFixed(0)}'),
@@ -252,23 +253,6 @@ class SellerAnalyticsScreen extends StatelessWidget {
   }
 
   Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return Colors.orange;
-      case 'accepted':
-      case 'paid':
-        return Colors.blue;
-      case 'inprogress':
-      case 'confirmed':
-        return Colors.purple;
-      case 'ready':
-        return Colors.green;
-      case 'completed':
-        return Colors.grey;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
+    return AppTheme.getTransactionStatusColor(status);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/payment_controller.dart';
 import '../../models/payment_method.dart';
+import '../../utils/app_theme.dart';
 
 class PaymentMethodsScreen extends StatelessWidget {
   final PaymentController controller = Get.find<PaymentController>();
@@ -15,7 +16,7 @@ class PaymentMethodsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Payment Methods'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.red,
         foregroundColor: Colors.white,
       ),
       floatingActionButton: FloatingActionButton(

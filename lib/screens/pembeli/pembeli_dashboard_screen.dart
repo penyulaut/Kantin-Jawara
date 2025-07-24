@@ -5,6 +5,7 @@ import '../../controllers/pembeli_controller.dart';
 import '../../controllers/menu_controller.dart' as menu_ctrl;
 import '../../controllers/chat_controller.dart';
 import '../../controllers/cart_controller.dart';
+import '../../utils/app_theme.dart';
 import 'menu_list_screen.dart';
 import 'my_orders_screen.dart';
 import 'chat_list_screen.dart';
@@ -99,52 +100,167 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Obx(
-        () => BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-
-            // Fetch data when specific tabs are selected
-            if (index == 1) {
-              // My Orders tab - fetch transactions
-              pembeliController.fetchTransactions();
-            } else if (index == 0) {
-              // Menu tab - fetch menus and cart
-              menuController.fetchMenus();
-              cartController.fetchCart();
-            } else if (index == 2) {
-              // Chat tab - fetch chat list and unread count
-              chatController.fetchChatList();
-              chatController.fetchUnreadCount();
-            }
-          },
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: Colors.blue,
-          unselectedItemColor: Colors.grey,
-          items: [
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.restaurant_menu),
-              label: 'Menu',
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
-              label: 'My Orders',
-            ),
-            BottomNavigationBarItem(
-              icon: Badge(
-                isLabelVisible: chatController.unreadCount > 0,
-                label: Text(chatController.unreadCount.toString()),
-                child: const Icon(Icons.chat),
+        () => Container(
+          decoration: BoxDecoration(
+            color: AppTheme.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.darkGray.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 10,
+                offset: const Offset(0, -2),
               ),
-              label: 'Chat',
+            ],
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+
+              // Fetch data when specific tabs are selected
+              if (index == 1) {
+                // My Orders tab - fetch transactions
+                pembeliController.fetchTransactions();
+              } else if (index == 0) {
+                // Menu tab - fetch menus and cart
+                menuController.fetchMenus();
+                cartController.fetchCart();
+              } else if (index == 2) {
+                // Chat tab - fetch chat list and unread count
+                chatController.fetchChatList();
+                chatController.fetchUnreadCount();
+              }
+            },
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: AppTheme.white,
+            selectedItemColor: AppTheme.royalBlueDark,
+            unselectedItemColor: AppTheme.mediumGray,
+            selectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 11,
             ),
-          ],
+            elevation: 0,
+            items: [
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    Icons.restaurant_menu,
+                    size: _currentIndex == 0 ? 26 : 24,
+                  ),
+                ),
+                activeIcon: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.royalBlueDark.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.restaurant_menu,
+                    size: 26,
+                    color: AppTheme.royalBlueDark,
+                  ),
+                ),
+                label: 'Menu',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    Icons.shopping_bag_outlined,
+                    size: _currentIndex == 1 ? 26 : 24,
+                  ),
+                ),
+                activeIcon: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.royalBlueDark.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.shopping_bag,
+                    size: 26,
+                    color: AppTheme.royalBlueDark,
+                  ),
+                ),
+                label: 'Orders',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(6),
+                  child: Badge(
+                    isLabelVisible: chatController.unreadCount > 0,
+                    label: Text(
+                      chatController.unreadCount.toString(),
+                      style: const TextStyle(
+                        color: AppTheme.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    backgroundColor: AppTheme.red,
+                    child: Icon(
+                      Icons.chat_bubble_outline,
+                      size: _currentIndex == 2 ? 26 : 24,
+                    ),
+                  ),
+                ),
+                activeIcon: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.royalBlueDark.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Badge(
+                    isLabelVisible: chatController.unreadCount > 0,
+                    label: Text(
+                      chatController.unreadCount.toString(),
+                      style: const TextStyle(
+                        color: AppTheme.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    backgroundColor: AppTheme.red,
+                    child: const Icon(
+                      Icons.chat_bubble,
+                      size: 26,
+                      color: AppTheme.royalBlueDark,
+                    ),
+                  ),
+                ),
+                label: 'Chat',
+              ),
+              BottomNavigationBarItem(
+                icon: Container(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    Icons.person_outline,
+                    size: _currentIndex == 3 ? 26 : 24,
+                  ),
+                ),
+                activeIcon: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.royalBlueDark.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    size: 26,
+                    color: AppTheme.royalBlueDark,
+                  ),
+                ),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/admin_controller.dart';
 import '../../models/transaction.dart';
+import '../../utils/app_theme.dart';
 
 class AdminTransactionsScreen extends StatelessWidget {
   final AdminController controller = Get.find<AdminController>();
@@ -250,35 +251,15 @@ class AdminTransactionsScreen extends StatelessWidget {
   }
 
   Widget _buildStatusChip(TransactionStatus status) {
-    Color color;
-    switch (status) {
-      case TransactionStatus.pending:
-        color = Colors.orange;
-        break;
-      case TransactionStatus.paid:
-        color = Colors.blue;
-        break;
-      case TransactionStatus.confirmed:
-        color = Colors.purple;
-        break;
-      case TransactionStatus.ready:
-        color = Colors.amber;
-        break;
-      case TransactionStatus.completed:
-        color = Colors.green;
-        break;
-      case TransactionStatus.cancelled:
-        color = Colors.red;
-        break;
-    }
+    final color = AppTheme.getStatusColorFromEnum(status);
 
     return Chip(
       label: Text(
         status.toString().split('.').last.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: AppTheme.white,
         ),
       ),
       backgroundColor: color,

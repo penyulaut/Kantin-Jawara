@@ -95,6 +95,7 @@ class PembeliController extends GetxController {
     String? customerName,
     String? customerPhone,
     String? orderType,
+    String? paymentMethod,
   }) async {
     try {
       _isLoading.value = true;
@@ -113,6 +114,7 @@ class PembeliController extends GetxController {
         'customer_name': customerName,
         'customer_phone': customerPhone,
         'order_type': orderType ?? 'takeaway',
+        'payment_method': paymentMethod ?? 'Bank Transfer',
       };
 
       final response = await _apiService.post(
@@ -272,6 +274,56 @@ class PembeliController extends GetxController {
       return _transactions.firstWhere((transaction) => transaction.id == id);
     } catch (e) {
       return null;
+    }
+  }
+
+  // Mark transaction as paid
+  Future<Map<String, dynamic>> markTransactionAsPaid({
+    required int transactionId,
+    String? paymentNote,
+  }) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return {'success': false, 'message': 'User not authenticated'};
+      }
+
+      final response = await _apiService.markTransactionAsPaid(
+        token: token,
+        transactionId: transactionId,
+        paymentNote: paymentNote,
+      );
+
+      print('PembeliController: markTransactionAsPaid response: $response');
+
+      if (response['success'] == true) {
+        // Extract the success message from API response
+        // The post method wraps response in: {'success': true, 'data': actualApiResponse}
+        final apiResponse = response['data']; // This is the actual API response
+        final message =
+            apiResponse['message'] ??
+            'Transaksi berhasil ditandai sebagai sudah dibayar';
+
+        print('PembeliController: Extracted message: $message');
+
+        // Refresh transactions to get updated data
+        await fetchTransactions();
+
+        return {'success': true, 'message': message, 'data': apiResponse};
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to mark transaction as paid';
+        return {'success': false, 'message': _errorMessage.value};
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error marking transaction as paid: $e';
+      return {'success': false, 'message': _errorMessage.value};
+    } finally {
+      _isLoading.value = false;
     }
   }
 }

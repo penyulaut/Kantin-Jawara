@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
 import '../../utils/enums.dart';
+import '../../utils/app_theme.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -92,7 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.lightGray,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -101,14 +102,42 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text('Kantin Jawara',
-                    style:
-                        TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                // Logo/Icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.royalBlueDark,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.royalBlueDark.withOpacity(0.3),
+                        blurRadius: 15,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.restaurant,
+                    size: 40,
+                    color: AppTheme.white,
+                  ),
+                ),
+
+                const Text(
+                  'Kantin Jawara',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.royalBlueDark,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 const Text(
                   'Solusi Untuk Kantin Untirta yang sangat ramai',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
                 ),
                 const SizedBox(height: 24),
 
@@ -123,20 +152,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 24),
 
                 _inputField("Nama", _nameController, _validateName),
-                _inputField("Email", _emailController, _validateEmail, keyboardType: TextInputType.emailAddress),
+                _inputField(
+                  "Email",
+                  _emailController,
+                  _validateEmail,
+                  keyboardType: TextInputType.emailAddress,
+                ),
                 _passwordField(),
-                _inputField("Konfirmasi Password", _confirmPasswordController, _validateConfirmPassword, obscure: true),
+                _inputField(
+                  "Konfirmasi Password",
+                  _confirmPasswordController,
+                  _validateConfirmPassword,
+                  obscure: true,
+                ),
 
-                DropdownButtonFormField<UserRole>(
-                  value: _selectedRole,
-                  decoration: const InputDecoration(labelText: 'Role'),
-                  items: [UserRole.penjual, UserRole.pembeli]
-                      .map((role) => DropdownMenuItem(
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.white,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: AppTheme.mediumGray.withOpacity(0.3),
+                    ),
+                  ),
+                  child: DropdownButtonFormField<UserRole>(
+                    value: _selectedRole,
+                    decoration: const InputDecoration(
+                      labelText: 'Role',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                    ),
+                    items: [UserRole.penjual, UserRole.pembeli]
+                        .map(
+                          (role) => DropdownMenuItem(
                             value: role,
                             child: Text(_getRoleDisplayName(role)),
-                          ))
-                      .toList(),
-                  onChanged: (val) => setState(() => _selectedRole = val!),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (val) => setState(() => _selectedRole = val!),
+                  ),
                 ),
 
                 const SizedBox(height: 12),
@@ -145,41 +203,76 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Checkbox(
                       value: _agreed,
-                      onChanged: (val) => setState(() => _agreed = val ?? false),
+                      activeColor: AppTheme.goldenPoppy,
+                      checkColor: AppTheme.royalBlueDark,
+                      onChanged: (val) =>
+                          setState(() => _agreed = val ?? false),
                     ),
                     const Flexible(
                       child: Text(
                         "Saya setuju dengan Ketentuan Layanan & Kebijakan Privasi",
-                        style: TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.mediumGray,
+                        ),
                       ),
                     ),
                   ],
                 ),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 20),
 
-                Obx(() => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _authController.isLoading ? null : _handleRegister,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFC107),
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _authController.isLoading
+                          ? null
+                          : _handleRegister,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.goldenPoppy,
+                        foregroundColor: AppTheme.royalBlueDark,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 3,
+                        shadowColor: AppTheme.goldenPoppy.withOpacity(0.4),
+                      ),
+                      child: _authController.isLoading
+                          ? const CircularProgressIndicator(
+                              color: AppTheme.royalBlueDark,
+                            )
+                          : const Text(
+                              'Register',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
-                    child: _authController.isLoading
-                        ? const CircularProgressIndicator()
-                        : const Text('Register'),
                   ),
-                )),
+                ),
 
-                const SizedBox(height: 12),
-                Obx(() => _authController.errorMessage.isNotEmpty
-                    ? Text(_authController.errorMessage,
-                        style: const TextStyle(color: Colors.red))
-                    : const SizedBox.shrink()),
+                const SizedBox(height: 16),
+                Obx(
+                  () => _authController.errorMessage.isNotEmpty
+                      ? Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.red.withOpacity(0.1),
+                            border: Border.all(
+                              color: AppTheme.red.withOpacity(0.3),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            _authController.errorMessage,
+                            style: const TextStyle(color: AppTheme.red),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
 
                 TextButton(
                   onPressed: () {
@@ -188,9 +281,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   },
                   child: const Text(
                     'Sudah punya akun? Masuk',
-                    style: TextStyle(color: Colors.blueAccent),
+                    style: TextStyle(
+                      color: AppTheme.usafaBlue,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
+
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -199,21 +297,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _inputField(String label, TextEditingController controller, FormFieldValidator<String>? validator,
-      {bool obscure = false, TextInputType? keyboardType}) {
+  Widget _inputField(
+    String label,
+    TextEditingController controller,
+    FormFieldValidator<String>? validator, {
+    bool obscure = false,
+    TextInputType? keyboardType,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
-      child: TextFormField(
-        controller: controller,
-        validator: validator,
-        obscureText: obscure,
-        keyboardType: keyboardType,
-        onChanged: (_) {
-          if (_authController.errorMessage.isNotEmpty) {
-            _authController.clearError();
-          }
-        },
-        decoration: InputDecoration(labelText: label),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppTheme.mediumGray.withOpacity(0.3)),
+        ),
+        child: TextFormField(
+          controller: controller,
+          validator: validator,
+          obscureText: obscure,
+          keyboardType: keyboardType,
+          onChanged: (_) {
+            if (_authController.errorMessage.isNotEmpty) {
+              _authController.clearError();
+            }
+          },
+          decoration: InputDecoration(
+            labelText: label,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            labelStyle: const TextStyle(color: AppTheme.mediumGray),
+          ),
+        ),
       ),
     );
   }
@@ -221,15 +339,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _passwordField() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
-      child: TextFormField(
-        controller: _passwordController,
-        obscureText: !_passwordVisible,
-        validator: _validatePassword,
-        decoration: InputDecoration(
-          labelText: 'Password',
-          suffixIcon: IconButton(
-            icon: Icon(_passwordVisible ? Icons.visibility : Icons.visibility_off),
-            onPressed: () => setState(() => _passwordVisible = !_passwordVisible),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppTheme.mediumGray.withOpacity(0.3)),
+        ),
+        child: TextFormField(
+          controller: _passwordController,
+          obscureText: !_passwordVisible,
+          validator: _validatePassword,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            labelStyle: const TextStyle(color: AppTheme.mediumGray),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                color: AppTheme.mediumGray,
+              ),
+              onPressed: () =>
+                  setState(() => _passwordVisible = !_passwordVisible),
+            ),
           ),
         ),
       ),
@@ -241,15 +376,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 6),
         child: ElevatedButton.icon(
-          icon: Icon(icon, color: Colors.black),
-          label: Text(text, style: const TextStyle(color: Colors.black)),
+          icon: Icon(icon, color: AppTheme.royalBlueDark),
+          label: Text(
+            text,
+            style: const TextStyle(color: AppTheme.royalBlueDark),
+          ),
           onPressed: () {},
           style: ElevatedButton.styleFrom(
             elevation: 2,
-            backgroundColor: Colors.white,
+            backgroundColor: AppTheme.white,
             padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: AppTheme.mediumGray.withOpacity(0.3)),
             ),
           ),
         ),

@@ -1,16 +1,28 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../controllers/pembeli_controller.dart';
+import '../../controllers/payment_controller.dart';
 import '../../models/transaction.dart';
 import '../../models/payment_method.dart';
 import '../../models/merchant_payment_method.dart';
+import '../../utils/app_theme.dart';
 
 class PaymentProofScreen extends StatelessWidget {
   final Transaction transaction;
   final PaymentMethod paymentMethod;
   final MerchantPaymentMethod merchantPaymentMethod;
 
-  const PaymentProofScreen({
+  // Add these properties
+  final RxString selectedImagePath = ''.obs;
+  final RxString proofUrl = ''.obs;
+  final RxBool useUrl = false.obs;
+  final ImagePicker _picker = ImagePicker();
+  final TextEditingController urlController = TextEditingController();
+  final TextEditingController paymentNoteController = TextEditingController();
+
+  PaymentProofScreen({
     super.key,
     required this.transaction,
     required this.paymentMethod,
@@ -24,9 +36,10 @@ class PaymentProofScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Payment Proof'),
-        backgroundColor: Colors.blue,
+        title: const Text('Upload Bukti Pembayaran'),
+        backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -158,37 +171,256 @@ class PaymentProofScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Upload Section
-            const Text(
-              'Upload Payment Proof',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Text(
+              'Upload Bukti Pembayaran',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.royalBlueDark,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
+            Text(
+              'Pilih cara upload bukti pembayaran atau berikan URL bukti pembayaran.',
+              style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
+            ),
+            const SizedBox(height: 16),
 
-            // Image Placeholder
+            // Toggle between Image Upload and URL
             Container(
-              width: double.infinity,
-              height: 200,
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey[50],
+                color: AppTheme.lightGray,
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add_a_photo, size: 48, color: Colors.grey[400]),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Tap to upload payment proof',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'JPG, PNG (Max 5MB)',
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                  ),
-                ],
+              child: Obx(
+                () => Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          useUrl.value = false;
+                          selectedImagePath.value = '';
+                          urlController.clear();
+                          proofUrl.value = '';
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: !useUrl.value
+                                ? Colors.white
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: !useUrl.value
+                                ? [
+                                    BoxShadow(
+                                      color: AppTheme.darkGray.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Upload Foto',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: !useUrl.value
+                                    ? AppTheme.royalBlueDark
+                                    : AppTheme.mediumGray,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          useUrl.value = true;
+                          selectedImagePath.value = '';
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: useUrl.value
+                                ? Colors.white
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: useUrl.value
+                                ? [
+                                    BoxShadow(
+                                      color: AppTheme.darkGray.withOpacity(0.1),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ]
+                                : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Pakai URL',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: useUrl.value
+                                    ? AppTheme.royalBlueDark
+                                    : AppTheme.mediumGray,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ),
+            const SizedBox(height: 16),
+
+            // Image Upload Section or URL Input
+            Obx(
+              () => !useUrl.value
+                  ? Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: selectedImagePath.value.isEmpty
+                              ? AppTheme.lightGray
+                              : AppTheme.usafaBlue,
+                          width: selectedImagePath.value.isEmpty ? 1 : 2,
+                        ),
+                      ),
+                      child: selectedImagePath.value.isEmpty
+                          ? _buildImagePicker()
+                          : _buildImagePreview(),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'URL Bukti Pembayaran',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.royalBlueDark,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.lightGray),
+                          ),
+                          child: TextField(
+                            controller: urlController,
+                            onChanged: (value) => proofUrl.value = value,
+                            decoration: InputDecoration(
+                              hintText:
+                                  'https://example.com/bukti-pembayaran.jpg',
+                              hintStyle: TextStyle(color: AppTheme.mediumGray),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.all(16),
+                              prefixIcon: Icon(
+                                Icons.link,
+                                color: AppTheme.goldenPoppy,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (proofUrl.value.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            width: double.infinity,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppTheme.usafaBlue),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                proofUrl.value,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppTheme.lightGray,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.broken_image,
+                                          size: 48,
+                                          color: AppTheme.mediumGray,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Gagal memuat gambar',
+                                          style: TextStyle(
+                                            color: AppTheme.mediumGray,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        color: AppTheme.lightGray,
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            value:
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                : null,
+                                            color: AppTheme.usafaBlue,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (useUrl.value && proofUrl.value.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              urlController.clear();
+                              proofUrl.value = '';
+                            },
+                            icon: Icon(Icons.clear, color: Colors.red),
+                            label: Text(
+                              'Hapus URL',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: Colors.red),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
             ),
             const SizedBox(height: 16),
 
@@ -215,41 +447,151 @@ class PaymentProofScreen extends StatelessWidget {
             // Submit Button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () =>
-                    _submitPaymentProof(controller, notesController.text),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: Obx(
+                () => Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    gradient:
+                        ((!useUrl.value &&
+                                selectedImagePath.value.isNotEmpty) ||
+                            (useUrl.value && proofUrl.value.isNotEmpty))
+                        ? LinearGradient(
+                            colors: [
+                              AppTheme.usafaBlue,
+                              AppTheme.royalBlueDark,
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          )
+                        : null,
+                    color:
+                        ((useUrl.value && proofUrl.value.isEmpty) ||
+                            (!useUrl.value && selectedImagePath.value.isEmpty))
+                        ? AppTheme.lightGray
+                        : null,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap:
+                          ((!useUrl.value &&
+                                  selectedImagePath.value.isNotEmpty) ||
+                              (useUrl.value && proofUrl.value.isNotEmpty))
+                          ? () => _submitPaymentProof(
+                              controller,
+                              notesController.text,
+                            )
+                          : null,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Center(
+                          child: Text(
+                            'Upload Bukti Pembayaran',
+                            style: TextStyle(
+                              color: selectedImagePath.value.isNotEmpty
+                                  ? Colors.white
+                                  : AppTheme.darkGray,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'Submit Payment Proof',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Payment Note Section
+            Text(
+              'Payment Note (Opsional)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.royalBlueDark,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.lightGray),
+              ),
+              child: TextField(
+                controller: paymentNoteController,
+                maxLines: 2,
+                maxLength: 255,
+                decoration: InputDecoration(
+                  hintText: 'Contoh: Sudah transfer via BCA, bayar cash, dll.',
+                  hintStyle: TextStyle(color: AppTheme.mediumGray),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.all(16),
+                  prefixIcon: Icon(
+                    Icons.note_outlined,
+                    color: AppTheme.goldenPoppy,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Mark as Paid Button
+            SizedBox(
+              width: double.infinity,
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.goldenPoppy, Colors.orange[600]!],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _markAsPaid,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Center(
+                        child: Text(
+                          'Sudah Membayar',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 8),
+
             // Later Button
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
                 onPressed: () => Get.back(),
                 style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppTheme.lightGray),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Upload Later',
-                  style: TextStyle(fontSize: 16),
+                child: Text(
+                  'Upload Nanti',
+                  style: TextStyle(fontSize: 16, color: AppTheme.darkGray),
                 ),
               ),
             ),
@@ -345,30 +687,416 @@ class PaymentProofScreen extends StatelessWidget {
     }
   }
 
-  void _submitPaymentProof(PembeliController controller, String notes) async {
-    // In a real app, this would handle image upload
-    // For now, we'll just show success message
-
-    Get.dialog(
-      AlertDialog(
-        title: const Text('Payment Proof Uploaded'),
-        content: const Text(
-          'Your payment proof has been submitted successfully. '
-          'The merchant will review and confirm your payment.',
+  Widget _buildImagePicker() {
+    return InkWell(
+      onTap: _pickImage,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: 200,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.cloud_upload_outlined,
+              size: 48,
+              color: AppTheme.darkGray,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Tap untuk pilih foto',
+              style: TextStyle(fontSize: 16, color: AppTheme.darkGray),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'JPG, PNG (max 2MB)',
+              style: TextStyle(fontSize: 12, color: AppTheme.lightGray),
+            ),
+          ],
         ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Get.back(); // Close dialog
-              Get.back(); // Go back to previous screen
-            },
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
+  }
 
-    // Here you would typically call the API to upload the payment proof
-    // await controller.uploadPaymentProof(transaction.id!, imageFile, notes);
+  Widget _buildImagePreview() {
+    return Stack(
+      children: [
+        Container(
+          height: 200,
+          width: double.infinity,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.file(File(selectedImagePath.value), fit: BoxFit.cover),
+          ),
+        ),
+        Positioned(
+          top: 8,
+          right: 8,
+          child: GestureDetector(
+            onTap: () => selectedImagePath.value = '',
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.red,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(Icons.close, color: Colors.white, size: 20),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.royalBlueDark.withOpacity(0.8),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(Icons.edit, color: Colors.white, size: 20),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024,
+      );
+
+      if (image != null) {
+        // Check file size (2MB limit)
+        final file = File(image.path);
+        final fileSize = await file.length();
+
+        if (fileSize > 2 * 1024 * 1024) {
+          // 2MB in bytes
+          Get.snackbar(
+            'Error',
+            'Ukuran file terlalu besar. Maksimal 2MB.',
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            icon: Icon(Icons.error, color: Colors.white),
+          );
+          return;
+        }
+
+        selectedImagePath.value = image.path;
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memilih gambar: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+    }
+  }
+
+  Future<void> _markAsPaid() async {
+    try {
+      // Show confirmation dialog
+      final confirmed = await Get.dialog<bool>(
+        AlertDialog(
+          title: Text('Konfirmasi Pembayaran'),
+          content: Text(
+            'Apakah Anda yakin sudah melakukan pembayaran untuk pesanan ini?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.back(result: true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.royalBlueDark,
+              ),
+              child: Text(
+                'Ya, Sudah Bayar',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      // Show beautiful loading dialog
+      Get.dialog(
+        WillPopScope(
+          onWillPop: () async => false, // Prevent dismissing while processing
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppTheme.goldenPoppy.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppTheme.goldenPoppy,
+                        ),
+                        strokeWidth: 3,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Menandai Sebagai Sudah Dibayar',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.darkGray,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Mohon tunggu sebentar...',
+                    style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Get PembeliController and mark transaction as paid
+      final pembeliController = Get.find<PembeliController>();
+      final result = await pembeliController.markTransactionAsPaid(
+        transactionId: transaction.id!,
+        paymentNote: paymentNoteController.text.trim().isEmpty
+            ? null
+            : paymentNoteController.text.trim(),
+      );
+
+      print('PaymentProofScreen: markTransactionAsPaid result: $result');
+
+      // Close loading dialog
+      Get.back();
+
+      if (result['success'] == true) {
+        // Show success message from API
+        Get.snackbar(
+          'Sukses',
+          result['message'] ??
+              'Transaksi berhasil ditandai sebagai sudah dibayar',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          icon: Icon(Icons.check_circle, color: Colors.white),
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+
+        // Navigate to orders screen
+        print('PaymentProofScreen: Navigating to /orders');
+        try {
+          Get.offAllNamed('/orders'); // Navigate to orders page
+        } catch (e) {
+          print(
+            'PaymentProofScreen: Failed to navigate to /orders, trying fallback: $e',
+          );
+          // Fallback: go back to previous screen multiple times to get to orders
+          Get.until((route) => route.isFirst);
+        }
+      } else {
+        Get.snackbar(
+          'Error',
+          result['message'] ?? 'Gagal menandai pembayaran sebagai selesai',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          icon: Icon(Icons.error, color: Colors.white),
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+      }
+    } catch (e) {
+      Get.back(); // Close loading dialog if still open
+      Get.snackbar(
+        'Error',
+        'Gagal menandai pembayaran: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+    }
+  }
+
+  void _submitPaymentProof(PembeliController controller, String notes) async {
+    if (!useUrl.value && selectedImagePath.value.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Pilih foto bukti pembayaran terlebih dahulu',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+      return;
+    }
+
+    if (useUrl.value && proofUrl.value.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Masukkan URL bukti pembayaran terlebih dahulu',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+      return;
+    }
+
+    try {
+      // Show beautiful loading dialog
+      Get.dialog(
+        WillPopScope(
+          onWillPop: () async => false, // Prevent dismissing while uploading
+          child: Dialog(
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: AppTheme.usafaBlue.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppTheme.usafaBlue,
+                        ),
+                        strokeWidth: 3,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Mengupload Bukti Pembayaran',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.darkGray,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Mohon tunggu sebentar...',
+                    style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      Map<String, dynamic> result;
+      PaymentController paymentController = Get.find<PaymentController>();
+
+      if (useUrl.value) {
+        // Upload using URL
+        result = await paymentController.uploadPaymentProofUrl(
+          transactionId: transaction.id!,
+          proofUrl: proofUrl.value,
+        );
+      } else {
+        // Upload payment proof using PaymentController
+        result = await paymentController.uploadPaymentProof(
+          transactionId: transaction.id!,
+          proofFile: File(selectedImagePath.value),
+        );
+      }
+
+      // Close loading dialog
+      Get.back();
+
+      print('PaymentProofScreen: Upload result: $result');
+
+      if (result['success'] == true) {
+        // Show success message from API
+        Get.snackbar(
+          'Sukses',
+          result['message'] ?? 'Bukti pembayaran berhasil diupload',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          icon: Icon(Icons.check_circle, color: Colors.white),
+          duration: Duration(seconds: 3),
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+
+        Get.back(); // Go back to order list
+      } else {
+        Get.snackbar(
+          'Error',
+          result['message'] ?? 'Gagal upload bukti pembayaran',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          icon: Icon(Icons.error, color: Colors.white),
+          snackPosition: SnackPosition.TOP,
+          margin: EdgeInsets.all(16),
+          borderRadius: 12,
+        );
+      }
+    } catch (e) {
+      Get.back(); // Close loading dialog if still open
+      Get.snackbar(
+        'Error',
+        'Gagal upload bukti pembayaran: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+    }
   }
 }

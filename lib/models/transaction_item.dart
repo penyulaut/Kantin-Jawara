@@ -23,10 +23,10 @@ class TransactionItem {
 
   factory TransactionItem.fromJson(Map<String, dynamic> json) {
     return TransactionItem(
-      id: json['id'],
-      transactionId: json['transaction_id'],
-      menuId: json['menu_id'],
-      quantity: json['quantity'] ?? 0,
+      id: int.tryParse(json['id'].toString()),
+      transactionId: int.tryParse(json['transaction_id'].toString()),
+      menuId: int.tryParse(json['menu_id'].toString()),
+      quantity: int.tryParse(json['quantity'].toString()) ?? 0,
       price: double.tryParse(json['price'].toString()) ?? 0.0,
       menu: json['menu'] != null ? Menu.fromJson(json['menu']) : null,
       createdAt: json['created_at'] != null

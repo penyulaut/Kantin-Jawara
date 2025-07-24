@@ -26,9 +26,9 @@ class MerchantPaymentMethod {
 
   factory MerchantPaymentMethod.fromJson(Map<String, dynamic> json) {
     return MerchantPaymentMethod(
-      id: json['id'],
-      userId: json['user_id'],
-      paymentMethodId: json['payment_method_id'],
+      id: int.tryParse(json['id'].toString()),
+      userId: int.tryParse(json['user_id'].toString()),
+      paymentMethodId: int.tryParse(json['payment_method_id'].toString()),
       isActive: json['is_active'] ?? true,
       details: json['details'] ?? {},
       user: json['user'] != null ? User.fromJson(json['user']) : null,

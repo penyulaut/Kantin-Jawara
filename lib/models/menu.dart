@@ -29,15 +29,16 @@ class Menu {
 
   factory Menu.fromJson(Map<String, dynamic> json) {
     return Menu(
-      id: json['id'],
+      id: int.tryParse(json['id'].toString()),
       name: json['name'] ?? '',
       description: json['description'],
       price: double.tryParse(json['price'].toString()) ?? 0.0,
-      stock: json['stock'] ?? 0,
+      stock: int.tryParse(json['stock'].toString()) ?? 0,
       imageUrl: json['image_url'],
-      categoryId: json['category_id'],
-      penjualId:
-          json['penjual_id'] ?? json['user_id'], // Handle both field names
+      categoryId: int.tryParse(json['category_id'].toString()),
+      penjualId: int.tryParse(
+        (json['penjual_id'] ?? json['user_id']).toString(),
+      ), // Handle both field names
       category: json['category'] != null
           ? Category.fromJson(json['category'])
           : null,

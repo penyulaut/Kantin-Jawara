@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/pembeli_controller.dart';
 import '../../controllers/payment_controller.dart';
+import '../../controllers/cart_controller.dart';
 import '../../models/menu.dart';
 import '../../models/payment_method.dart';
 import '../../models/merchant_payment_method.dart';
+import '../../utils/app_theme.dart';
 import 'payment_selection_screen.dart';
 
 class CheckoutScreen extends StatelessWidget {
   final RxList<Map<String, dynamic>> cartItems;
   final PembeliController pembeliController = Get.find<PembeliController>();
   final PaymentController paymentController = Get.put(PaymentController());
+  final CartController cartController = Get.find<CartController>();
 
   final TextEditingController customerNameController = TextEditingController();
   final TextEditingController customerPhoneController = TextEditingController();
@@ -28,8 +31,9 @@ class CheckoutScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Checkout'),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -37,156 +41,287 @@ class CheckoutScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Order Summary
-            const Text(
+            Text(
               'Order Summary',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.royalBlueDark,
+              ),
             ),
-            const SizedBox(height: 12),
-            ...cartItems.map((item) => _buildOrderItem(item)),
-            const Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Total:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Rp ${_calculateTotal().toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green[700],
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.darkGray.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Customer Information
-            const Text(
-              'Customer Information',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: customerNameController,
-              decoration: const InputDecoration(
-                labelText: 'Customer Name',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.person),
+                ],
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: customerPhoneController,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.phone),
-              ),
-              keyboardType: TextInputType.phone,
-            ),
-            const SizedBox(height: 24),
-
-            // Order Type
-            const Text(
-              'Order Type',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Obx(
-              () => Column(
+              child: Column(
                 children: [
-                  RadioListTile<String>(
-                    title: const Text('Dine In'),
-                    subtitle: const Text('Eat at the restaurant'),
-                    value: 'dine_in',
-                    groupValue: selectedOrderType.value,
-                    onChanged: (value) => selectedOrderType.value = value!,
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('Takeaway'),
-                    subtitle: const Text('Take your order to go'),
-                    value: 'takeaway',
-                    groupValue: selectedOrderType.value,
-                    onChanged: (value) => selectedOrderType.value = value!,
-                  ),
-                  RadioListTile<String>(
-                    title: const Text('Delivery'),
-                    subtitle: const Text('Deliver to your location'),
-                    value: 'delivery',
-                    groupValue: selectedOrderType.value,
-                    onChanged: (value) => selectedOrderType.value = value!,
+                  ...cartItems.map((item) => _buildOrderItem(item)),
+                  const Divider(thickness: 1.5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Total:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.royalBlueDark,
+                        ),
+                      ),
+                      Text(
+                        'Rp ${_calculateTotal().toStringAsFixed(0)}',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.goldenPoppy,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 24),
 
-            // Payment Method
-            const Text(
-              'Payment Method',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Customer Information
+            Text(
+              'Customer Information',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.royalBlueDark,
+              ),
             ),
-            const SizedBox(height: 12),
-            Obx(
-              () => Card(
-                child: InkWell(
-                  onTap: () => _selectPaymentMethod(),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Icon(
-                          selectedPaymentMethod.value != null
-                              ? _getPaymentMethodIcon(
-                                  selectedPaymentMethod.value!.name,
-                                )
-                              : Icons.payment,
-                          size: 24,
-                          color: selectedPaymentMethod.value != null
-                              ? Colors.blue
-                              : Colors.grey,
+            const SizedBox(height: 16),
+            TextField(
+              controller: customerNameController,
+              decoration: InputDecoration(
+                labelText: 'Customer Name',
+                labelStyle: TextStyle(color: AppTheme.darkGray),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.lightGray),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.usafaBlue, width: 2),
+                ),
+                prefixIcon: Icon(Icons.person, color: AppTheme.goldenPoppy),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: customerPhoneController,
+              decoration: InputDecoration(
+                labelText: 'Phone Number',
+                labelStyle: TextStyle(color: AppTheme.darkGray),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.lightGray),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.usafaBlue, width: 2),
+                ),
+                prefixIcon: Icon(Icons.phone, color: AppTheme.goldenPoppy),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              keyboardType: TextInputType.phone,
+            ),
+            const SizedBox(height: 24),
+
+            // Order Type
+            Text(
+              'Order Type',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.royalBlueDark,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.lightGray),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.darkGray.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Obx(
+                () => Column(
+                  children: [
+                    RadioListTile<String>(
+                      title: Text(
+                        'Dine In',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.royalBlueDark,
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                selectedPaymentMethod.value?.name ??
-                                    'Select Payment Method',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: selectedPaymentMethod.value != null
-                                      ? Colors.black
-                                      : Colors.grey,
-                                ),
-                              ),
-                              if (selectedPaymentMethod.value != null &&
-                                  selectedMerchantPaymentMethod.value !=
-                                      null) ...[
-                                const SizedBox(height: 4),
+                      ),
+                      subtitle: Text(
+                        'Eat at the restaurant',
+                        style: TextStyle(color: AppTheme.darkGray),
+                      ),
+                      value: 'dine_in',
+                      groupValue: selectedOrderType.value,
+                      activeColor: AppTheme.usafaBlue,
+                      onChanged: (value) => selectedOrderType.value = value!,
+                    ),
+                    Divider(color: AppTheme.lightGray, height: 1),
+                    RadioListTile<String>(
+                      title: Text(
+                        'Takeaway',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.royalBlueDark,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Take your order to go',
+                        style: TextStyle(color: AppTheme.darkGray),
+                      ),
+                      value: 'takeaway',
+                      groupValue: selectedOrderType.value,
+                      activeColor: AppTheme.usafaBlue,
+                      onChanged: (value) => selectedOrderType.value = value!,
+                    ),
+                    Divider(color: AppTheme.lightGray, height: 1),
+                    RadioListTile<String>(
+                      title: Text(
+                        'Delivery',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.royalBlueDark,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Deliver to your location',
+                        style: TextStyle(color: AppTheme.darkGray),
+                      ),
+                      value: 'delivery',
+                      groupValue: selectedOrderType.value,
+                      activeColor: AppTheme.usafaBlue,
+                      onChanged: (value) => selectedOrderType.value = value!,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Payment Method
+            Text(
+              'Payment Method',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.royalBlueDark,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Obx(
+              () => Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.lightGray),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.darkGray.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _selectPaymentMethod(),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: selectedPaymentMethod.value != null
+                                  ? AppTheme.goldenPoppy.withOpacity(0.1)
+                                  : AppTheme.lightGray.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              selectedPaymentMethod.value != null
+                                  ? _getPaymentMethodIcon(
+                                      selectedPaymentMethod.value!.name,
+                                    )
+                                  : Icons.payment,
+                              size: 24,
+                              color: selectedPaymentMethod.value != null
+                                  ? AppTheme.goldenPoppy
+                                  : AppTheme.darkGray,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
                                 Text(
-                                  'Account: ${selectedMerchantPaymentMethod.value!.details['account_number']}',
+                                  selectedPaymentMethod.value?.name ??
+                                      'Select Payment Method',
                                   style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: selectedPaymentMethod.value != null
+                                        ? AppTheme.royalBlueDark
+                                        : AppTheme.darkGray,
                                   ),
                                 ),
+                                if (selectedPaymentMethod.value != null &&
+                                    selectedMerchantPaymentMethod.value !=
+                                        null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Account: ${selectedMerchantPaymentMethod.value!.details['account_number']}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppTheme.darkGray,
+                                    ),
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Colors.grey[400],
-                        ),
-                      ],
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: AppTheme.usafaBlue,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -195,43 +330,104 @@ class CheckoutScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Notes
-            const Text(
+            Text(
               'Notes (Optional)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.royalBlueDark,
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             TextField(
               controller: notesController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Add any special instructions...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.note),
+                labelStyle: TextStyle(color: AppTheme.darkGray),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.lightGray),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppTheme.usafaBlue, width: 2),
+                ),
+                prefixIcon: Icon(Icons.note, color: AppTheme.goldenPoppy),
+                filled: true,
+                fillColor: Colors.white,
               ),
               maxLines: 3,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 80), // Extra padding to avoid button overlap
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        child: Obx(
-          () => ElevatedButton(
-            onPressed: pembeliController.isLoading ? null : _placeOrder,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: pembeliController.isLoading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : const Text(
-                    'Place Order',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.darkGray.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 6,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Obx(
+            () => Container(
+              height: 50,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.usafaBlue, AppTheme.royalBlueDark],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: pembeliController.isLoading ? null : _placeOrder,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Center(
+                      child: pembeliController.isLoading
+                          ? SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.shopping_cart_checkout,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Place Order',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                     ),
                   ),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -243,15 +439,49 @@ class CheckoutScreen extends StatelessWidget {
     final int quantity = item['quantity'];
     final double price = item['price'];
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(child: Text('${menu.name} x$quantity')),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.goldenPoppy.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.restaurant_menu,
+              color: AppTheme.goldenPoppy,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  menu.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.royalBlueDark,
+                  ),
+                ),
+                Text(
+                  'Qty: $quantity',
+                  style: TextStyle(fontSize: 14, color: AppTheme.darkGray),
+                ),
+              ],
+            ),
+          ),
           Text(
             'Rp ${(price * quantity).toStringAsFixed(0)}',
-            style: const TextStyle(fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.usafaBlue,
+            ),
           ),
         ],
       ),
@@ -269,17 +499,35 @@ class CheckoutScreen extends StatelessWidget {
   void _placeOrder() async {
     // Validate inputs
     if (customerNameController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Please enter customer name');
+      Get.snackbar(
+        'Error',
+        'Please enter customer name',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
       return;
     }
 
     if (customerPhoneController.text.trim().isEmpty) {
-      Get.snackbar('Error', 'Please enter phone number');
+      Get.snackbar(
+        'Error',
+        'Please enter phone number',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
       return;
     }
 
     if (selectedPaymentMethod.value == null) {
-      Get.snackbar('Error', 'Please select a payment method');
+      Get.snackbar(
+        'Error',
+        'Please select a payment method',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
       return;
     }
 
@@ -304,19 +552,23 @@ class CheckoutScreen extends StatelessWidget {
       customerName: customerNameController.text.trim(),
       customerPhone: customerPhoneController.text.trim(),
       orderType: selectedOrderType.value,
+      paymentMethod: selectedPaymentMethod.value?.name,
     );
 
     if (success) {
-      // Clear cart
+      // Clear cart both locally and through CartController
       cartItems.clear();
+      cartController.clearCart();
 
       // Navigate back to orders
       Get.until((route) => route.isFirst);
       Get.snackbar(
         'Order Placed',
         'Your order has been placed successfully!',
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.usafaBlue,
         colorText: Colors.white,
+        icon: Icon(Icons.check_circle, color: Colors.white),
+        duration: Duration(seconds: 3),
       );
     }
   }

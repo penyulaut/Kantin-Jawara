@@ -6,8 +6,10 @@ import 'screens/admin/admin_dashboard_screen.dart';
 import 'screens/pembeli/pembeli_dashboard_screen.dart';
 import 'screens/penjual/penjual_dashboard_screen.dart';
 import 'screens/penjual/merchant_payment_list_screen.dart';
+import 'screens/shared/chat_screen.dart';
+import 'screens/pembeli/payment_proof_screen.dart';
 import 'bindings/app_binding.dart';
-// import 'middleware/auth_middleware.dart'; // Temporarily disabled
+import 'utils/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,43 +23,32 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Kantin Jawara',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        fontFamily: 'Inter',
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-      ),
+      theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       initialBinding: AppBinding(),
       initialRoute: '/splash',
       getPages: [
         GetPage(name: '/splash', page: () => const SplashScreen()),
-        GetPage(
-          name: '/login',
-          page: () => const LoginScreen(),
-          // middlewares: [GuestMiddleware()], // Temporarily disabled
-        ),
-        GetPage(
-          name: '/admin',
-          page: () => AdminDashboardScreen(),
-          // middlewares: [AdminMiddleware()], // Temporarily disabled
-        ),
-        GetPage(
-          name: '/pembeli',
-          page: () => const PembeliDashboardScreen(),
-          // middlewares: [PembeliMiddleware()], // Temporarily disabled
-        ),
-        GetPage(
-          name: '/penjual',
-          page: () => const PenjualDashboardScreen(),
-          // middlewares: [PenjualMiddleware()], // Temporarily disabled
-        ),
+        GetPage(name: '/login', page: () => const LoginScreen()),
+        GetPage(name: '/admin', page: () => AdminDashboardScreen()),
+        GetPage(name: '/pembeli', page: () => const PembeliDashboardScreen()),
+        GetPage(name: '/penjual', page: () => const PenjualDashboardScreen()),
         GetPage(
           name: '/merchant-payment-methods',
           page: () => const MerchantPaymentListScreen(),
+        ),
+        GetPage(
+          name: '/chat',
+          page: () =>
+              ChatScreen(transactionId: Get.arguments?['transactionId'] ?? 0),
+        ),
+        GetPage(
+          name: '/payment-proof',
+          page: () => PaymentProofScreen(
+            transaction: Get.arguments?['transaction'],
+            paymentMethod: Get.arguments?['paymentMethod'],
+            merchantPaymentMethod: Get.arguments?['merchantPaymentMethod'],
+          ),
         ),
       ],
     );

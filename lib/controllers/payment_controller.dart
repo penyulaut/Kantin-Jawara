@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import '../models/payment_method.dart';
 import '../models/merchant_payment_method.dart';
@@ -441,5 +442,125 @@ class PaymentController extends GetxController {
   // Method to set merchant payment methods from external call
   void setMerchantPaymentMethods(List<MerchantPaymentMethod> methods) {
     _merchantPaymentMethods.value = methods;
+  }
+
+  // Upload Payment Proof
+  Future<Map<String, dynamic>> uploadPaymentProof({
+    required int transactionId,
+    required File proofFile,
+  }) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return {'success': false, 'message': 'User not authenticated'};
+      }
+
+      final response = await _apiService.uploadPaymentProof(
+        transactionId: transactionId,
+        proofFile: proofFile,
+        token: token,
+      );
+
+      if (response['success'] == true) {
+        // Extract the success message and proof URL from API response
+        // uploadPaymentProof spreads the API response directly: {'success': true, ...apiResponse}
+        final message =
+            response['message'] ?? 'Bukti pembayaran berhasil diupload';
+        final proofUrl = response['proof_url'];
+
+        return {'success': true, 'message': message, 'proof_url': proofUrl};
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to upload payment proof';
+        return {'success': false, 'message': _errorMessage.value};
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error uploading payment proof: $e';
+      return {'success': false, 'message': _errorMessage.value};
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  // Upload Payment Proof via URL
+  Future<Map<String, dynamic>> uploadPaymentProofUrl({
+    required int transactionId,
+    required String proofUrl,
+  }) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return {'success': false, 'message': 'User not authenticated'};
+      }
+
+      final response = await _apiService.uploadPaymentProofUrl(
+        token: token,
+        transactionId: transactionId,
+        proofUrl: proofUrl,
+      );
+
+      print('PaymentController: uploadPaymentProofUrl response: $response');
+
+      if (response['success'] == true) {
+        // Extract the success message from API response
+        // uploadPaymentProofUrl uses post method: {'success': true, 'data': apiResponse}
+        final apiResponse = response['data']; // This is the actual API response
+        final message =
+            apiResponse['message'] ?? 'Bukti pembayaran berhasil diupload';
+
+        print('PaymentController: Extracted message: $message');
+
+        return {'success': true, 'message': message};
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to upload payment proof URL';
+        return {'success': false, 'message': _errorMessage.value};
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error uploading payment proof URL: $e';
+      return {'success': false, 'message': _errorMessage.value};
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  // Mark Payment as Paid
+  Future<bool> markAsPaid({required int transactionId}) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return false;
+      }
+
+      final response = await _apiService.markPaymentAsPaid(
+        transactionId: transactionId,
+        token: token,
+      );
+
+      if (response['success'] == true) {
+        return true;
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to mark payment as paid';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error marking payment as paid: $e';
+      return false;
+    } finally {
+      _isLoading.value = false;
+    }
   }
 }

@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import '../models/chat.dart';
-import '../models/transaction.dart';
+import '../models/chat_item.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 
@@ -9,13 +9,13 @@ class ChatController extends GetxController {
   final AuthService _authService = AuthService();
 
   final RxMap<int, List<Chat>> _chatsByTransaction = <int, List<Chat>>{}.obs;
-  final RxList<Transaction> _chatList = <Transaction>[].obs;
+  final RxList<ChatItem> _chatList = <ChatItem>[].obs;
   final RxInt _unreadCount = 0.obs;
   final RxBool _isLoading = false.obs;
   final RxString _errorMessage = ''.obs;
 
   Map<int, List<Chat>> get chatsByTransaction => _chatsByTransaction;
-  List<Transaction> get chatList => _chatList;
+  List<ChatItem> get chatList => _chatList;
   int get unreadCount => _unreadCount.value;
   bool get isLoading => _isLoading.value;
   String get errorMessage => _errorMessage.value;
@@ -39,28 +39,61 @@ class ChatController extends GetxController {
       }
 
       final response = await _apiService.get('/chats', token: token);
+      print('ChatController: Full API response: $response');
+
       if (response['success']) {
-        // Handle the response format where data contains {chats: []}
         final responseData = response['data'];
         List<dynamic> chatListData = [];
 
+        // Handle response data structure
         if (responseData is Map) {
           if (responseData.containsKey('chats')) {
             // API returns {"success": true, "data": {"chats": [...]}}
-            chatListData = responseData['chats'] as List<dynamic>? ?? [];
-          } else if (responseData.containsKey('data')) {
-            // API returns {"success": true, "data": {"data": [...]}}
-            chatListData = responseData['data'] as List<dynamic>? ?? [];
+            final chatsData = responseData['chats'];
+            if (chatsData is List) {
+              chatListData = chatsData;
+            } else {
+              print('ChatController: chats field is not a list: $chatsData');
+            }
+          } else {
+            print(
+              'ChatController: Response data does not contain chats field: $responseData',
+            );
           }
         } else if (responseData is List) {
           // Direct list format
           chatListData = responseData;
+        } else {
+          print('ChatController: Unexpected response format: $responseData');
         }
 
         print('ChatController: Processing ${chatListData.length} chat items');
-        _chatList.value = chatListData
-            .map((json) => Transaction.fromJson(json))
-            .toList();
+        print('ChatController: Raw chat data: $chatListData');
+
+        try {
+          _chatList.value = chatListData
+              .map((json) {
+                if (json is Map<String, dynamic>) {
+                  return ChatItem.fromJson(json);
+                } else {
+                  print('ChatController: Invalid chat item format: $json');
+                  return null;
+                }
+              })
+              .where((item) => item != null)
+              .cast<ChatItem>()
+              .toList();
+
+          print('ChatController: Processed ${_chatList.length} chat items');
+          for (var item in _chatList) {
+            print(
+              'ChatController: Chat item - Transaction ID: ${item.transactionId}, Status: ${item.transactionStatus}',
+            );
+          }
+        } catch (e) {
+          print('ChatController: Error parsing chat items: $e');
+          _errorMessage.value = 'Error parsing chat data: $e';
+        }
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch chat list';
@@ -106,17 +139,60 @@ class ChatController extends GetxController {
         '/transactions/$transactionId/chats',
         token: token,
       );
+
+      print('ChatController: fetchChatMessages response: $response');
+
       if (response['success']) {
-        // Handle nested response structure
         final responseData = response['data'];
+        print('ChatController: fetchChatMessages responseData: $responseData');
 
         if (responseData is Map) {
-          final List<dynamic> chatData =
-              responseData['chats'] ?? responseData['data'] ?? [];
-          final List<Chat> chats = chatData
-              .map((json) => Chat.fromJson(json))
-              .toList();
+          List<Chat> chats = [];
+
+          // Handle the structure: {"transaction": {...}, "chats": {"data": [...]}, "unread_count": 0}
+          if (responseData.containsKey('chats')) {
+            final chatsSection = responseData['chats'];
+            if (chatsSection is Map && chatsSection.containsKey('data')) {
+              // Paginated response format
+              final List<dynamic> chatData =
+                  chatsSection['data'] as List<dynamic>? ?? [];
+              chats = chatData
+                  .map((json) {
+                    try {
+                      return Chat.fromJson(json);
+                    } catch (e) {
+                      print(
+                        'ChatController: Error parsing chat message: $e, JSON: $json',
+                      );
+                      return null;
+                    }
+                  })
+                  .where((chat) => chat != null)
+                  .cast<Chat>()
+                  .toList();
+            } else if (chatsSection is List) {
+              // Direct list format
+              chats = chatsSection
+                  .map((json) {
+                    try {
+                      return Chat.fromJson(json);
+                    } catch (e) {
+                      print(
+                        'ChatController: Error parsing chat message: $e, JSON: $json',
+                      );
+                      return null;
+                    }
+                  })
+                  .where((chat) => chat != null)
+                  .cast<Chat>()
+                  .toList();
+            }
+          }
+
           _chatsByTransaction[transactionId] = chats;
+          print(
+            'ChatController: Stored ${chats.length} messages for transaction $transactionId',
+          );
 
           // Update unread count
           _unreadCount.value = responseData['unread_count'] ?? 0;
@@ -247,5 +323,23 @@ class ChatController extends GetxController {
     _chatsByTransaction.clear();
     _chatList.clear();
     _unreadCount.value = 0;
+  }
+
+  // Get unread count for a specific transaction
+  int getUnreadCountForTransaction(int transactionId) {
+    final chatItem = _chatList.firstWhereOrNull(
+      (item) => item.transactionId == transactionId,
+    );
+    return chatItem?.unreadCount ?? 0;
+  }
+
+  // Check if transaction has unread messages
+  bool hasUnreadMessages(int transactionId) {
+    return getUnreadCountForTransaction(transactionId) > 0;
+  }
+
+  // Get total unread count for seller (all transactions)
+  int getTotalUnreadCount() {
+    return _chatList.fold(0, (sum, item) => sum + item.unreadCount);
   }
 }
