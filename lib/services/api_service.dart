@@ -456,8 +456,8 @@ class ApiService {
   }
 
   // Payment Methods API
-  Future<Map<String, dynamic>> getPaymentMethods() async {
-    return await get('/payment-methods');
+  Future<Map<String, dynamic>> getPaymentMethods({String? token}) async {
+    return await get('/payment-methods', token: token);
   }
 
   Future<Map<String, dynamic>> getPaymentMethod(int id, String token) async {

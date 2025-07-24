@@ -1,7 +1,7 @@
 class Constants {
   // API Base URL - Laravel API
-  static const String baseUrl = 'http://kaja.test/api';
-  // static const String baseUrl = 'https://semenjana.biz.id/kaja/api';
+  // static const String baseUrl = 'http://kaja.test/api';
+  static const String baseUrl = 'https://semenjana.biz.id/kaja/api';
 
   // API Endpoints
   static const String loginEndpoint = '/login';

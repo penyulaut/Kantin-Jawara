@@ -17,15 +17,18 @@ class PaymentMethod {
 
   factory PaymentMethod.fromJson(Map<String, dynamic> json) {
     return PaymentMethod(
-      id: int.tryParse(json['id'].toString()),
-      name: json['name'] ?? '',
-      description: json['description'],
-      isActive: json['is_active'] ?? true,
+      id: json['id'] != null ? int.tryParse(json['id'].toString()) : null,
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+      isActive:
+          json['is_active'] == true ||
+          json['is_active'] == 1 ||
+          json['is_active'] == '1',
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
+          ? DateTime.tryParse(json['created_at'].toString())
           : null,
       updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
+          ? DateTime.tryParse(json['updated_at'].toString())
           : null,
     );
   }

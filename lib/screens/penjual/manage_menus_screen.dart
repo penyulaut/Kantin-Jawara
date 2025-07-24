@@ -842,7 +842,20 @@ class ManageMenusScreen extends StatelessWidget {
                 );
               }
 
-              if (!success) {
+              if (success) {
+                // Show success message
+                Get.snackbar(
+                  'Success',
+                  menu == null
+                      ? 'Menu berhasil ditambahkan!'
+                      : 'Menu berhasil diperbarui!',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                  icon: const Icon(Icons.check_circle, color: Colors.white),
+                );
+              } else {
                 // Show error notification only if controller doesn't handle it
                 Get.snackbar(
                   'Error',
@@ -891,12 +904,21 @@ class ManageMenusScreen extends StatelessWidget {
           ElevatedButton(
             onPressed: () async {
               if (menu.id != null) {
-                Get.back();
+                Get.back(); // Close confirmation dialog
 
                 final success = await menuController.deleteMenu(menu.id!);
 
                 if (success) {
-                  // Success - controller will handle notification
+                  // Show success message
+                  Get.snackbar(
+                    'Success',
+                    'Menu "${menu.name}" berhasil dihapus!',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 2),
+                    icon: const Icon(Icons.check_circle, color: Colors.white),
+                  );
                 } else {
                   // Show error notification only if controller doesn't handle it
                   Get.snackbar(

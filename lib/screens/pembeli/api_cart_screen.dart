@@ -417,9 +417,33 @@ class ApiCartScreen extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.red),
             onPressed: () async {
+              Get.back(); // Close dialog first
               final cartItem = cartController.cartItems[index];
-              await cartController.removeFromCart(cartItem['id']);
-              Get.back();
+              final success = await cartController.removeFromCart(
+                cartItem['id'],
+              );
+
+              if (success) {
+                Get.snackbar(
+                  'Removed',
+                  'Item berhasil dihapus dari keranjang',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                  icon: const Icon(Icons.check_circle, color: Colors.white),
+                );
+              } else {
+                Get.snackbar(
+                  'Error',
+                  'Gagal menghapus item dari keranjang',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                  icon: const Icon(Icons.error_outline, color: Colors.white),
+                );
+              }
             },
             child: const Text('Remove', style: TextStyle(color: Colors.white)),
           ),
@@ -440,8 +464,19 @@ class ApiCartScreen extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.red),
             onPressed: () async {
+              Get.back(); // Close dialog first
               await cartController.clearCart();
-              Get.back();
+
+              // Show success message
+              Get.snackbar(
+                'Success',
+                'Keranjang berhasil dikosongkan',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green,
+                colorText: Colors.white,
+                duration: const Duration(seconds: 2),
+                icon: const Icon(Icons.check_circle, color: Colors.white),
+              );
             },
             child: const Text(
               'Clear All',

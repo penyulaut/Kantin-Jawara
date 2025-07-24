@@ -30,37 +30,49 @@ class PaymentController extends GetxController {
   }
 
   Future<void> fetchPaymentMethods() async {
+    Map<String, dynamic>? response;
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
 
-      final response = await _apiService.get('/payment-methods');
+      // Get token for authenticated requests
+      final token = await _authService.getToken();
+      response = await _apiService.get('/payment-methods', token: token);
 
-      // Check if response is successful
       if (response['success'] == true) {
-        // Standard wrapped response
-        final List<dynamic> paymentMethodData = response['data'];
-        _paymentMethods.value = paymentMethodData
-            .map((json) => PaymentMethod.fromJson(json))
-            .toList();
-      } else if (response['success'] == false) {
-        // Error response
-        _errorMessage.value =
-            response['message'] ?? 'Failed to fetch payment methods';
-      } else {
-        // Direct array response (Laravel sometimes returns array directly)
-        // Check if response contains array data directly
-        if (response.containsKey('data') && response['data'] is List) {
-          final List<dynamic> paymentMethodData = response['data'];
+        final dynamic data = response['data'];
+
+        if (data is List) {
+          // Data is already a list
+          _paymentMethods.value = data
+              .map((json) => PaymentMethod.fromJson(json))
+              .toList();
+        } else if (data is Map && data.containsKey('payment_methods')) {
+          // Data is wrapped in an object with 'payment_methods' key
+          final List<dynamic> paymentMethodData = data['payment_methods'];
+          _paymentMethods.value = paymentMethodData
+              .map((json) => PaymentMethod.fromJson(json))
+              .toList();
+        } else if (data is Map && data.containsKey('data')) {
+          // Data is wrapped in an object with 'data' key
+          final List<dynamic> paymentMethodData = data['data'];
           _paymentMethods.value = paymentMethodData
               .map((json) => PaymentMethod.fromJson(json))
               .toList();
         } else {
-          _errorMessage.value = 'Unexpected response format';
+          // Fallback: empty list
+          _paymentMethods.value = [];
         }
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to fetch payment methods';
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
+      print('Debug - fetchPaymentMethods error: $e');
+      if (response != null) {
+        print('Debug - payment methods response: $response');
+      }
     } finally {
       _isLoading.value = false;
     }

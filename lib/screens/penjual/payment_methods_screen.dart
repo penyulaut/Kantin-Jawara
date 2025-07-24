@@ -351,7 +351,32 @@ class PaymentMethodsScreen extends StatelessWidget {
               }
 
               if (success) {
-                Get.back();
+                Get.back(); // Close dialog
+
+                // Show success message
+                Get.snackbar(
+                  'Success',
+                  existingMethod != null
+                      ? 'Payment method berhasil diperbarui!'
+                      : 'Payment method berhasil ditambahkan!',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                  icon: const Icon(Icons.check_circle, color: Colors.white),
+                );
+              } else {
+                Get.snackbar(
+                  'Error',
+                  existingMethod != null
+                      ? 'Gagal memperbarui payment method!'
+                      : 'Gagal menambahkan payment method!',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.red,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 3),
+                  icon: const Icon(Icons.error_outline, color: Colors.white),
+                );
               }
             },
             child: Text(existingMethod != null ? 'Update' : 'Add'),

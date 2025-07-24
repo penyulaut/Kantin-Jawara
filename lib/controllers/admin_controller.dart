@@ -28,6 +28,7 @@ class AdminController extends GetxController {
 
   // Fetch dashboard statistics
   Future<void> fetchDashboardStats() async {
+    Map<String, dynamic>? response;
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
@@ -38,16 +39,60 @@ class AdminController extends GetxController {
         return;
       }
 
-      final response = await _apiService.get('/admin/dashboard', token: token);
+      response = await _apiService.get('/admin/dashboard', token: token);
 
-      if (response['success']) {
-        _dashboardStats.value = response['data'];
+      if (response['success'] == true) {
+        final dynamic data = response['data'];
+        if (data is Map<String, dynamic>) {
+          // Parse the new dashboard format
+          Map<String, dynamic> stats = {};
+
+          if (data.containsKey('users')) {
+            final users = data['users'];
+            stats['total_users'] = users['total'];
+            stats['admins'] = users['admins'];
+            stats['sellers'] = users['sellers'];
+            stats['customers'] = users['customers'];
+            stats['new_users_today'] = users['new_today'];
+          }
+
+          if (data.containsKey('transactions')) {
+            final transactions = data['transactions'];
+            stats['total_transactions'] = transactions['total'];
+            stats['pending_transactions'] = transactions['pending'];
+            stats['completed_transactions'] = transactions['completed'];
+            stats['cancelled_transactions'] = transactions['cancelled'];
+            stats['transactions_today'] = transactions['today'];
+          }
+
+          if (data.containsKey('revenue')) {
+            final revenue = data['revenue'];
+            stats['total_revenue'] = revenue['total'];
+            stats['revenue_today'] = revenue['today'];
+            stats['average_order'] = revenue['average_order'];
+          }
+
+          if (data.containsKey('menus')) {
+            final menus = data['menus'];
+            stats['total_menus'] = menus['total'];
+            stats['available_menus'] = menus['available'];
+            stats['out_of_stock_menus'] = menus['out_of_stock'];
+          }
+
+          _dashboardStats.value = stats;
+        } else {
+          _dashboardStats.value = {'error': 'Invalid data format'};
+        }
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch dashboard stats';
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
+      print('Debug - fetchDashboardStats error: $e');
+      if (response != null) {
+        print('Debug - dashboard response: $response');
+      }
     } finally {
       _isLoading.value = false;
     }
@@ -55,6 +100,7 @@ class AdminController extends GetxController {
 
   // Fetch all users
   Future<void> fetchUsers() async {
+    Map<String, dynamic>? response;
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
@@ -65,16 +111,36 @@ class AdminController extends GetxController {
         return;
       }
 
-      final response = await _apiService.get('/admin/users', token: token);
+      response = await _apiService.get('/admin/users', token: token);
 
-      if (response['success']) {
-        final List<dynamic> userData = response['data'];
-        _users.value = userData.map((json) => User.fromJson(json)).toList();
+      if (response['success'] == true) {
+        final dynamic data = response['data'];
+
+        if (data is List) {
+          // Data is already a list
+          _users.value = data.map((json) => User.fromJson(json)).toList();
+        } else if (data is Map && data.containsKey('users')) {
+          // Data is wrapped in an object with 'users' key
+          final List<dynamic> userData = data['users'];
+          _users.value = userData.map((json) => User.fromJson(json)).toList();
+        } else if (data is Map && data.containsKey('data')) {
+          // Data is wrapped in an object with 'data' key
+          final List<dynamic> userData = data['data'];
+          _users.value = userData.map((json) => User.fromJson(json)).toList();
+        } else {
+          // Fallback: treat single user as list
+          _users.value = [User.fromJson(data)];
+        }
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to fetch users';
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
+      print('Debug - fetchUsers error: $e');
+      if (response != null) {
+        print('Debug - response type: ${response.runtimeType}');
+        print('Debug - response: $response');
+      }
     } finally {
       _isLoading.value = false;
     }
@@ -129,19 +195,71 @@ class AdminController extends GetxController {
         token: token,
       );
 
-      if (response['success']) {
-        final List<dynamic> transactionData = response['data'];
-        _transactions.value = transactionData
-            .map((json) => Transaction.fromJson(json))
-            .toList();
+      print('Debug - fetchTransactions response: $response');
+
+      if (response['success'] == true) {
+        final dynamic data = response['data'];
+        print('Debug - Raw data type: ${data.runtimeType}');
+        print('Debug - Raw data: $data');
+
+        if (data is Map<String, dynamic>) {
+          // Check if data contains nested 'data' key (Laravel pagination response)
+          if (data.containsKey('data')) {
+            final dynamic transactionList = data['data'];
+            if (transactionList is List) {
+              _transactions.value = transactionList
+                  .map((json) {
+                    try {
+                      return Transaction.fromJson(json as Map<String, dynamic>);
+                    } catch (e) {
+                      print('Debug - Error parsing transaction: $e');
+                      print('Debug - Transaction data: $json');
+                      return null;
+                    }
+                  })
+                  .where((transaction) => transaction != null)
+                  .cast<Transaction>()
+                  .toList();
+            } else {
+              print(
+                'Debug - Expected list in data.data but got: ${transactionList.runtimeType}',
+              );
+              _errorMessage.value = 'Invalid transaction data format';
+            }
+          } else {
+            print('Debug - No nested data key found in response');
+            _errorMessage.value = 'Invalid response structure';
+          }
+        } else if (data is List) {
+          // Direct list response
+          _transactions.value = data
+              .map((json) {
+                try {
+                  return Transaction.fromJson(json as Map<String, dynamic>);
+                } catch (e) {
+                  print('Debug - Error parsing transaction: $e');
+                  print('Debug - Transaction data: $json');
+                  return null;
+                }
+              })
+              .where((transaction) => transaction != null)
+              .cast<Transaction>()
+              .toList();
+        } else {
+          print('Debug - Expected Map or List but got: ${data.runtimeType}');
+          _errorMessage.value = 'Invalid data format received';
+        }
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch transactions';
+        print('Debug - API error: ${response['message']}');
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
+      print('Debug - fetchTransactions error: $e');
     } finally {
       _isLoading.value = false;
+      update(); // Update UI after data change
     }
   }
 
@@ -210,5 +328,152 @@ class AdminController extends GetxController {
       counts[role] = (counts[role] ?? 0) + 1;
     }
     return counts;
+  }
+
+  // Update user
+  Future<bool> updateUser({
+    required int userId,
+    required String name,
+    required String email,
+    required String role,
+  }) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return false;
+      }
+
+      final response = await _apiService.put(
+        '/admin/users/$userId',
+        data: {'name': name, 'email': email, 'role': role},
+        token: token,
+      );
+
+      if (response['success'] == true) {
+        // Refresh users list after successful update
+        await fetchUsers();
+        return true;
+      } else {
+        _errorMessage.value = response['message'] ?? 'Failed to update user';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error: $e';
+      print('Debug - updateUser error: $e');
+      return false;
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  // Change user password
+  Future<bool> changeUserPassword({
+    required int userId,
+    required String newPassword,
+  }) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return false;
+      }
+
+      final response = await _apiService.put(
+        '/admin/users/$userId/password',
+        data: {'password': newPassword, 'password_confirmation': newPassword},
+        token: token,
+      );
+
+      if (response['success'] == true) {
+        return true;
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to change password';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error: $e';
+      print('Debug - changeUserPassword error: $e');
+      return false;
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  // Toggle user status
+  Future<bool> toggleUserStatus(int userId) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return false;
+      }
+
+      final response = await _apiService.put(
+        '/admin/users/$userId/status',
+        data: {},
+        token: token,
+      );
+
+      if (response['success'] == true) {
+        // Refresh users list after successful status toggle
+        await fetchUsers();
+        return true;
+      } else {
+        _errorMessage.value =
+            response['message'] ?? 'Failed to toggle user status';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error: $e';
+      print('Debug - toggleUserStatus error: $e');
+      return false;
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  // Delete user
+  Future<bool> deleteUser(int userId) async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return false;
+      }
+
+      final response = await _apiService.delete(
+        '/admin/users/$userId',
+        token: token,
+      );
+
+      if (response['success'] == true) {
+        // Refresh users list after successful deletion
+        await fetchUsers();
+        return true;
+      } else {
+        _errorMessage.value = response['message'] ?? 'Failed to delete user';
+        return false;
+      }
+    } catch (e) {
+      _errorMessage.value = 'Error: $e';
+      print('Debug - deleteUser error: $e');
+      return false;
+    } finally {
+      _isLoading.value = false;
+    }
   }
 }
