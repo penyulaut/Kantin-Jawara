@@ -22,23 +22,48 @@ class CategoryController extends GetxController {
   }
 
   Future<void> fetchCategories() async {
+    Map<String, dynamic>? response;
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
 
       final token = await _authService.getToken();
-      final response = await _apiService.get('/categories', token: token);
-      if (response['success']) {
-        final List<dynamic> categoryData = response['data'];
-        _categories.value = categoryData
-            .map((json) => Category.fromJson(json))
-            .toList();
+      response = await _apiService.get('/categories', token: token);
+
+      if (response['success'] == true) {
+        final dynamic data = response['data'];
+
+        if (data is List) {
+          // Data is already a list
+          _categories.value = data
+              .map((json) => Category.fromJson(json))
+              .toList();
+        } else if (data is Map && data.containsKey('categories')) {
+          // Data is wrapped in an object with 'categories' key
+          final List<dynamic> categoryData = data['categories'];
+          _categories.value = categoryData
+              .map((json) => Category.fromJson(json))
+              .toList();
+        } else if (data is Map && data.containsKey('data')) {
+          // Data is wrapped in an object with 'data' key
+          final List<dynamic> categoryData = data['data'];
+          _categories.value = categoryData
+              .map((json) => Category.fromJson(json))
+              .toList();
+        } else {
+          // Fallback: empty list
+          _categories.value = [];
+        }
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch categories';
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
+      print('Debug - fetchCategories error: $e');
+      if (response != null) {
+        print('Debug - categories response: $response');
+      }
     } finally {
       _isLoading.value = false;
     }

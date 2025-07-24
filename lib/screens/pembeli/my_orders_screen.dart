@@ -547,10 +547,35 @@ class MyOrdersScreen extends StatelessWidget {
               ),
             ),
             onPressed: () async {
-              Get.back();
+              Get.back(); // Close dialog
+
               if (transaction.id != null) {
                 final controller = Get.find<PembeliController>();
-                await controller.cancelTransaction(transaction.id!);
+                final success = await controller.cancelTransaction(
+                  transaction.id!,
+                );
+
+                if (success) {
+                  Get.snackbar(
+                    'Success',
+                    'Pesanan berhasil dibatalkan',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 2),
+                    icon: const Icon(Icons.check_circle, color: Colors.white),
+                  );
+                } else {
+                  Get.snackbar(
+                    'Error',
+                    'Gagal membatalkan pesanan. Silakan coba lagi.',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 3),
+                    icon: const Icon(Icons.error_outline, color: Colors.white),
+                  );
+                }
               }
             },
             child: const Text(

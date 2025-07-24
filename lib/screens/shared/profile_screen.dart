@@ -358,7 +358,21 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                       if (success) {
-                        Get.back();
+                        Get.back(); // Close modal after success
+
+                        // Show success message
+                        Get.snackbar(
+                          'Success',
+                          'Profile updated successfully',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                          duration: const Duration(seconds: 2),
+                          icon: const Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                          ),
+                        );
                       }
                     },
               child: authController.isLoading
@@ -451,7 +465,7 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                       if (success) {
-                        Get.back();
+                        Get.back(); // Close modal after success
 
                         // Show success message and auto logout
                         Get.snackbar(
@@ -460,6 +474,10 @@ class ProfileScreen extends StatelessWidget {
                           duration: const Duration(seconds: 3),
                           backgroundColor: Colors.green,
                           colorText: Colors.white,
+                          icon: const Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                          ),
                         );
 
                         // Auto logout after 2 seconds
@@ -572,6 +590,19 @@ class ProfileScreen extends StatelessWidget {
                         final success = await authController.deleteAccount();
 
                         if (success) {
+                          // Show success message before redirect
+                          Get.snackbar(
+                            'Account Deleted',
+                            'Your account has been successfully deleted',
+                            snackPosition: SnackPosition.TOP,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                            duration: const Duration(seconds: 2),
+                            icon: const Icon(
+                              Icons.check_circle,
+                              color: Colors.white,
+                            ),
+                          );
                           // Account deleted, user will be redirected to login
                         }
                       }

@@ -148,7 +148,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
                             imageUrl: null,
                             onTap: () {
                               print('Tapping All Warung card');
-                              menuController.clearFilters();
+                              menuController.setSelectedMerchant(
+                                0,
+                              ); // Use setSelectedMerchant instead of clearFilters
                             },
                           );
                         }
@@ -206,9 +208,8 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               label: const Text('All'),
                               selected: menuController.selectedCategoryId == 0,
                               onSelected: (selected) {
-                                if (selected) {
-                                  menuController.setSelectedCategory(0);
-                                }
+                                // Always set to "All" when tapped
+                                menuController.setSelectedCategory(0);
                               },
                               selectedColor: AppTheme.royalBlueDark,
                               checkmarkColor: Colors.white,
@@ -233,12 +234,19 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                 menuController.selectedCategoryId ==
                                 category.id,
                             onSelected: (selected) {
-                              if (selected && category.id != null) {
-                                menuController.setSelectedCategory(
-                                  category.id!,
-                                );
-                              } else {
-                                menuController.setSelectedCategory(0);
+                              if (category.id != null) {
+                                // Toggle behavior: if currently selected, deselect to "All"
+                                // If not selected, select this category
+                                if (menuController.selectedCategoryId ==
+                                    category.id) {
+                                  // Currently selected, go back to "All"
+                                  menuController.setSelectedCategory(0);
+                                } else {
+                                  // Not selected, select this category
+                                  menuController.setSelectedCategory(
+                                    category.id!,
+                                  );
+                                }
                               }
                             },
                             selectedColor: AppTheme.royalBlueDark,

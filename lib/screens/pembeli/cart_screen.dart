@@ -319,14 +319,41 @@ class CartScreen extends StatelessWidget {
                 );
                 if (success) {
                   cartItems.removeAt(index);
-                  Get.back();
-                  Get.snackbar('Removed', 'Item removed from cart');
+                  Get.back(); // Close dialog
+                  Get.snackbar(
+                    'Removed',
+                    'Item berhasil dihapus dari keranjang',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.green,
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 2),
+                    icon: const Icon(Icons.check_circle, color: Colors.white),
+                  );
+                } else {
+                  Get.back(); // Close dialog
+                  Get.snackbar(
+                    'Error',
+                    'Gagal menghapus item dari keranjang',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.red,
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 2),
+                    icon: const Icon(Icons.error_outline, color: Colors.white),
+                  );
                 }
               } else {
                 // Local cart item, remove directly
                 cartItems.removeAt(index);
-                Get.back();
-                Get.snackbar('Removed', 'Item removed from cart');
+                Get.back(); // Close dialog
+                Get.snackbar(
+                  'Removed',
+                  'Item berhasil dihapus dari keranjang',
+                  snackPosition: SnackPosition.BOTTOM,
+                  backgroundColor: Colors.green,
+                  colorText: Colors.white,
+                  duration: const Duration(seconds: 2),
+                  icon: const Icon(Icons.check_circle, color: Colors.white),
+                );
               }
             },
             child: const Text('Remove', style: TextStyle(color: Colors.white)),
