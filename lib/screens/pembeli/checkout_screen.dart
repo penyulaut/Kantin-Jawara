@@ -562,14 +562,6 @@ class CheckoutScreen extends StatelessWidget {
 
       // Navigate back to orders
       Get.until((route) => route.isFirst);
-      Get.snackbar(
-        'Order Placed',
-        'Your order has been placed successfully!',
-        backgroundColor: AppTheme.usafaBlue,
-        colorText: Colors.white,
-        icon: Icon(Icons.check_circle, color: Colors.white),
-        duration: Duration(seconds: 3),
-      );
     }
   }
 

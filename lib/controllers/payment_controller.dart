@@ -4,6 +4,8 @@ import '../models/payment_method.dart';
 import '../models/merchant_payment_method.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_snackbar.dart';
+import '../utils/merchant_id_utils.dart';
 
 class PaymentController extends GetxController {
   final ApiService _apiService = ApiService();
@@ -155,6 +157,24 @@ class PaymentController extends GetxController {
       );
 
       print('PaymentController: Response for merchant $merchantId: $response');
+
+      // Check for data inconsistency warning
+      if (response['success'] && response['data'] is List) {
+        final data = response['data'] as List;
+        for (var item in data) {
+          if (item is Map<String, dynamic>) {
+            // Use utility to validate merchant data consistency
+            MerchantIdUtils.validateMerchantData(
+              requestedMerchantId: merchantId,
+              responseData: item,
+              showWarning: true,
+            );
+
+            // Debug output for troubleshooting
+            MerchantIdUtils.debugMerchantMapping(item);
+          }
+        }
+      }
 
       if (response['success']) {
         final responseData = response['data'];
@@ -454,6 +474,52 @@ class PaymentController extends GetxController {
   // Method to set merchant payment methods from external call
   void setMerchantPaymentMethods(List<MerchantPaymentMethod> methods) {
     _merchantPaymentMethods.value = methods;
+  }
+
+  // Alternative method that tries to use user_id when merchant_id fails
+  Future<List<MerchantPaymentMethod>> getAvailablePaymentMethodsWithFallback(
+    int merchantId,
+  ) async {
+    try {
+      // First try with merchant_id
+      var result = await getAvailablePaymentMethodsForMerchant(merchantId);
+
+      if (result.isEmpty) {
+        print(
+          'PaymentController: No payment methods found for merchant_id $merchantId, checking if this is a user_id issue...',
+        );
+
+        // Try to fetch using user endpoints if available
+        final token = await _authService.getToken();
+        final fallbackResponse = await _apiService.get(
+          '/users/$merchantId/payment-methods',
+          token: token,
+        );
+
+        if (fallbackResponse['success'] && fallbackResponse['data'] is List) {
+          final data = fallbackResponse['data'] as List;
+          result = data
+              .map((json) => MerchantPaymentMethod.fromJson(json))
+              .toList();
+
+          print(
+            'PaymentController: Found ${result.length} payment methods using user_id $merchantId',
+          );
+
+          CustomSnackbar.showInfo(
+            title: 'Info',
+            message: 'Using user ID $merchantId for payment methods',
+          );
+        }
+      }
+
+      return result;
+    } catch (e) {
+      print(
+        'PaymentController: Error in getAvailablePaymentMethodsWithFallback: $e',
+      );
+      return [];
+    }
   }
 
   // Upload Payment Proof

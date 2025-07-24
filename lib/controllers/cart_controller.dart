@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../models/menu.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import '../widgets/custom_snackbar.dart';
 
 class CartController extends GetxController {
   final ApiService _apiService = ApiService();
@@ -16,14 +17,16 @@ class CartController extends GetxController {
   bool get isLoading => _isLoading.value;
   String get errorMessage => _errorMessage.value;
 
-  int get totalItems =>
-      _cartItems.fold(0, (sum, item) => sum + (item['quantity'] as int));
-
-  double get totalPrice => _cartItems.fold(
-    0.0,
-    (sum, item) =>
-        sum + ((item['price'] as double) * (item['quantity'] as int)),
+  int get totalItems => _cartItems.fold(
+    0,
+    (sum, item) => sum + (int.tryParse(item['quantity'].toString()) ?? 0),
   );
+
+  double get totalPrice => _cartItems.fold(0.0, (sum, item) {
+    final quantity = int.tryParse(item['quantity'].toString()) ?? 0;
+    final price = double.tryParse(item['price'].toString()) ?? 0.0;
+    return sum + (price * quantity);
+  });
 
   @override
   void onInit() {
@@ -83,17 +86,35 @@ class CartController extends GetxController {
             );
 
             for (final item in cartItems) {
+              final merchantIdFromCart =
+                  int.tryParse(cart['merchant_id'].toString()) ?? 0;
+
+              // Debug logging for merchant_id type consistency
+              print(
+                'CartController: Adding item with merchant_id: $merchantIdFromCart (type: ${merchantIdFromCart.runtimeType})',
+              );
+
+              final menuData = item['menu'] != null
+                  ? Menu.fromJson(item['menu'])
+                  : null;
+
+              // Debug: Log menu image URL
+              if (menuData != null) {
+                print(
+                  'CartController: Item ${item['id']} - Menu: ${menuData.name}, Image: ${menuData.imageUrl}',
+                );
+              }
+
               allCartItems.add({
-                'id': item['id'],
-                'menu_id': item['menu_id'],
-                'quantity': item['quantity'],
-                'price': double.parse(item['unit_price'].toString()),
-                'total_price': double.parse(item['total_price'].toString()),
-                'menu': item['menu'] != null
-                    ? Menu.fromJson(item['menu'])
-                    : null,
-                'cart_id': item['cart_id'],
-                'merchant_id': cart['merchant_id'],
+                'id': int.tryParse(item['id'].toString()) ?? 0,
+                'menu_id': int.tryParse(item['menu_id'].toString()) ?? 0,
+                'quantity': int.tryParse(item['quantity'].toString()) ?? 0,
+                'price': double.tryParse(item['unit_price'].toString()) ?? 0.0,
+                'total_price':
+                    double.tryParse(item['total_price'].toString()) ?? 0.0,
+                'menu': menuData,
+                'cart_id': int.tryParse(item['cart_id'].toString()) ?? 0,
+                'merchant_id': merchantIdFromCart,
               });
             }
           }
@@ -193,11 +214,14 @@ class CartController extends GetxController {
 
       if (response['success']) {
         // Update local cart item
-        final index = _cartItems.indexWhere((item) => item['id'] == itemId);
+        final index = _cartItems.indexWhere(
+          (item) => int.tryParse(item['id'].toString()) == itemId,
+        );
         if (index != -1) {
           _cartItems[index]['quantity'] = quantity;
-          _cartItems[index]['total_price'] =
-              (_cartItems[index]['price'] as double) * quantity;
+          final price =
+              double.tryParse(_cartItems[index]['price'].toString()) ?? 0.0;
+          _cartItems[index]['total_price'] = price * quantity;
           _cartItems.refresh();
         }
         return true;
@@ -235,7 +259,9 @@ class CartController extends GetxController {
 
       if (response['success']) {
         // Remove from local cart
-        _cartItems.removeWhere((item) => item['id'] == itemId);
+        _cartItems.removeWhere(
+          (item) => int.tryParse(item['id'].toString()) == itemId,
+        );
         return true;
       } else {
         _errorMessage.value =
@@ -268,16 +294,13 @@ class CartController extends GetxController {
 
       if (response['success']) {
         _cartItems.clear();
-        Get.snackbar('Success', 'Cart cleared successfully');
         return true;
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to clear cart';
-        Get.snackbar('Error', _errorMessage.value);
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      Get.snackbar('Error', 'Failed to clear cart');
       return false;
     } finally {
       _isLoading.value = false;
@@ -313,20 +336,31 @@ class CartController extends GetxController {
         for (final cart in cartData) {
           if (cart is Map<String, dynamic> &&
               cart.containsKey('cart_items') &&
-              cart['merchant_id'] == merchantId) {
+              _isSameMerchantId(cart['merchant_id'], merchantId)) {
             final List<dynamic> cartItems = cart['cart_items'] ?? [];
             for (final item in cartItems) {
+              final menuData = item['menu'] != null
+                  ? Menu.fromJson(item['menu'])
+                  : null;
+
+              // Debug: Log menu image URL for merchant cart
+              if (menuData != null) {
+                print(
+                  'CartController: Merchant $merchantId - Item ${item['id']} - Menu: ${menuData.name}, Image: ${menuData.imageUrl}',
+                );
+              }
+
               merchantCartItems.add({
-                'id': item['id'],
-                'menu_id': item['menu_id'],
-                'quantity': item['quantity'],
-                'price': double.parse(item['unit_price'].toString()),
-                'total_price': double.parse(item['total_price'].toString()),
-                'menu': item['menu'] != null
-                    ? Menu.fromJson(item['menu'])
-                    : null,
-                'cart_id': item['cart_id'],
-                'merchant_id': cart['merchant_id'],
+                'id': int.tryParse(item['id'].toString()) ?? 0,
+                'menu_id': int.tryParse(item['menu_id'].toString()) ?? 0,
+                'quantity': int.tryParse(item['quantity'].toString()) ?? 0,
+                'price': double.tryParse(item['unit_price'].toString()) ?? 0.0,
+                'total_price':
+                    double.tryParse(item['total_price'].toString()) ?? 0.0,
+                'menu': menuData,
+                'cart_id': int.tryParse(item['cart_id'].toString()) ?? 0,
+                'merchant_id':
+                    int.tryParse(cart['merchant_id'].toString()) ?? 0,
               });
             }
           }
@@ -386,7 +420,9 @@ class CartController extends GetxController {
           return itemMerchantId == merchantId;
         });
 
-        Get.snackbar('Success', 'Order placed successfully');
+        CustomSnackbar.success(
+          'Order Placed\nYour order has been placed successfully!',
+        );
         return true;
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to checkout';
@@ -402,17 +438,45 @@ class CartController extends GetxController {
     }
   }
 
+  // Helper method to safely compare merchant IDs (handles both int and string)
+  bool _isSameMerchantId(dynamic id1, dynamic id2) {
+    if (id1 == null || id2 == null) return false;
+
+    // Convert both to string for comparison to handle int/string mismatch
+    final str1 = id1.toString();
+    final str2 = id2.toString();
+
+    return str1 == str2;
+  }
+
   // Helper method to group cart items by merchant
   Map<int, List<Map<String, dynamic>>> get cartItemsByMerchant {
     final Map<int, List<Map<String, dynamic>>> grouped = {};
 
-    for (final item in _cartItems) {
-      // Use merchant_id from cart data if available, otherwise fallback to menu's penjualId
-      int? merchantId = item['merchant_id'];
+    print(
+      'CartController: Grouping ${cartItems.length} cart items by merchant...',
+    );
 
+    // Use the observable cartItems getter to ensure reactivity
+    for (final item in cartItems) {
+      // Use merchant_id from cart data if available, otherwise fallback to menu's penjualId
+      int? merchantId;
+
+      // Try to get merchant_id from item data
+      if (item['merchant_id'] != null) {
+        merchantId = int.tryParse(item['merchant_id'].toString());
+        print(
+          'CartController: Item ${item['id']} has merchant_id: ${item['merchant_id']} (parsed as: $merchantId)',
+        );
+      }
+
+      // Fallback to menu's penjualId if merchant_id is not available
       if (merchantId == null) {
         final menu = item['menu'] as Menu?;
         merchantId = menu?.penjualId;
+        print(
+          'CartController: Using fallback penjualId: $merchantId for item ${item['id']}',
+        );
       }
 
       if (merchantId != null) {
@@ -420,9 +484,20 @@ class CartController extends GetxController {
           grouped[merchantId] = [];
         }
         grouped[merchantId]!.add(item);
+        print(
+          'CartController: Added item ${item['id']} to merchant group $merchantId',
+        );
+      } else {
+        // If no merchant ID found, log for debugging
+        print(
+          'CartController: WARNING - No merchant ID found for item: ${item['id']}',
+        );
       }
     }
 
+    print(
+      'CartController: Grouped into ${grouped.keys.length} merchant groups: ${grouped.keys.toList()}',
+    );
     return grouped;
   }
 

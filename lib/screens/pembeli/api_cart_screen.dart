@@ -10,6 +10,22 @@ class ApiCartScreen extends StatelessWidget {
 
   ApiCartScreen({super.key});
 
+  // Helper function to build proper image URL
+  String _buildImageUrl(String? imageUrl) {
+    if (imageUrl == null || imageUrl.isEmpty) {
+      return '';
+    }
+
+    // If it's already a full URL, return as is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+
+    // If it's a relative URL, append to base URL
+    const String baseUrl = 'https://semenjana.biz.id/kaja';
+    return '$baseUrl/$imageUrl';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +43,19 @@ class ApiCartScreen extends StatelessWidget {
       ),
       body: Obx(() {
         if (cartController.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text(
+                  'Memuat keranjang...',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
+            ),
+          );
         }
 
         if (cartController.cartItems.isEmpty) {
@@ -42,12 +70,12 @@ class ApiCartScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Your cart is empty',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
+                  'Keranjang kosong',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Add some delicious items to get started',
+                  'Tambahkan menu favorit Anda',
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
@@ -57,6 +85,14 @@ class ApiCartScreen extends StatelessWidget {
 
         // Group items by merchant if needed
         final groupedItems = cartController.cartItemsByMerchant;
+
+        // Debug log to check grouped items
+        print(
+          'ApiCartScreen: Grouped items keys: ${groupedItems.keys.toList()}',
+        );
+        print(
+          'ApiCartScreen: Total grouped merchants: ${groupedItems.keys.length}',
+        );
 
         return Column(
           children: [
@@ -80,8 +116,9 @@ class ApiCartScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final cartItem = cartController.cartItems[index];
         final Menu? menu = cartItem['menu'];
-        final int quantity = cartItem['quantity'];
-        final double price = cartItem['price'];
+        final int quantity = int.tryParse(cartItem['quantity'].toString()) ?? 0;
+        final double price =
+            double.tryParse(cartItem['price'].toString()) ?? 0.0;
 
         return _buildCartItem(cartItem, menu, quantity, price, index);
       },
@@ -95,6 +132,10 @@ class ApiCartScreen extends StatelessWidget {
       itemBuilder: (context, merchantIndex) {
         final merchantId = groupedItems.keys.elementAt(merchantIndex);
         final merchantItems = groupedItems[merchantId]!;
+
+        print(
+          'ApiCartScreen: Building UI for merchant $merchantId with ${merchantItems.length} items',
+        );
 
         // Get merchant name - for now using merchant ID
         // In the future, you might want to add merchant info to Menu model or fetch it separately
@@ -153,8 +194,10 @@ class ApiCartScreen extends StatelessWidget {
               // Merchant Items
               ...merchantItems.map((item) {
                 final Menu? menu = item['menu'];
-                final int quantity = item['quantity'];
-                final double price = item['price'];
+                final int quantity =
+                    int.tryParse(item['quantity'].toString()) ?? 0;
+                final double price =
+                    double.tryParse(item['price'].toString()) ?? 0.0;
                 final index = cartController.cartItems.indexOf(item);
 
                 return _buildCartItem(
@@ -183,34 +226,89 @@ class ApiCartScreen extends StatelessWidget {
   }) {
     return Card(
       margin: EdgeInsets.only(bottom: isInGroup ? 0 : 8),
-      elevation: isInGroup ? 0 : 1,
+      elevation: isInGroup ? 0 : 2,
+      shadowColor: AppTheme.royalBlueDark.withOpacity(0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
             // Image
             Container(
-              width: 60,
-              height: 60,
+              width: 70,
+              height: 70,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 color: Colors.grey[200],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: menu?.imageUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        menu!.imageUrl!,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: menu?.imageUrl != null && menu!.imageUrl!.isNotEmpty
+                    ? Image.network(
+                        _buildImageUrl(menu.imageUrl),
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Icon(
-                            Icons.restaurant,
-                            color: Colors.grey,
+                        width: 70,
+                        height: 70,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppTheme.royalBlueDark,
+                                ),
+                              ),
+                            ),
                           );
                         },
+                        errorBuilder: (context, error, stackTrace) {
+                          print(
+                            'CartScreen: Error loading image: ${menu.imageUrl}',
+                          );
+                          return Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              color: AppTheme.lightGray,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.restaurant_menu,
+                              color: AppTheme.royalBlueDark.withOpacity(0.6),
+                              size: 30,
+                            ),
+                          );
+                        },
+                      )
+                    : Container(
+                        width: 70,
+                        height: 70,
+                        decoration: BoxDecoration(
+                          color: AppTheme.lightGray,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          Icons.restaurant_menu,
+                          color: AppTheme.royalBlueDark.withOpacity(0.6),
+                          size: 30,
+                        ),
                       ),
-                    )
-                  : const Icon(Icons.restaurant, color: Colors.grey),
+              ),
             ),
             const SizedBox(width: 12),
 
@@ -225,12 +323,55 @@ class ApiCartScreen extends StatelessWidget {
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
+                  // Show description if available
+                  if (menu?.description != null &&
+                      menu!.description!.isNotEmpty) ...[
+                    Text(
+                      menu.description!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                  ],
                   Text(
                     'Rp ${price.toStringAsFixed(0)} each',
-                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.goldenPoppy,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
+                  // Show stock warning if stock is low
+                  if (menu != null && menu.stock <= 5 && menu.stock > 0) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.warning_amber,
+                          size: 12,
+                          color: Colors.orange[600],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Only ${menu.stock} left',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.orange[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -238,19 +379,33 @@ class ApiCartScreen extends StatelessWidget {
                         onPressed: quantity > 1
                             ? () => _decreaseQuantity(index)
                             : null,
-                        icon: const Icon(Icons.remove),
+                        icon: const Icon(Icons.remove, size: 18),
                         style: IconButton.styleFrom(
-                          backgroundColor: AppTheme.royalBlueDark.withOpacity(
-                            0.1,
-                          ),
-                          foregroundColor: AppTheme.royalBlueDark,
-                          minimumSize: const Size(32, 32),
+                          backgroundColor: quantity > 1
+                              ? AppTheme.royalBlueDark.withOpacity(0.1)
+                              : Colors.grey.withOpacity(0.1),
+                          foregroundColor: quantity > 1
+                              ? AppTheme.royalBlueDark
+                              : Colors.grey,
+                          minimumSize: const Size(28, 28),
                         ),
                         constraints: const BoxConstraints(),
                         padding: const EdgeInsets.all(4),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.royalBlueDark.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: AppTheme.royalBlueDark.withOpacity(0.2),
+                            width: 1,
+                          ),
+                        ),
                         child: Text(
                           quantity.toString(),
                           style: TextStyle(
@@ -264,13 +419,15 @@ class ApiCartScreen extends StatelessWidget {
                         onPressed: menu != null && quantity < menu.stock
                             ? () => _increaseQuantity(index)
                             : null,
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add, size: 18),
                         style: IconButton.styleFrom(
-                          backgroundColor: AppTheme.royalBlueDark.withOpacity(
-                            0.1,
-                          ),
-                          foregroundColor: AppTheme.royalBlueDark,
-                          minimumSize: const Size(32, 32),
+                          backgroundColor: menu != null && quantity < menu.stock
+                              ? AppTheme.green.withOpacity(0.1)
+                              : Colors.grey.withOpacity(0.1),
+                          foregroundColor: menu != null && quantity < menu.stock
+                              ? AppTheme.green
+                              : Colors.grey,
+                          minimumSize: const Size(28, 28),
                         ),
                         constraints: const BoxConstraints(),
                         padding: const EdgeInsets.all(4),
@@ -317,47 +474,106 @@ class ApiCartScreen extends StatelessWidget {
 
   Widget _buildCheckoutSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 1,
-            blurRadius: 5,
-            offset: const Offset(0, -2),
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 10,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Total:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          // Summary section
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.royalBlueDark.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: AppTheme.royalBlueDark.withOpacity(0.1),
+                width: 1,
               ),
-              Obx(
-                () => Text(
-                  'Rp ${cartController.totalPrice.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.goldenPoppy,
-                  ),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.shopping_cart,
+                          color: AppTheme.royalBlueDark,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Total Belanja:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Obx(
+                      () => Text(
+                        '${cartController.totalItems} items',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Obx(
-            () => Text(
-              '${cartController.totalItems} items',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Total Harga:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Obx(
+                      () => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.goldenPoppy.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'Rp ${cartController.totalPrice.toStringAsFixed(0)}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.goldenPoppy,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -366,10 +582,21 @@ class ApiCartScreen extends StatelessWidget {
                 backgroundColor: AppTheme.royalBlueDark,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 2,
               ),
-              child: const Text(
-                'Checkout All',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.payment, size: 20),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Lanjut ke Pembayaran',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
           ),
@@ -381,11 +608,13 @@ class ApiCartScreen extends StatelessWidget {
   void _increaseQuantity(int index) async {
     final cartItem = cartController.cartItems[index];
     final Menu? menu = cartItem['menu'];
-    final int currentQuantity = cartItem['quantity'];
+    final int currentQuantity =
+        int.tryParse(cartItem['quantity'].toString()) ?? 0;
 
     if (menu != null && currentQuantity < menu.stock) {
+      final itemId = int.tryParse(cartItem['id'].toString()) ?? 0;
       await cartController.updateCartItem(
-        itemId: cartItem['id'],
+        itemId: itemId,
         quantity: currentQuantity + 1,
       );
     } else {
@@ -395,11 +624,13 @@ class ApiCartScreen extends StatelessWidget {
 
   void _decreaseQuantity(int index) async {
     final cartItem = cartController.cartItems[index];
-    final int currentQuantity = cartItem['quantity'];
+    final int currentQuantity =
+        int.tryParse(cartItem['quantity'].toString()) ?? 0;
 
     if (currentQuantity > 1) {
+      final itemId = int.tryParse(cartItem['id'].toString()) ?? 0;
       await cartController.updateCartItem(
-        itemId: cartItem['id'],
+        itemId: itemId,
         quantity: currentQuantity - 1,
       );
     }
@@ -419,9 +650,8 @@ class ApiCartScreen extends StatelessWidget {
             onPressed: () async {
               Get.back(); // Close dialog first
               final cartItem = cartController.cartItems[index];
-              final success = await cartController.removeFromCart(
-                cartItem['id'],
-              );
+              final itemId = int.tryParse(cartItem['id'].toString()) ?? 0;
+              final success = await cartController.removeFromCart(itemId);
 
               if (success) {
                 Get.snackbar(
@@ -489,7 +719,6 @@ class ApiCartScreen extends StatelessWidget {
   }
 
   void _checkoutMerchant(int merchantId, List<Map<String, dynamic>> items) {
-    // Convert to the format expected by CheckoutScreen
     final cartItems = items.obs;
     Get.to(() => CheckoutScreen(cartItems: cartItems));
   }
