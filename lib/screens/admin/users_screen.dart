@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/admin_controller.dart';
 import '../../models/user.dart';
+import '../../utils/app_theme.dart';
 
 class UsersScreen extends StatelessWidget {
   final AdminController controller = Get.find<AdminController>();
@@ -18,7 +19,7 @@ class UsersScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Users'),
-        backgroundColor: Colors.orange,
+        backgroundColor: AppTheme.red,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -186,7 +187,7 @@ class UsersScreen extends StatelessWidget {
                 child: Text(
                   (user.role ?? 'unknown').toUpperCase(),
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppTheme.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -200,16 +201,7 @@ class UsersScreen extends StatelessWidget {
   }
 
   Color _getRoleColor(String role) {
-    switch (role.toLowerCase()) {
-      case 'admin':
-        return Colors.red;
-      case 'penjual':
-        return Colors.green;
-      case 'pembeli':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
+    return AppTheme.getRoleColor(role);
   }
 
   IconData _getRoleIcon(String role) {

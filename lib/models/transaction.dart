@@ -50,9 +50,9 @@ class Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     return Transaction(
-      id: json['id'],
-      userId: json['user_id'],
-      cashierId: json['cashier_id'],
+      id: int.tryParse(json['id'].toString()),
+      userId: int.tryParse(json['user_id'].toString()),
+      cashierId: int.tryParse(json['cashier_id'].toString()),
       totalPrice: double.tryParse(json['total_price'].toString()) ?? 0.0,
       paymentMethod: json['payment_method'],
       status: _parseStatus(json['status']),

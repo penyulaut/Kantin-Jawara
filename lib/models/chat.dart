@@ -33,9 +33,9 @@ class Chat {
 
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
-      id: json['id'],
-      transactionId: json['transaction_id'],
-      senderId: json['sender_id'],
+      id: int.tryParse(json['id'].toString()),
+      transactionId: int.tryParse(json['transaction_id'].toString()),
+      senderId: int.tryParse(json['sender_id'].toString()),
       message: json['message'],
       attachmentUrl: json['attachment_url'],
       attachmentType: json['attachment_type'],

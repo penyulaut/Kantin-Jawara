@@ -8,7 +8,7 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['id'],
+      id: int.tryParse(json['id'].toString()),
       name: json['name'] ?? '',
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])

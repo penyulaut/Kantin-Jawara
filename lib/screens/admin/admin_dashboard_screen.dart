@@ -4,6 +4,7 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/admin_controller.dart';
 import '../../controllers/category_controller.dart';
 import '../../controllers/payment_controller.dart';
+import '../../utils/app_theme.dart';
 import 'categories_screen.dart';
 import 'payment_methods_screen.dart';
 import 'users_screen.dart';
@@ -23,8 +24,10 @@ class AdminDashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
-        backgroundColor: Colors.red[700],
-        foregroundColor: Colors.white,
+        backgroundColor: AppTheme.red,
+        foregroundColor: AppTheme.white,
+        elevation: 0,
+        centerTitle: true,
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -89,20 +92,20 @@ class AdminDashboardScreen extends StatelessWidget {
                                   'Users',
                                   stats['total_users']?.toString() ?? '0',
                                   Icons.people,
-                                  Colors.blue,
+                                  AppTheme.royalBlueDark,
                                 ),
                                 _buildQuickStat(
                                   'Orders',
                                   stats['total_transactions']?.toString() ??
                                       '0',
                                   Icons.receipt,
-                                  Colors.orange,
+                                  AppTheme.goldenPoppy,
                                 ),
                                 _buildQuickStat(
                                   'Revenue',
                                   'Rp ${stats['total_revenue']?.toString() ?? '0'}',
                                   Icons.attach_money,
-                                  Colors.green,
+                                  AppTheme.green,
                                 ),
                               ],
                             ),

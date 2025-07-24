@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kantin_jawara/utils/app_theme.dart';
 import 'dart:io';
 import '../models/menu.dart';
+import '../models/merchant.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 
@@ -8,27 +11,27 @@ class MenuController extends GetxController {
   final ApiService _apiService = ApiService();
   final AuthService _authService = AuthService();
 
-  // Observable states
   final RxList<Menu> _menus = <Menu>[].obs;
   final RxList<Menu> _myMenus = <Menu>[].obs;
+  final RxList<Merchant> _merchants = <Merchant>[].obs;
   final RxBool _isLoading = false.obs;
   final RxString _errorMessage = ''.obs;
   final RxString _searchQuery = ''.obs;
   final RxInt _selectedCategoryId = 0.obs;
+  final RxInt _selectedMerchantId = 0.obs;
 
-  // Getters
   List<Menu> get menus => _menus;
   List<Menu> get myMenus => _myMenus;
+  List<Merchant> get merchants => _merchants;
   bool get isLoading => _isLoading.value;
   String get errorMessage => _errorMessage.value;
   String get searchQuery => _searchQuery.value;
   int get selectedCategoryId => _selectedCategoryId.value;
+  int get selectedMerchantId => _selectedMerchantId.value;
 
-  // Filtered menus based on search and category
   List<Menu> get filteredMenus {
     List<Menu> filtered = List.from(_menus);
 
-    // Filter by search query
     if (_searchQuery.value.isNotEmpty) {
       filtered = filtered
           .where(
@@ -44,10 +47,15 @@ class MenuController extends GetxController {
           .toList();
     }
 
-    // Filter by category
     if (_selectedCategoryId.value > 0) {
       filtered = filtered
           .where((menu) => menu.categoryId == _selectedCategoryId.value)
+          .toList();
+    }
+
+    if (_selectedMerchantId.value > 0) {
+      filtered = filtered
+          .where((menu) => menu.penjualId == _selectedMerchantId.value)
           .toList();
     }
 
@@ -58,25 +66,50 @@ class MenuController extends GetxController {
   void onInit() {
     super.onInit();
     fetchMenus();
+    fetchMerchants(); // Fetch merchants when controller initializes
+    // Test connectivity
+    _testImageConnectivity();
   }
 
-  // Set search query
+  void _testImageConnectivity() async {
+    try {
+      print('Testing image connectivity...');
+      // You can add a simple connectivity test here
+    } catch (e) {
+      print('Connectivity test failed: $e');
+    }
+  }
+
   void setSearchQuery(String query) {
     _searchQuery.value = query;
   }
 
-  // Set selected category
   void setSelectedCategory(int categoryId) {
     _selectedCategoryId.value = categoryId;
+    _selectedMerchantId.value =
+        0; // Clear merchant filter when category is selected
   }
 
-  // Clear filters
+  void setSelectedMerchant(int merchantId) {
+    print('Setting selected merchant: $merchantId');
+    _selectedMerchantId.value = merchantId;
+    _selectedCategoryId.value =
+        0; // Clear category filter when merchant is selected
+
+    // Fetch menus for specific merchant if not "All Warung"
+    if (merchantId > 0) {
+      fetchMenusByMerchant(merchantId);
+    } else {
+      fetchMenus(); // Fetch all menus
+    }
+  }
+
   void clearFilters() {
     _searchQuery.value = '';
     _selectedCategoryId.value = 0;
+    _selectedMerchantId.value = 0;
   }
 
-  // Fetch all menus (public endpoint)
   Future<void> fetchMenus() async {
     try {
       _isLoading.value = true;
@@ -85,33 +118,31 @@ class MenuController extends GetxController {
       final response = await _apiService.get('/menus');
 
       if (response['success']) {
-        // Handle nested response structure
         final responseData = response['data'];
         final List<dynamic> menuData;
 
-        if (responseData is Map && responseData.containsKey('data')) {
-          // Nested structure: {"success": true, "data": {"message": "...", "data": [...]}}
-          menuData = responseData['data'] ?? [];
-        } else if (responseData is List) {
-          // Direct array: {"success": true, "data": [...]}
+        if (responseData is List) {
           menuData = responseData;
+        } else if (responseData is Map && responseData.containsKey('data')) {
+          menuData = responseData['data'] ?? [];
         } else {
-          // Unknown structure
           menuData = [];
         }
 
         _menus.value = menuData.map((json) => Menu.fromJson(json)).toList();
+        // Also update merchants after fetching menus
+        await fetchMerchants();
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to fetch menus';
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
+      print('Error fetching menus: $e');
     } finally {
       _isLoading.value = false;
     }
   }
 
-  // Fetch menu by ID (public endpoint)
   Future<Menu?> getMenuById(int id) async {
     try {
       _isLoading.value = true;
@@ -133,14 +164,12 @@ class MenuController extends GetxController {
     }
   }
 
-  // Fetch seller's own menus (protected endpoint)
   Future<void> fetchMyMenus() async {
     try {
       print('Starting fetchMyMenus...');
       _isLoading.value = true;
       _errorMessage.value = '';
 
-      // Get current user and token
       final currentUser = await _authService.getUser();
       final token = await _authService.getToken();
 
@@ -154,25 +183,20 @@ class MenuController extends GetxController {
       }
 
       try {
-        // First try the specific penjual menus endpoint
         print('Trying penjual menus endpoint...');
         final response = await _apiService.getMyMenus(token);
         print('Response: $response');
 
         if (response['success'] == true ||
             response['message'] == 'Menus retrieved successfully') {
-          // Handle nested response structure
           final responseData = response['data'];
           final List<dynamic> menusData;
 
-          if (responseData is Map && responseData.containsKey('data')) {
-            // Nested structure: {"success": true, "data": {"message": "...", "data": [...]}}
-            menusData = responseData['data'] ?? [];
-          } else if (responseData is List) {
-            // Direct array: {"success": true, "data": [...]}
+          if (responseData is List) {
             menusData = responseData;
+          } else if (responseData is Map && responseData.containsKey('data')) {
+            menusData = responseData['data'] ?? [];
           } else {
-            // Unknown structure
             menusData = [];
           }
 
@@ -184,32 +208,25 @@ class MenuController extends GetxController {
           return;
         }
       } catch (e) {
-        // If the penjual endpoint fails, fall back to filtering all menus
         print('Fallback to general menus endpoint: $e');
       }
 
-      // Fallback: Use general menus endpoint and filter by current user
       final response = await _apiService.get('/menus', token: token);
 
       if (response['success']) {
-        // Handle nested response structure
         final responseData = response['data'];
         final List<dynamic> menusData;
 
-        if (responseData is Map && responseData.containsKey('data')) {
-          // Nested structure: {"success": true, "data": {"message": "...", "data": [...]}}
-          menusData = responseData['data'] ?? [];
-        } else if (responseData is List) {
-          // Direct array: {"success": true, "data": [...]}
+        if (responseData is List) {
           menusData = responseData;
+        } else if (responseData is Map && responseData.containsKey('data')) {
+          menusData = responseData['data'] ?? [];
         } else {
-          // Unknown structure
           menusData = [];
         }
 
         final allMenus = menusData.map((json) => Menu.fromJson(json)).toList();
 
-        // Filter menus by current user (penjual)
         _myMenus.value = allMenus
             .where((menu) => menu.penjualId == currentUser.id)
             .toList();
@@ -224,7 +241,6 @@ class MenuController extends GetxController {
     }
   }
 
-  // Create new menu (seller only)
   Future<bool> createMenu({
     required String name,
     required String description,
@@ -234,6 +250,7 @@ class MenuController extends GetxController {
     String? imageUrl,
   }) async {
     try {
+      print('Creating menu with imageUrl: $imageUrl');
       _isLoading.value = true;
       _errorMessage.value = '';
 
@@ -245,9 +262,18 @@ class MenuController extends GetxController {
 
       final Map<String, dynamic> response;
 
-      // Check if imageUrl is a file path (for uploaded images) or URL
-      if (imageUrl != null && File(imageUrl).existsSync()) {
-        // Upload as multipart form data
+      // Check if imageUrl is a local file path (for picked images)
+      bool isLocalFile =
+          imageUrl != null &&
+          !imageUrl.startsWith('http://') &&
+          !imageUrl.startsWith('https://') &&
+          File(imageUrl).existsSync();
+
+      print('Is local file: $isLocalFile');
+
+      if (isLocalFile) {
+        // Upload local file
+        print('Uploading local file: $imageUrl');
         final fields = {
           'name': name,
           'description': description,
@@ -264,21 +290,24 @@ class MenuController extends GetxController {
           token: token,
         );
       } else {
-        // Regular JSON post (for URL or no image)
+        // Send as regular data (including URL images)
+        print('Sending as data with imageUrl: $imageUrl');
         final data = {
           'name': name,
           'description': description,
           'price': price,
           'stock': stock,
           'category_id': categoryId,
-          if (imageUrl != null) 'image_url': imageUrl,
+          if (imageUrl != null && imageUrl.isNotEmpty) 'image_url': imageUrl,
         };
 
+        print('Data being sent: $data');
         response = await _apiService.post('/menus', data: data, token: token);
       }
 
+      print('Response: $response');
+
       if (response['success']) {
-        // Refresh menus after creating
         await fetchMyMenus();
         await fetchMenus();
 
@@ -286,23 +315,33 @@ class MenuController extends GetxController {
           'Success',
           'Menu created successfully',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppTheme.goldenPoppy,
+          colorText: AppTheme.royalBlueDark,
+          duration: const Duration(seconds: 3),
+          icon: const Icon(Icons.check_circle, color: AppTheme.royalBlueDark),
         );
         return true;
       } else {
+        print('Failed to create menu: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to create menu';
         Get.snackbar(
           'Error',
           _errorMessage.value,
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
         );
         return false;
       }
     } catch (e) {
+      print('Exception creating menu: $e');
       _errorMessage.value = 'Error: $e';
       Get.snackbar(
         'Error',
         _errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
       return false;
     } finally {
@@ -310,7 +349,6 @@ class MenuController extends GetxController {
     }
   }
 
-  // Update existing menu (seller only)
   Future<bool> updateMenu({
     required int id,
     required String name,
@@ -321,6 +359,7 @@ class MenuController extends GetxController {
     String? imageUrl,
   }) async {
     try {
+      print('Updating menu ID: $id with imageUrl: $imageUrl');
       _isLoading.value = true;
       _errorMessage.value = '';
 
@@ -332,9 +371,18 @@ class MenuController extends GetxController {
 
       final Map<String, dynamic> response;
 
-      // Check if imageUrl is a file path (for uploaded images) or URL
-      if (imageUrl != null && File(imageUrl).existsSync()) {
-        // Upload as multipart form data - Laravel expects POST with _method field for PUT
+      // Check if imageUrl is a local file path (for picked images)
+      bool isLocalFile =
+          imageUrl != null &&
+          !imageUrl.startsWith('http://') &&
+          !imageUrl.startsWith('https://') &&
+          File(imageUrl).existsSync();
+
+      print('Is local file: $isLocalFile');
+
+      if (isLocalFile) {
+        // Upload local file
+        print('Uploading local file: $imageUrl');
         final fields = {
           '_method': 'PUT',
           'name': name,
@@ -352,16 +400,18 @@ class MenuController extends GetxController {
           token: token,
         );
       } else {
-        // Regular JSON put (for URL or no image)
+        // Send as regular data (including URL images)
+        print('Sending as data with imageUrl: $imageUrl');
         final data = {
           'name': name,
           'description': description,
           'price': price,
           'stock': stock,
           'category_id': categoryId,
-          if (imageUrl != null) 'image_url': imageUrl,
+          if (imageUrl != null && imageUrl.isNotEmpty) 'image_url': imageUrl,
         };
 
+        print('Data being sent: $data');
         response = await _apiService.put(
           '/menus/$id',
           data: data,
@@ -369,8 +419,9 @@ class MenuController extends GetxController {
         );
       }
 
+      print('Response: $response');
+
       if (response['success']) {
-        // Refresh menus after updating
         await fetchMyMenus();
         await fetchMenus();
 
@@ -378,23 +429,31 @@ class MenuController extends GetxController {
           'Success',
           'Menu updated successfully',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: AppTheme.goldenPoppy,
+          colorText: AppTheme.royalBlueDark,
         );
         return true;
       } else {
+        print('Failed to update menu: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to update menu';
         Get.snackbar(
           'Error',
           _errorMessage.value,
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
         );
         return false;
       }
     } catch (e) {
+      print('Exception updating menu: $e');
       _errorMessage.value = 'Error: $e';
       Get.snackbar(
         'Error',
         _errorMessage.value,
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
       return false;
     } finally {
@@ -402,7 +461,6 @@ class MenuController extends GetxController {
     }
   }
 
-  // Delete menu (seller only)
   Future<bool> deleteMenu(int id) async {
     try {
       _isLoading.value = true;
@@ -417,7 +475,6 @@ class MenuController extends GetxController {
       final response = await _apiService.delete('/menus/$id', token: token);
 
       if (response['success']) {
-        // Refresh menus after deleting
         await fetchMyMenus();
         await fetchMenus();
 
@@ -449,17 +506,118 @@ class MenuController extends GetxController {
     }
   }
 
-  // Search menus
   Future<void> searchMenus(String query) async {
     setSearchQuery(query);
-    // Since we're using local filtering, no need to make API call
-    // But you can implement server-side search if needed
   }
 
-  // Filter menus by category
   Future<void> filterByCategory(int categoryId) async {
     setSelectedCategory(categoryId);
-    // Since we're using local filtering, no need to make API call
-    // But you can implement server-side filtering if needed
+  }
+
+  Future<void> fetchMerchants() async {
+    try {
+      print('Fetching merchants from API...');
+
+      final response = await _apiService.get('/merchants');
+      print('Merchants API response: $response');
+
+      if (response['success']) {
+        final responseData = response['data'];
+        final List<dynamic> merchantData;
+
+        if (responseData is List) {
+          merchantData = responseData;
+        } else if (responseData is Map && responseData.containsKey('data')) {
+          merchantData = responseData['data'] as List<dynamic>;
+        } else {
+          merchantData = [responseData];
+        }
+
+        _merchants.value = merchantData
+            .map((data) => Merchant.fromJson(data as Map<String, dynamic>))
+            .toList();
+
+        print('Successfully loaded ${_merchants.length} merchants');
+        for (var merchant in _merchants) {
+          print('Merchant: ${merchant.name} (ID: ${merchant.id})');
+        }
+      } else {
+        print('Failed to fetch merchants: ${response['message']}');
+        _errorMessage.value = response['message'] ?? 'Failed to load merchants';
+
+        // Fallback: Extract unique merchants from existing menus
+        _extractMerchantsFromMenus();
+      }
+    } catch (e) {
+      print('Error fetching merchants: $e');
+      _errorMessage.value = 'Error loading merchants: $e';
+
+      // Fallback: Extract unique merchants from existing menus
+      _extractMerchantsFromMenus();
+    }
+  }
+
+  void _extractMerchantsFromMenus() {
+    print('Extracting merchants from existing menus...');
+    if (_menus.isNotEmpty) {
+      final Map<int, Merchant> merchantMap = {};
+
+      for (final menu in _menus) {
+        if (menu.penjualId != null) {
+          merchantMap[menu.penjualId!] = Merchant(
+            id: menu.penjualId!,
+            name: 'Kantin ${menu.penjualId}', // Default name
+            description: 'Delicious food from our kitchen',
+            imageUrl: null,
+          );
+        }
+      }
+
+      _merchants.value = merchantMap.values.toList();
+      print('Extracted ${_merchants.length} merchants from menus');
+    }
+  }
+
+  Future<void> fetchMenusByMerchant(int merchantId) async {
+    try {
+      print('Fetching menus for merchant: $merchantId');
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final response = await _apiService.get('/merchants/$merchantId/menus');
+      print('Merchant menus API response: $response');
+
+      if (response['success']) {
+        final responseData = response['data'];
+        final List<dynamic> menuData;
+
+        if (responseData is List) {
+          menuData = responseData;
+        } else if (responseData is Map && responseData.containsKey('menus')) {
+          menuData = responseData['menus'] as List<dynamic>;
+        } else if (responseData is Map && responseData.containsKey('data')) {
+          menuData = responseData['data'] as List<dynamic>;
+        } else {
+          menuData = [];
+        }
+
+        _menus.value = menuData
+            .map((data) => Menu.fromJson(data as Map<String, dynamic>))
+            .toList();
+
+        print(
+          'Successfully loaded ${_menus.length} menus for merchant $merchantId',
+        );
+      } else {
+        print('Failed to fetch merchant menus: ${response['message']}');
+        _errorMessage.value =
+            response['message'] ?? 'Failed to load merchant menus';
+      }
+    } catch (e) {
+      print('Error fetching merchant menus: $e');
+      _errorMessage.value = 'Error loading merchant menus: $e';
+    } finally {
+      _isLoading.value = false;
+    }
   }
 }

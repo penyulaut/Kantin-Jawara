@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../models/menu.dart';
 import '../../controllers/cart_controller.dart';
 import 'checkout_screen.dart';
+import '../../utils/app_theme.dart';
 
 class MenuDetailScreen extends StatelessWidget {
   final Menu menu;
@@ -16,7 +17,7 @@ class MenuDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(menu.name),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -62,7 +63,7 @@ class MenuDetailScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.green[700],
+                      color: AppTheme.goldenPoppy,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -138,16 +139,19 @@ class MenuDetailScreen extends StatelessWidget {
                                 : null,
                             icon: const Icon(Icons.remove),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.grey[200],
+                              backgroundColor: AppTheme.royalBlueDark
+                                  .withOpacity(0.1),
+                              foregroundColor: AppTheme.royalBlueDark,
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
                               quantity.value.toString(),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: AppTheme.royalBlueDark,
                               ),
                             ),
                           ),
@@ -157,7 +161,9 @@ class MenuDetailScreen extends StatelessWidget {
                                 : null,
                             icon: const Icon(Icons.add),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.grey[200],
+                              backgroundColor: AppTheme.royalBlueDark
+                                  .withOpacity(0.1),
+                              foregroundColor: AppTheme.royalBlueDark,
                             ),
                           ),
                         ],
@@ -182,15 +188,15 @@ class MenuDetailScreen extends StatelessWidget {
                       child: OutlinedButton(
                         onPressed: () => _addToCart(),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.blue),
+                          side: BorderSide(color: AppTheme.royalBlueDark),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Add to Cart',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: AppTheme.royalBlueDark,
                           ),
                         ),
                       ),
@@ -202,7 +208,8 @@ class MenuDetailScreen extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () => _buyNow(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
+                          backgroundColor: AppTheme.royalBlueDark,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         child: Text(
@@ -210,7 +217,6 @@ class MenuDetailScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -260,7 +266,7 @@ class MenuDetailScreen extends StatelessWidget {
         'Added to Cart',
         '${quantity.value}x ${menu.name} added to cart',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.green,
         colorText: Colors.white,
       );
       Get.back();

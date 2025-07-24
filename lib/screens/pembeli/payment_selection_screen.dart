@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/payment_controller.dart';
 import '../../models/payment_method.dart';
 import '../../models/merchant_payment_method.dart';
+import '../../utils/app_theme.dart';
 
 class PaymentSelectionScreen extends StatefulWidget {
   final int merchantId;
@@ -41,8 +42,9 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select Payment Method'),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Column(
         children: [
@@ -51,22 +53,29 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
-              border: Border(bottom: BorderSide(color: Colors.grey[300]!)),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppTheme.royalBlueDark, AppTheme.usafaBlue],
+              ),
             ),
             child: Column(
               children: [
                 const Text(
                   'Total Amount',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Rp ${widget.totalAmount.toStringAsFixed(0)}',
                   style: const TextStyle(
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -77,7 +86,28 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
           Expanded(
             child: Obx(() {
               if (_isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          AppTheme.royalBlueDark,
+                        ),
+                        strokeWidth: 3,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Loading payment methods...',
+                        style: TextStyle(
+                          color: AppTheme.mediumGray,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
               }
 
               if (_errorMessage.value.isNotEmpty) {
@@ -85,18 +115,44 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.error, size: 64, color: Colors.red[300]),
+                      Icon(Icons.error_outline, size: 64, color: AppTheme.red),
                       const SizedBox(height: 16),
                       Text(
-                        'Error: ${_errorMessage.value}',
-                        style: const TextStyle(fontSize: 16),
+                        'Oops! Something went wrong',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.royalBlueDark,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _errorMessage.value,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.mediumGray,
+                        ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: () =>
                             _loadMerchantPaymentMethods(controller),
-                        child: const Text('Retry'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.royalBlueDark,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Try Again',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ],
                   ),
@@ -104,24 +160,31 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
               }
 
               if (_merchantPaymentMethods.isEmpty) {
-                return const Center(
+                return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
                         Icons.payment_outlined,
                         size: 64,
-                        color: Colors.grey,
+                        color: AppTheme.mediumGray,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'No payment methods available',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: AppTheme.royalBlueDark,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'The merchant hasn\'t set up payment methods yet',
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.mediumGray,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -131,6 +194,8 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
 
               return RefreshIndicator(
                 onRefresh: () => _loadMerchantPaymentMethods(controller),
+                color: AppTheme.royalBlueDark,
+                backgroundColor: Colors.white,
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _merchantPaymentMethods.length,
@@ -161,27 +226,47 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
   ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
           _showPaymentConfirmation(paymentMethod, merchantPaymentMethod);
         },
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
           padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.lightGray.withOpacity(0.3),
+              width: 1,
+            ),
+          ),
           child: Row(
             children: [
               // Payment Method Icon
               Container(
-                width: 48,
-                height: 48,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(8),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppTheme.royalBlueDark.withOpacity(0.1),
+                      AppTheme.usafaBlue.withOpacity(0.1),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppTheme.royalBlueDark.withOpacity(0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Icon(
                   _getPaymentMethodIcon(paymentMethod.name),
-                  size: 24,
-                  color: Colors.grey[600],
+                  size: 28,
+                  color: AppTheme.royalBlueDark,
                 ),
               ),
               const SizedBox(width: 16),
@@ -193,16 +278,20 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                   children: [
                     Text(
                       paymentMethod.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        color: AppTheme.royalBlueDark,
                       ),
                     ),
                     if (paymentMethod.description != null) ...[
                       const SizedBox(height: 4),
                       Text(
                         paymentMethod.description!,
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.mediumGray,
+                        ),
                       ),
                     ],
                     const SizedBox(height: 8),
@@ -210,9 +299,10 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                         null) ...[
                       Text(
                         'Account: ${merchantPaymentMethod.details['account_number']}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.usafaBlue,
                         ),
                       ),
                     ],
@@ -221,7 +311,10 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       const SizedBox(height: 2),
                       Text(
                         'Name: ${merchantPaymentMethod.details['account_name']}',
-                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.mediumGray,
+                        ),
                       ),
                     ],
                   ],
@@ -229,7 +322,18 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
               ),
 
               // Arrow Icon
-              Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.royalBlueDark.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: AppTheme.royalBlueDark,
+                ),
+              ),
             ],
           ),
         ),
@@ -261,10 +365,10 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
   ) {
     Get.bottomSheet(
       Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -274,40 +378,56 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             Row(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(8),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppTheme.royalBlueDark.withOpacity(0.1),
+                        AppTheme.usafaBlue.withOpacity(0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: AppTheme.royalBlueDark.withOpacity(0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Icon(
                     _getPaymentMethodIcon(paymentMethod.name),
-                    size: 20,
-                    color: Colors.grey[600],
+                    size: 24,
+                    color: AppTheme.royalBlueDark,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Text(
                     paymentMethod.name,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      color: AppTheme.royalBlueDark,
                     ),
                   ),
                 ),
                 IconButton(
                   onPressed: () => Get.back(),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(Icons.close, color: AppTheme.mediumGray),
                 ),
               ],
             ),
             const SizedBox(height: 20),
 
             // Payment Details
-            const Text(
+            Text(
               'Payment Details',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.royalBlueDark,
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -327,6 +447,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             _buildDetailRow(
               'Amount',
               'Rp ${widget.totalAmount.toStringAsFixed(0)}',
+              isAmount: true,
             ),
 
             const SizedBox(height: 20),
@@ -337,10 +458,23 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Get.back(),
-                    child: const Text('Cancel'),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: AppTheme.royalBlueDark),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: AppTheme.royalBlueDark,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
@@ -359,11 +493,16 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: AppTheme.royalBlueDark,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     child: const Text(
                       'Pay Now',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),
@@ -375,7 +514,12 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool copyable = false}) {
+  Widget _buildDetailRow(
+    String label,
+    String value, {
+    bool copyable = false,
+    bool isAmount = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -385,7 +529,11 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             width: 120,
             child: Text(
               label,
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 14,
+                color: AppTheme.mediumGray,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
           const Text(': '),
@@ -395,9 +543,12 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                 Expanded(
                   child: Text(
                     value,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: isAmount ? FontWeight.bold : FontWeight.w600,
+                      color: isAmount
+                          ? AppTheme.goldenPoppy
+                          : AppTheme.royalBlueDark,
                     ),
                   ),
                 ),
@@ -410,11 +561,21 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                         'Account number copied to clipboard',
                         snackPosition: SnackPosition.BOTTOM,
                         duration: const Duration(seconds: 2),
+                        backgroundColor: AppTheme.royalBlueDark,
+                        colorText: Colors.white,
                       );
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.all(4),
-                      child: Icon(Icons.copy, size: 16, color: Colors.blue),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.royalBlueDark.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Icon(
+                        Icons.copy,
+                        size: 16,
+                        color: AppTheme.royalBlueDark,
+                      ),
                     ),
                   ),
                 ],
@@ -435,6 +596,9 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
       'Payment Selected',
       'Selected ${paymentMethod.name}. Payment proof upload feature coming soon!',
       snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppTheme.royalBlueDark,
+      colorText: Colors.white,
+      duration: const Duration(seconds: 3),
     );
   }
 

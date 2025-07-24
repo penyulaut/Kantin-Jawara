@@ -4,6 +4,7 @@ import '../../controllers/merchant_payment_method_controller.dart';
 import '../../controllers/payment_controller.dart';
 import '../../models/payment_method.dart';
 import '../../models/merchant_payment_method.dart';
+import '../../utils/app_theme.dart';
 
 class PaymentMethodsScreen extends StatelessWidget {
   const PaymentMethodsScreen({super.key});
@@ -24,7 +25,7 @@ class PaymentMethodsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Payment Methods'),
-        backgroundColor: Colors.green,
+        backgroundColor: AppTheme.green,
         foregroundColor: Colors.white,
       ),
       body: Obx(() {
@@ -37,7 +38,11 @@ class PaymentMethodsScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.error, size: 64, color: Colors.red[300]),
+                Icon(
+                  Icons.error,
+                  size: 64,
+                  color: AppTheme.red.withOpacity(0.6),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Error: ${merchantController.errorMessage}',
@@ -181,7 +186,7 @@ class PaymentMethodsScreen extends StatelessWidget {
                       }
                     }
                   },
-                  activeColor: Colors.green,
+                  activeColor: AppTheme.green,
                 ),
               ],
             ),
@@ -192,9 +197,9 @@ class PaymentMethodsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.green[50],
+                  color: AppTheme.green.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.green[200]!),
+                  border: Border.all(color: AppTheme.green.withOpacity(0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,7 +209,7 @@ class PaymentMethodsScreen extends StatelessWidget {
                         Icon(
                           Icons.check_circle,
                           size: 16,
-                          color: Colors.green[700],
+                          color: AppTheme.green,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -212,7 +217,7 @@ class PaymentMethodsScreen extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Colors.green[700],
+                            color: AppTheme.green,
                           ),
                         ),
                       ],
@@ -242,7 +247,7 @@ class PaymentMethodsScreen extends StatelessWidget {
                           icon: const Icon(Icons.edit, size: 16),
                           label: const Text('Edit'),
                           style: TextButton.styleFrom(
-                            foregroundColor: Colors.blue,
+                            foregroundColor: AppTheme.royalBlueDark,
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
                         ),

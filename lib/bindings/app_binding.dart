@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/merchant_payment_method_controller.dart';
+import '../controllers/payment_controller.dart';
 
 class AppBinding extends Bindings {
   @override
@@ -15,5 +16,7 @@ class AppBinding extends Bindings {
       MerchantPaymentMethodController(),
       permanent: true,
     );
+    // Initialize PaymentController as permanent dependency
+    Get.put<PaymentController>(PaymentController(), permanent: true);
   }
 }

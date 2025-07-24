@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/transaction.dart';
 import '../../controllers/chat_controller.dart';
-import '../shared/chat_screen.dart';
+import '../../utils/app_theme.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Transaction transaction;
@@ -13,15 +13,41 @@ class OrderDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.lightGray.withOpacity(0.1),
       appBar: AppBar(
-        title: Text('Order #${transaction.id}'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        title: Text(
+          'Order #${transaction.id}',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        backgroundColor: AppTheme.royalBlueDark,
+        foregroundColor: AppTheme.white,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppTheme.royalBlueDark, AppTheme.usafaBlue],
+            ),
+          ),
+        ),
         actions: [
-          IconButton(
-            onPressed: () =>
-                Get.to(() => ChatScreen(transactionId: transaction.id!)),
-            icon: const Icon(Icons.chat),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              onPressed: () => Get.toNamed(
+                '/chat',
+                arguments: {'transactionId': transaction.id!},
+              ),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.chat_bubble_outline, size: 20),
+              ),
+            ),
           ),
         ],
       ),
@@ -130,7 +156,7 @@ class OrderDetailScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green[700],
+                              color: AppTheme.goldenPoppy,
                             ),
                           ),
                         ],
@@ -212,32 +238,26 @@ class OrderDetailScreen extends StatelessWidget {
   }
 
   Widget _buildStatusChip(TransactionStatus status) {
-    Color color;
+    final color = AppTheme.getStatusColorFromEnum(status);
     String text;
 
     switch (status) {
       case TransactionStatus.pending:
-        color = Colors.orange;
         text = 'Pending';
         break;
       case TransactionStatus.paid:
-        color = Colors.blue;
         text = 'Paid';
         break;
       case TransactionStatus.confirmed:
-        color = Colors.purple;
         text = 'Confirmed';
         break;
       case TransactionStatus.ready:
-        color = Colors.teal;
         text = 'Ready';
         break;
       case TransactionStatus.completed:
-        color = Colors.green;
         text = 'Completed';
         break;
       case TransactionStatus.cancelled:
-        color = Colors.red;
         text = 'Cancelled';
         break;
     }
@@ -274,7 +294,6 @@ class OrderDetailScreen extends StatelessWidget {
     return Row(
       children: statuses.asMap().entries.map((entry) {
         final index = entry.key;
-        final status = entry.value;
         final isActive = index <= currentIndex;
         final isLast = index == statuses.length - 1;
 
@@ -286,13 +305,15 @@ class OrderDetailScreen extends StatelessWidget {
                 height: 20,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isActive ? Colors.blue : Colors.grey[300],
+                  color: isActive
+                      ? AppTheme.royalBlueDark
+                      : AppTheme.mediumGray.withOpacity(0.3),
                 ),
                 child: Center(
                   child: Icon(
                     Icons.check,
                     size: 12,
-                    color: isActive ? Colors.white : Colors.grey[600],
+                    color: isActive ? AppTheme.white : AppTheme.mediumGray,
                   ),
                 ),
               ),
@@ -300,7 +321,9 @@ class OrderDetailScreen extends StatelessWidget {
                 Expanded(
                   child: Container(
                     height: 2,
-                    color: isActive ? Colors.blue : Colors.grey[300],
+                    color: isActive
+                        ? AppTheme.royalBlueDark
+                        : AppTheme.mediumGray.withOpacity(0.3),
                   ),
                 ),
               ],

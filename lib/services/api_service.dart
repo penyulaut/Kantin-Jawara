@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../utils/constants.dart';
 
@@ -592,9 +593,105 @@ class ApiService {
 
   Future<Map<String, dynamic>> uploadPaymentProof({
     required String token,
-    required Map<String, dynamic> data,
+    required int transactionId,
+    required File proofFile,
   }) async {
-    return await post('/payments/proof', data: data, token: token);
+    try {
+      print(
+        'ApiService: Uploading payment proof for transaction $transactionId',
+      );
+
+      final uri = Uri.parse('$_baseUrl/api/payments/proof');
+      final request = http.MultipartRequest('POST', uri);
+
+      // Add headers
+      request.headers.addAll({
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      });
+
+      // Add fields
+      request.fields['transaction_id'] = transactionId.toString();
+
+      // Add file
+      final multipartFile = await http.MultipartFile.fromPath(
+        'proof',
+        proofFile.path,
+      );
+      request.files.add(multipartFile);
+
+      print('ApiService: Sending multipart request to ${uri.toString()}');
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('ApiService: Upload proof response status: ${response.statusCode}');
+      print('ApiService: Upload proof response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return {'success': true, ...data};
+      } else {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Failed to upload payment proof',
+        };
+      }
+    } catch (e) {
+      print('ApiService: Exception in uploadPaymentProof: $e');
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  // Mark transaction as paid (pembeli)
+  Future<Map<String, dynamic>> markTransactionAsPaid({
+    required String token,
+    required int transactionId,
+    String? paymentNote,
+  }) async {
+    try {
+      print('ApiService: Marking transaction $transactionId as paid');
+
+      final data = <String, dynamic>{};
+      if (paymentNote != null && paymentNote.isNotEmpty) {
+        data['payment_note'] = paymentNote;
+      }
+
+      final response = await post(
+        '/pembeli/transactions/$transactionId/mark-as-paid',
+        data: data,
+        token: token,
+      );
+
+      print('ApiService: Mark as paid response: $response');
+      return response;
+    } catch (e) {
+      print('ApiService: Exception in markTransactionAsPaid: $e');
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  // Upload payment proof via URL
+  Future<Map<String, dynamic>> uploadPaymentProofUrl({
+    required String token,
+    required int transactionId,
+    required String proofUrl,
+  }) async {
+    try {
+      print(
+        'ApiService: Uploading payment proof URL for transaction $transactionId',
+      );
+
+      final data = {'transaction_id': transactionId, 'proof_url': proofUrl};
+
+      final response = await post('/payments/proof', data: data, token: token);
+
+      print('ApiService: Upload proof URL response: $response');
+      return response;
+    } catch (e) {
+      print('ApiService: Exception in uploadPaymentProofUrl: $e');
+      return {'success': false, 'message': 'Network error: $e'};
+    }
   }
 
   // Chat System API
@@ -766,6 +863,41 @@ class ApiService {
       }
     } catch (e) {
       print('ApiService: Exception in postMultipart: $e');
+      return {'success': false, 'message': 'Network error: $e'};
+    }
+  }
+
+  // Mark Payment as Paid
+  Future<Map<String, dynamic>> markPaymentAsPaid({
+    required int transactionId,
+    required String token,
+  }) async {
+    try {
+      print(
+        'ApiService: Marking payment as paid for transaction $transactionId',
+      );
+
+      final response = await http.post(
+        Uri.parse('$_baseUrl/api/payments/mark-paid'),
+        headers: _getHeaders(token: token),
+        body: jsonEncode({'transaction_id': transactionId}),
+      );
+
+      print('ApiService: Mark as paid response status: ${response.statusCode}');
+      print('ApiService: Mark as paid response body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        return {'success': true, ...data};
+      } else {
+        final errorData = jsonDecode(response.body);
+        return {
+          'success': false,
+          'message': errorData['message'] ?? 'Failed to mark payment as paid',
+        };
+      }
+    } catch (e) {
+      print('ApiService: Exception in markPaymentAsPaid: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }

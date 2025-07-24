@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/category_controller.dart';
 import '../../models/category.dart';
+import '../../utils/app_theme.dart';
 
 class CategoriesScreen extends StatelessWidget {
   final CategoryController controller = Get.find<CategoryController>();
@@ -14,7 +15,7 @@ class CategoriesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manage Categories'),
-        backgroundColor: Colors.blue,
+        backgroundColor: AppTheme.red,
         foregroundColor: Colors.white,
       ),
       floatingActionButton: FloatingActionButton(

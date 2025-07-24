@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../utils/app_theme.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -10,11 +11,14 @@ class ProfileScreen extends StatelessWidget {
     final AuthController authController = Get.find<AuthController>();
 
     return Scaffold(
+      backgroundColor: AppTheme.lightGray,
       appBar: AppBar(
         title: const Text('Profile'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        backgroundColor: AppTheme.royalBlueDark,
+        foregroundColor: AppTheme.white,
         automaticallyImplyLeading: false,
+        elevation: 0,
+        centerTitle: true,
       ),
       body: Obx(() {
         final user = authController.currentUser;
@@ -28,18 +32,52 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             children: [
               // Profile Header
-              Card(
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [AppTheme.royalBlueDark, AppTheme.usafaBlue],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.royalBlueDark.withOpacity(0.3),
+                      spreadRadius: 1,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.blue[100],
-                        child: Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.blue[700],
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.darkGray.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: AppTheme.goldenPoppy.withOpacity(
+                            0.2,
+                          ),
+                          child: Icon(
+                            Icons.person,
+                            size: 50,
+                            color: AppTheme.royalBlueDark,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -48,29 +86,41 @@ class ProfileScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: AppTheme.white,
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         user.email,
-                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppTheme.white.withOpacity(0.9),
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                          horizontal: 16,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: _getRoleColor(user.role).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: _getRoleColor(user.role)),
+                          color: AppTheme.goldenPoppy,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.goldenPoppy.withOpacity(0.4),
+                              spreadRadius: 1,
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                         child: Text(
                           _getRoleDisplay(user.role),
-                          style: TextStyle(
-                            color: _getRoleColor(user.role),
-                            fontWeight: FontWeight.w500,
+                          style: const TextStyle(
+                            color: AppTheme.royalBlueDark,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
                           ),
                         ),
                       ),
@@ -94,50 +144,81 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => _showChangePasswordDialog(),
               ),
               _buildMenuItem(
-                icon: Icons.help,
+                icon: Icons.help_outline,
                 title: 'Help & Support',
                 subtitle: 'Get help and contact support',
                 onTap: () => _showComingSoon(),
               ),
-              const SizedBox(height: 24),
-
-              // Delete Account Button
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => _showDeleteAccountDialog(),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    'Delete Account',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
+              _buildMenuItem(
+                icon: Icons.info_outline,
+                title: 'About',
+                subtitle: 'App version and information',
+                onTap: () => _showComingSoon(),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
 
-              // Logout Button
-              SizedBox(
+              // Action Buttons
+              Container(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () => _showLogoutDialog(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text(
-                    'Logout',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  children: [
+                    // Delete Account Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _showDeleteAccountDialog(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.red,
+                          side: const BorderSide(
+                            color: AppTheme.red,
+                            width: 1.5,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        icon: const Icon(Icons.delete_outline),
+                        label: const Text(
+                          'Delete Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 12),
+
+                    // Logout Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _showLogoutDialog(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.red,
+                          foregroundColor: AppTheme.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                        ),
+                        icon: const Icon(Icons.logout),
+                        label: const Text(
+                          'Logout',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 32),
             ],
           ),
         );
@@ -151,45 +232,67 @@ class ProfileScreen extends StatelessWidget {
     required String subtitle,
     required VoidCallback onTap,
   }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: AppTheme.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.darkGray.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: Colors.grey[100],
-          child: Icon(icon, color: Colors.grey[700]),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppTheme.royalBlueDark.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: AppTheme.royalBlueDark, size: 24),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+            color: AppTheme.darkGray,
+          ),
+        ),
         subtitle: Text(
           subtitle,
-          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          style: TextStyle(color: AppTheme.mediumGray, fontSize: 13),
         ),
-        trailing: Icon(Icons.chevron_right, color: Colors.grey[400]),
+        trailing: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.lightGray,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            Icons.chevron_right,
+            color: AppTheme.mediumGray,
+            size: 20,
+          ),
+        ),
         onTap: onTap,
       ),
     );
   }
 
-  Color _getRoleColor(String? role) {
-    switch (role) {
-      case 'admin':
-        return Colors.red;
-      case 'penjual':
-        return Colors.green;
-      case 'pembeli':
-        return Colors.blue;
-      default:
-        return Colors.grey;
-    }
-  }
-
   String _getRoleDisplay(String? role) {
     switch (role) {
       case 'admin':
-        return 'Admin';
+        return 'Administrator';
       case 'penjual':
         return 'Seller';
       case 'pembeli':
-        return 'Buyer';
+        return 'Customer';
       default:
         return 'User';
     }

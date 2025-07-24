@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
+import '../../utils/app_theme.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,11 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.white,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.mediumGray.withOpacity(0.3)),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.15),
+              color: AppTheme.mediumGray.withOpacity(0.15),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -40,8 +42,11 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: TextButton.icon(
           onPressed: () {},
-          icon: Icon(icon, color: icon == Icons.facebook ? Colors.blue : null),
-          label: Text(text),
+          icon: Icon(icon, color: AppTheme.royalBlueDark),
+          label: Text(
+            text,
+            style: const TextStyle(color: AppTheme.royalBlueDark),
+          ),
         ),
       ),
     );
@@ -95,22 +100,49 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.lightGray,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Logo/Icon
+              Container(
+                width: 100,
+                height: 100,
+                margin: const EdgeInsets.only(bottom: 24),
+                decoration: BoxDecoration(
+                  color: AppTheme.royalBlueDark,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.royalBlueDark.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.restaurant,
+                  size: 50,
+                  color: AppTheme.white,
+                ),
+              ),
+
               const Text(
                 'Selamat Datang',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: AppTheme.royalBlueDark,
+                ),
               ),
               const SizedBox(height: 4),
               const Text(
                 'Silahkan Login dengan Akun Anda',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
               ),
               const SizedBox(height: 32),
 
@@ -145,56 +177,71 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: _authController.isLoading ? null : _handleLogin,
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 25),
-                      backgroundColor: const Color(0xFFFFC107),
-                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      backgroundColor: AppTheme.goldenPoppy,
+                      foregroundColor: AppTheme.royalBlueDark,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 6,
-                      shadowColor: Colors.grey.shade300,
+                      elevation: 3,
+                      shadowColor: AppTheme.goldenPoppy.withOpacity(0.4),
                     ),
                     child: _authController.isLoading
-                        ? const CircularProgressIndicator()
+                        ? const CircularProgressIndicator(
+                            color: AppTheme.royalBlueDark,
+                          )
                         : const Text(
                             'Login',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   _authController.clearErrorOnNavigation();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
                   );
                 },
-                child: Text(
+                child: const Text(
                   'Belum Memiliki Akun? Ayo Daftar',
-                  style: TextStyle(fontSize: 14, color: Colors.blue),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppTheme.usafaBlue,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
 
               const SizedBox(height: 16),
 
               // Error message
-              Obx(() => _authController.errorMessage.isNotEmpty
-                  ? Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        border: Border.all(color: Colors.red),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        _authController.errorMessage,
-                        style: TextStyle(color: Colors.red[800]),
-                      ),
-                    )
-                  : const SizedBox.shrink()),
+              Obx(
+                () => _authController.errorMessage.isNotEmpty
+                    ? Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.red.withOpacity(0.1),
+                          border: Border.all(
+                            color: AppTheme.red.withOpacity(0.3),
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          _authController.errorMessage,
+                          style: const TextStyle(color: AppTheme.red),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
 
               const SizedBox(height: 30),
             ],
