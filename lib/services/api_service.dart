@@ -491,7 +491,16 @@ class ApiService {
     required String token,
     required int merchantId,
   }) async {
+    // Use user_id instead of merchant_id for the API call
     return await get('/merchants/$merchantId/payment-methods', token: token);
+  }
+
+  // Alternative method using user_id directly
+  Future<Map<String, dynamic>> getMerchantPaymentMethodsByUserId({
+    required String token,
+    required int userId,
+  }) async {
+    return await get('/users/$userId/payment-methods', token: token);
   }
 
   // Get current user's merchant payment methods

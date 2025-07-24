@@ -612,7 +612,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
         'PaymentSelectionScreen: Loading payment methods for merchant: ${widget.merchantId}',
       );
       final availablePaymentMethods = await controller
-          .getAvailablePaymentMethodsForMerchant(widget.merchantId);
+          .getAvailablePaymentMethodsWithFallback(widget.merchantId);
 
       print(
         'PaymentSelectionScreen: Found ${availablePaymentMethods.length} payment methods for merchant ${widget.merchantId}',
