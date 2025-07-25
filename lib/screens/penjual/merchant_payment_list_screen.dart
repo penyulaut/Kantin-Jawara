@@ -21,7 +21,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Payment Methods'),
+        title: const Text('Metode Pembayaran Saya'),
         backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: AppTheme.white,
         actions: [
@@ -39,7 +39,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
               }
             },
             icon: const Icon(Icons.add),
-            tooltip: 'Add Payment Method',
+            tooltip: 'Tambahkan Metode Pembayaran',
           ),
         ],
       ),
@@ -96,7 +96,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No payment methods yet',
+                    'Belum ada metode pembayaran',
                     style: TextStyle(
                       fontSize: 18,
                       color: AppTheme.darkGray,
@@ -105,7 +105,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Add your first payment method to start accepting payments',
+                    'Tambahkan metode pembayaran pertama Anda untuk mulai menerima pembayaran',
                     style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
                     textAlign: TextAlign.center,
                   ),
@@ -120,7 +120,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                       }
                     },
                     icon: const Icon(Icons.add),
-                    label: const Text('Add Payment Method'),
+                    label: const Text('Tambahkan Metode Pembayaran'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.royalBlueDark,
                       foregroundColor: AppTheme.white,
@@ -210,7 +210,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          paymentMethod.paymentMethod?.name ?? 'Unknown',
+                          paymentMethod.paymentMethod?.name ?? 'Tidak dikenal',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -281,7 +281,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Account Number: ${paymentMethod.details['account_number'] ?? 'N/A'}',
+                          'Nomor Akun: ${paymentMethod.details['account_number'] ?? 'N/A'}',
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -299,7 +299,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Account Name: ${paymentMethod.details['account_name'] ?? 'N/A'}',
+                          'Nama Akun: ${paymentMethod.details['account_name'] ?? 'N/A'}',
                           style: const TextStyle(fontSize: 14),
                         ),
                       ],
@@ -333,7 +333,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                       onPressed: () =>
                           _showDeleteDialog(paymentMethod, controller),
                       icon: const Icon(Icons.delete, size: 16),
-                      label: const Text('Delete'),
+                      label: const Text('Hapus'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.red,
                         side: BorderSide(color: AppTheme.red.withOpacity(0.5)),
@@ -380,7 +380,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         title: Text(
-          'Edit ${paymentMethod.paymentMethod?.name ?? 'Payment Method'}',
+          'Edit ${paymentMethod.paymentMethod?.name ?? 'Metode Pembayaran'}',
         ),
         content: SingleChildScrollView(
           child: Column(
@@ -389,7 +389,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
               TextField(
                 controller: accountNumberController,
                 decoration: const InputDecoration(
-                  labelText: 'Account Number',
+                  labelText: 'Nomor Akun',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.account_balance),
                 ),
@@ -399,7 +399,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
               TextField(
                 controller: accountNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Account Name',
+                  labelText: 'Nama Akun',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
@@ -409,13 +409,13 @@ class MerchantPaymentListScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             onPressed: () async {
               if (accountNumberController.text.isEmpty) {
                 Get.snackbar(
                   'Error',
-                  'Please enter account number',
+                  'Silakan masukkan nomor akun',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.red,
                   colorText: AppTheme.white,
@@ -452,8 +452,8 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 // Close edit dialog
                 Get.back();
                 Get.snackbar(
-                  'Success',
-                  'Payment method updated successfully',
+                  'Sukses',
+                  'Metode pembayaran berhasil diperbarui',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: AppTheme.goldenPoppy,
                   colorText: AppTheme.royalBlueDark,
@@ -462,7 +462,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 // Show error, keep dialog open
                 Get.snackbar(
                   'Error',
-                  'Failed to update payment method',
+                  'Gagal memperbarui metode pembayaran',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.red,
                   colorText: AppTheme.white,
@@ -486,12 +486,12 @@ class MerchantPaymentListScreen extends StatelessWidget {
   ) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Payment Method'),
+        title: const Text('Hapus Metode Pembayaran'),
         content: Text(
-          'Are you sure you want to delete this ${paymentMethod.paymentMethod?.name ?? 'payment method'}?\n\nThis action cannot be undone.',
+          'Apakah Anda yakin ingin menghapus ini? ${paymentMethod.paymentMethod?.name ?? 'metode pembayaran'}?\n\nTindakan ini tidak dapat dibatalkan.',
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             onPressed: () async {
               // Show loading
@@ -517,8 +517,8 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 // Close delete dialog
                 Get.back();
                 Get.snackbar(
-                  'Success',
-                  'Payment method deleted successfully',
+                  'Sukses',
+                  'Metode pembayaran berhasil dihapus',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: AppTheme.goldenPoppy,
                   colorText: AppTheme.royalBlueDark,
@@ -527,7 +527,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 // Show error, keep dialog open
                 Get.snackbar(
                   'Error',
-                  'Failed to delete payment method',
+                  'Gagal menghapus metode pembayaran',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.red,
                   colorText: AppTheme.white,
@@ -538,7 +538,7 @@ class MerchantPaymentListScreen extends StatelessWidget {
               backgroundColor: AppTheme.red,
               foregroundColor: AppTheme.white,
             ),
-            child: const Text('Delete'),
+            child: const Text('Hapus'),
           ),
         ],
       ),

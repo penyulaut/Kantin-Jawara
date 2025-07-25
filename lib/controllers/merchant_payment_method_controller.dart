@@ -22,13 +22,10 @@ class MerchantPaymentMethodController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
-    // Don't auto-fetch on init to avoid 403 errors
-    // fetchMerchantPaymentMethods();
+    super.onInit();    
     fetchAllPaymentMethods();
   }
 
-  // Fetch merchant's payment methods
   Future<void> fetchMerchantPaymentMethods() async {
     try {
       _isLoading.value = true;
@@ -45,7 +42,6 @@ class MerchantPaymentMethodController extends GetxController {
         'MerchantPaymentMethodController: Fetching with token: ${token.substring(0, 20)}...',
       );
 
-      // First, get available payment methods to get their IDs
       final paymentMethodsResponse = await _apiService.getPaymentMethods();
 
       if (!paymentMethodsResponse['success']) {
@@ -62,11 +58,10 @@ class MerchantPaymentMethodController extends GetxController {
         'MerchantPaymentMethodController: Found ${availablePaymentMethods.length} available payment methods',
       );
 
-      // Now fetch merchant payment methods for each available payment method
       List<MerchantPaymentMethod> allMerchantPaymentMethods = [];
 
       for (PaymentMethod paymentMethod in availablePaymentMethods) {
-        if (paymentMethod.id == null) continue; // Skip if ID is null
+        if (paymentMethod.id == null) continue; 
 
         print(
           'MerchantPaymentMethodController: Fetching merchant payment methods for payment method ID ${paymentMethod.id}',
@@ -84,7 +79,6 @@ class MerchantPaymentMethodController extends GetxController {
         if (response['success']) {
           final dynamic data = response['data'];
           if (data is List && data.isNotEmpty) {
-            // Multiple merchant payment methods for this payment method
             final List<MerchantPaymentMethod> merchantPaymentMethods = data
                 .map(
                   (json) => MerchantPaymentMethod.fromJson(
@@ -97,7 +91,6 @@ class MerchantPaymentMethodController extends GetxController {
               'MerchantPaymentMethodController: Found ${merchantPaymentMethods.length} merchant payment methods for payment method ${paymentMethod.id}',
             );
           } else if (data is Map<String, dynamic>) {
-            // Single merchant payment method
             allMerchantPaymentMethods.add(MerchantPaymentMethod.fromJson(data));
             print(
               'MerchantPaymentMethodController: Found 1 merchant payment method for payment method ${paymentMethod.id}',
@@ -126,7 +119,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Get all available payment methods
   Future<void> fetchAllPaymentMethods() async {
     try {
       _isLoading.value = true;
@@ -150,7 +142,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Get available payment methods for a merchant
   Future<void> fetchAvailablePaymentMethods(int merchantId) async {
     try {
       _isLoading.value = true;

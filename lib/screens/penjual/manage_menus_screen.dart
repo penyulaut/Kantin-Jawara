@@ -252,7 +252,7 @@ class ManageMenusScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          'Stock: ${menu.stock}',
+                          'Stok: ${menu.stock}',
                           style: TextStyle(
                             fontSize: 12,
                             color: menu.stock > 0
@@ -367,7 +367,7 @@ class ManageMenusScreen extends StatelessWidget {
 
     Get.dialog(
       AlertDialog(
-        title: Text(menu == null ? 'Add Menu' : 'Edit Menu'),
+        title: Text(menu == null ? 'Tambah Menu' : 'Edit Menu'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -375,7 +375,7 @@ class ManageMenusScreen extends StatelessWidget {
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Menu Name',
+                  labelText: 'Nama Menu',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -383,7 +383,7 @@ class ManageMenusScreen extends StatelessWidget {
               TextField(
                 controller: descriptionController,
                 decoration: const InputDecoration(
-                  labelText: 'Description',
+                  labelText: 'Deskripsi',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
@@ -392,7 +392,7 @@ class ManageMenusScreen extends StatelessWidget {
               TextField(
                 controller: priceController,
                 decoration: const InputDecoration(
-                  labelText: 'Price',
+                  labelText: 'Harga',
                   border: OutlineInputBorder(),
                   prefixText: 'Rp ',
                 ),
@@ -402,7 +402,7 @@ class ManageMenusScreen extends StatelessWidget {
               TextField(
                 controller: stockController,
                 decoration: const InputDecoration(
-                  labelText: 'Stock',
+                  labelText: 'Stok',
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
@@ -414,7 +414,7 @@ class ManageMenusScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Menu Image (Optional)',
+                      'Gambar Menu (Opsional)',
                       style: TextStyle(fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 8),
@@ -436,7 +436,7 @@ class ManageMenusScreen extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                'Pick Image',
+                                'Pilih Gambar',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: imageSourceType.value == 0
@@ -463,7 +463,7 @@ class ManageMenusScreen extends StatelessWidget {
                                 ),
                               ),
                               child: Text(
-                                'Image URL',
+                                'URL Gambar',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: imageSourceType.value == 1
@@ -526,7 +526,7 @@ class ManageMenusScreen extends StatelessWidget {
                                             size: 40,
                                             color: Colors.grey,
                                           ),
-                                          Text('Failed to load image'),
+                                          Text('Gagal memuat gambar'),
                                         ],
                                       );
                                     },
@@ -541,7 +541,7 @@ class ManageMenusScreen extends StatelessWidget {
                                       color: Colors.grey,
                                     ),
                                     SizedBox(height: 8),
-                                    Text('Tap to select image'),
+                                    Text('Ketuk untuk memilih gambar'),
                                   ],
                                 ),
                         ),
@@ -552,7 +552,7 @@ class ManageMenusScreen extends StatelessWidget {
                       TextField(
                         controller: imageUrlController,
                         decoration: const InputDecoration(
-                          labelText: 'Image URL',
+                          labelText: 'URL Gambar',
                           hintText: 'https://example.com/image.jpg',
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.link),
@@ -598,7 +598,7 @@ class ManageMenusScreen extends StatelessWidget {
                                       color: AppTheme.red,
                                     ),
                                     Text(
-                                      'Failed to load image',
+                                      'Gagal memuat gambar',
                                       style: TextStyle(color: AppTheme.red),
                                     ),
                                   ],
@@ -641,7 +641,7 @@ class ManageMenusScreen extends StatelessWidget {
                                       color: AppTheme.red,
                                     ),
                                     Text(
-                                      'Failed to load existing image',
+                                      'Gagal memuat gambar yang ada',
                                       style: TextStyle(color: AppTheme.red),
                                     ),
                                   ],
@@ -704,7 +704,7 @@ class ManageMenusScreen extends StatelessWidget {
                 () => DropdownButtonFormField<int>(
                   value: selectedCategoryId,
                   decoration: const InputDecoration(
-                    labelText: 'Category',
+                    labelText: 'Kategori',
                     border: OutlineInputBorder(),
                   ),
                   items: categoryController.categories.map((category) {
@@ -722,7 +722,7 @@ class ManageMenusScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             onPressed: () async {
               if (nameController.text.isEmpty ||
@@ -860,8 +860,8 @@ class ManageMenusScreen extends StatelessWidget {
                 Get.snackbar(
                   'Error',
                   menu == null
-                      ? 'Failed to add menu. Please try again.'
-                      : 'Failed to update menu. Please try again.',
+                      ? 'Gagal menambahkan menu. Silakan coba lagi.'
+                      : 'Gagal memperbarui menu. Silakan coba lagi.',
                   snackPosition: SnackPosition.BOTTOM,
                   backgroundColor: Colors.red,
                   colorText: Colors.white,
@@ -879,7 +879,7 @@ class ManageMenusScreen extends StatelessWidget {
               ),
             ),
             child: Text(
-              menu == null ? 'Add Menu' : 'Update Menu',
+              menu == null ? 'Tambah Menu' : 'Perbarui Menu',
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
@@ -894,12 +894,12 @@ class ManageMenusScreen extends StatelessWidget {
   ) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Delete Menu'),
-        content: Text('Are you sure you want to delete "${menu.name}"?'),
+        title: const Text('Hapus Menu'),
+        content: Text('Apakah Anda yakin ingin menghapus? "${menu.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: TextStyle(color: AppTheme.mediumGray)),
+            child: Text('Batal', style: TextStyle(color: AppTheme.mediumGray)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -911,7 +911,7 @@ class ManageMenusScreen extends StatelessWidget {
                 if (success) {
                   // Show success message
                   Get.snackbar(
-                    'Success',
+                    'Sukses',
                     'Menu "${menu.name}" berhasil dihapus!',
                     snackPosition: SnackPosition.BOTTOM,
                     backgroundColor: Colors.green,
@@ -923,7 +923,7 @@ class ManageMenusScreen extends StatelessWidget {
                   // Show error notification only if controller doesn't handle it
                   Get.snackbar(
                     'Error',
-                    'Failed to delete menu. Please try again.',
+                    'Gagal menghapus menu. Silakan coba lagi.',
                     snackPosition: SnackPosition.BOTTOM,
                     backgroundColor: Colors.red,
                     colorText: Colors.white,
@@ -942,7 +942,7 @@ class ManageMenusScreen extends StatelessWidget {
               ),
             ),
             child: const Text(
-              'Delete',
+              'Hapus',
               style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

@@ -15,7 +15,6 @@ class TransactionController extends GetxController {
   bool get isLoading => _isLoading.value;
   String get errorMessage => _errorMessage.value;
 
-  // Create new transaction (pembeli)
   Future<bool> createTransaction({
     required List<Map<String, dynamic>> items,
     required String customerName,
@@ -77,7 +76,6 @@ class TransactionController extends GetxController {
     }
   }
 
-  // Get transaction by ID
   Future<Transaction?> getTransactionById(int id) async {
     try {
       _isLoading.value = true;
@@ -106,7 +104,6 @@ class TransactionController extends GetxController {
     }
   }
 
-  // Delete transaction (pembeli)
   Future<bool> deleteTransaction(int id) async {
     try {
       _isLoading.value = true;
@@ -153,7 +150,6 @@ class TransactionController extends GetxController {
     }
   }
 
-  // Calculate total from cart items
   double calculateTotal(List<Map<String, dynamic>> items) {
     double total = 0.0;
     for (final item in items) {
@@ -164,7 +160,6 @@ class TransactionController extends GetxController {
     return total;
   }
 
-  // Validate cart items
   bool validateCartItems(List<Map<String, dynamic>> items) {
     if (items.isEmpty) {
       _errorMessage.value = 'Cart is empty';
@@ -189,7 +184,6 @@ class TransactionController extends GetxController {
     return true;
   }
 
-  // Format items for API request
   List<Map<String, dynamic>> formatItemsForRequest(
     List<Map<String, dynamic>> cartItems,
   ) {

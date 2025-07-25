@@ -23,7 +23,6 @@ class SellerAnalyticsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Summary Cards
               const Text(
                 'Sales Summary',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -69,7 +68,6 @@ class SellerAnalyticsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Orders by Status
               const Text(
                 'Orders by Status',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -92,7 +90,6 @@ class SellerAnalyticsScreen extends StatelessWidget {
               }),
               const SizedBox(height: 24),
 
-              // Today's Transactions
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

@@ -227,7 +227,7 @@ class SellerDashboardHome extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Seller Dashboard',
+                            'Dashboard Penjual',
                             style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
@@ -235,7 +235,7 @@ class SellerDashboardHome extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Manage your store efficiently',
+                            'Kelola toko Anda secara efisien',
                             style: TextStyle(
                               fontSize: 14,
                               color: AppTheme.white.withOpacity(0.9),
@@ -303,14 +303,14 @@ class SellerDashboardHome extends StatelessWidget {
                     childAspectRatio: 1.6,
                     children: [
                       _buildStatCard(
-                        title: 'Total Sales',
+                        title: 'Total Penjualan',
                         value:
                             'Rp ${controller.getTodaysSales().toStringAsFixed(0)}',
                         icon: Icons.monetization_on,
                         color: AppTheme.goldenPoppy,
                       ),
                       _buildStatCard(
-                        title: 'Orders Today',
+                        title: 'Pesanan Hari Ini',
                         value: controller
                             .getTodaysTransactions()
                             .length
@@ -319,7 +319,7 @@ class SellerDashboardHome extends StatelessWidget {
                         color: AppTheme.royalBlueDark,
                       ),
                       _buildStatCard(
-                        title: 'Pending Orders',
+                        title: 'Pesanan Tertunda',
                         value: controller
                             .getPendingTransactions()
                             .length
@@ -328,7 +328,7 @@ class SellerDashboardHome extends StatelessWidget {
                         color: AppTheme.goldenPoppy,
                       ),
                       _buildStatCard(
-                        title: 'Completed',
+                        title: 'Selesai',
                         value: controller
                             .getCompletedTransactions()
                             .length
@@ -343,7 +343,7 @@ class SellerDashboardHome extends StatelessWidget {
 
                 // Quick Actions
                 const Text(
-                  'Quick Actions',
+                  'Tindakan Cepat',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -393,7 +393,7 @@ class SellerDashboardHome extends StatelessWidget {
                                   ),
                                   SizedBox(height: 8),
                                   Text(
-                                    'Payment\nMethods',
+                                    'Metode\nPembayaran',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -417,7 +417,6 @@ class SellerDashboardHome extends StatelessWidget {
                         ),
                         child: InkWell(
                           onTap: () {
-                            // Add analytics functionality
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
@@ -445,7 +444,6 @@ class SellerDashboardHome extends StatelessWidget {
                         ),
                         child: InkWell(
                           onTap: () {
-                            // Add settings functionality
                           },
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
@@ -468,12 +466,11 @@ class SellerDashboardHome extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // Recent Orders
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Recent Orders',
+                      'Pesanan Terbaru',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -490,7 +487,7 @@ class SellerDashboardHome extends StatelessWidget {
                         foregroundColor: AppTheme.royalBlueDark,
                         textStyle: const TextStyle(fontWeight: FontWeight.w600),
                       ),
-                      child: const Text('View All'),
+                      child: const Text('Lihat Semua'),
                     ),
                   ],
                 ),
@@ -512,7 +509,7 @@ class SellerDashboardHome extends StatelessWidget {
                               ),
                               SizedBox(height: 12),
                               Text(
-                                'No orders yet',
+                                'Belum ada pesanan',
                                 style: TextStyle(color: AppTheme.mediumGray),
                               ),
                             ],

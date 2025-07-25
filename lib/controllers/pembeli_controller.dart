@@ -41,15 +41,12 @@ class PembeliController extends GetxController {
       print('PembeliController: Response: $response');
 
       if (response['success']) {
-        // Handle nested response structure: response['data'] contains {message, data}
         final responseData = response['data'];
         final List<dynamic> transactionData;
 
         if (responseData is Map && responseData.containsKey('data')) {
-          // API returns {"success": true, "data": {"message": "...", "data": [...]}}
           transactionData = responseData['data'] as List<dynamic>;
         } else if (responseData is List) {
-          // Direct list format
           transactionData = responseData;
         } else {
           print('PembeliController: Unexpected response format: $responseData');
@@ -70,14 +67,13 @@ class PembeliController extends GetxController {
             response['message'] ?? 'Failed to fetch transactions';
         print('PembeliController: Error - ${_errorMessage.value}');
 
-        // If unauthenticated, clear user data and redirect to login
         if (response['message']?.contains('Unauthenticated') == true ||
             response['message']?.contains('401') == true) {
           print(
             'PembeliController: Authentication failed, redirecting to login',
           );
           await _authService.clearUserData();
-          Get.offAllNamed('/login'); // Redirect to login
+          Get.offAllNamed('/login'); 
         }
       }
     } catch (e) {
@@ -123,7 +119,7 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); // Refresh list
+        await fetchTransactions(); 
         Get.snackbar('Success', 'Order created successfully');
         return true;
       } else {
@@ -154,7 +150,6 @@ class PembeliController extends GetxController {
         return false;
       }
 
-      // This would need multipart form data implementation in real app
       final data = {'proof': proofPath};
 
       final response = await _apiService.post(
@@ -163,7 +158,7 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); // Refresh list
+        await fetchTransactions();
         Get.snackbar('Success', 'Payment proof uploaded successfully');
         return true;
       } else {
@@ -210,7 +205,7 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); // Refresh list
+        await fetchTransactions(); 
         Get.snackbar('Success', 'Payment submitted successfully');
         return true;
       } else {
@@ -245,7 +240,7 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); // Refresh list
+        await fetchTransactions(); 
         Get.snackbar('Success', 'Transaction cancelled successfully');
         return true;
       } else {
@@ -277,7 +272,6 @@ class PembeliController extends GetxController {
     }
   }
 
-  // Mark transaction as paid
   Future<Map<String, dynamic>> markTransactionAsPaid({
     required int transactionId,
     String? paymentNote,
@@ -301,16 +295,13 @@ class PembeliController extends GetxController {
       print('PembeliController: markTransactionAsPaid response: $response');
 
       if (response['success'] == true) {
-        // Extract the success message from API response
-        // The post method wraps response in: {'success': true, 'data': actualApiResponse}
-        final apiResponse = response['data']; // This is the actual API response
+        final apiResponse = response['data']; 
         final message =
             apiResponse['message'] ??
             'Transaksi berhasil ditandai sebagai sudah dibayar';
 
         print('PembeliController: Extracted message: $message');
 
-        // Refresh transactions to get updated data
         await fetchTransactions();
 
         return {'success': true, 'message': message, 'data': apiResponse};

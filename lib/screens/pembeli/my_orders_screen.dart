@@ -23,7 +23,7 @@ class MyOrdersScreen extends StatelessWidget {
       backgroundColor: AppTheme.lightGray.withOpacity(0.1),
       appBar: AppBar(
         title: const Text(
-          'My Orders',
+          'Pesanan Saya',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         backgroundColor: AppTheme.royalBlueDark,
@@ -365,7 +365,7 @@ class MyOrdersScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Total Amount:',
+                        'Jumlah Total: ',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           color: AppTheme.royalBlueDark,

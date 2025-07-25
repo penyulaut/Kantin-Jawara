@@ -13,7 +13,6 @@ class AddPaymentMethodController extends GetxController {
   bool get isLoading => _isLoading.value;
   String get errorMessage => _errorMessage.value;
 
-  // Add merchant payment method
   Future<bool> addPaymentMethod({
     required int paymentMethodId,
     required String accountNumber,

@@ -25,9 +25,7 @@ class PaymentController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
-    // Only fetch payment methods (available for all roles)
-    // Do NOT automatically fetch merchant payment methods
+    super.onInit();    
     fetchPaymentMethods();
   }
 
@@ -37,7 +35,6 @@ class PaymentController extends GetxController {
       _isLoading.value = true;
       _errorMessage.value = '';
 
-      // Get token for authenticated requests
       final token = await _authService.getToken();
       response = await _apiService.get('/payment-methods', token: token);
 
@@ -45,24 +42,20 @@ class PaymentController extends GetxController {
         final dynamic data = response['data'];
 
         if (data is List) {
-          // Data is already a list
           _paymentMethods.value = data
               .map((json) => PaymentMethod.fromJson(json))
               .toList();
         } else if (data is Map && data.containsKey('payment_methods')) {
-          // Data is wrapped in an object with 'payment_methods' key
           final List<dynamic> paymentMethodData = data['payment_methods'];
           _paymentMethods.value = paymentMethodData
               .map((json) => PaymentMethod.fromJson(json))
               .toList();
         } else if (data is Map && data.containsKey('data')) {
-          // Data is wrapped in an object with 'data' key
           final List<dynamic> paymentMethodData = data['data'];
           _paymentMethods.value = paymentMethodData
               .map((json) => PaymentMethod.fromJson(json))
               .toList();
         } else {
-          // Fallback: empty list
           _paymentMethods.value = [];
         }
       } else {
@@ -92,7 +85,6 @@ class PaymentController extends GetxController {
         return;
       }
 
-      // Check user role - only penjual should access this endpoint
       final user = await _authService.getUser();
       if (user?.role != 'penjual') {
         _errorMessage.value =
@@ -113,13 +105,10 @@ class PaymentController extends GetxController {
         final List<dynamic> merchantPaymentMethodData;
 
         if (responseData is Map && responseData.containsKey('data')) {
-          // Nested structure: {"success": true, "data": {"message": "...", "data": [...]}}
           merchantPaymentMethodData = responseData['data'] ?? [];
         } else if (responseData is List) {
-          // Direct array: {"success": true, "data": [...]}
           merchantPaymentMethodData = responseData;
         } else {
-          // Unknown structure
           merchantPaymentMethodData = [];
         }
 
@@ -158,19 +147,16 @@ class PaymentController extends GetxController {
 
       print('PaymentController: Response for merchant $merchantId: $response');
 
-      // Check for data inconsistency warning
       if (response['success'] && response['data'] is List) {
         final data = response['data'] as List;
         for (var item in data) {
           if (item is Map<String, dynamic>) {
-            // Use utility to validate merchant data consistency
             MerchantIdUtils.validateMerchantData(
               requestedMerchantId: merchantId,
               responseData: item,
               showWarning: true,
             );
 
-            // Debug output for troubleshooting
             MerchantIdUtils.debugMerchantMapping(item);
           }
         }
@@ -181,13 +167,10 @@ class PaymentController extends GetxController {
         final List<dynamic> merchantPaymentMethodData;
 
         if (responseData is Map && responseData.containsKey('data')) {
-          // Nested structure: {"success": true, "data": {"message": "...", "data": [...]}}
           merchantPaymentMethodData = responseData['data'] ?? [];
         } else if (responseData is List) {
-          // Direct array: {"success": true, "data": [...]}
           merchantPaymentMethodData = responseData;
         } else {
-          // Unknown structure
           merchantPaymentMethodData = [];
         }
 
@@ -211,7 +194,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // For Admin - Create Payment Method
   Future<bool> createPaymentMethod({
     required String name,
     String? description,
@@ -239,7 +221,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchPaymentMethods(); // Refresh list
+        await fetchPaymentMethods(); 
         Get.snackbar('Success', 'Payment method created successfully');
         return true;
       } else {
@@ -257,7 +239,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // For Admin - Update Payment Method
   Future<bool> updatePaymentMethod({
     required int id,
     String? name,
@@ -285,7 +266,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchPaymentMethods(); // Refresh list
+        await fetchPaymentMethods(); 
         Get.snackbar('Success', 'Payment method updated successfully');
         return true;
       } else {
@@ -303,7 +284,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // For Admin - Delete Payment Method
   Future<bool> deletePaymentMethod(int id) async {
     try {
       _isLoading.value = true;
@@ -320,7 +300,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchPaymentMethods(); // Refresh list
+        await fetchPaymentMethods(); 
         Get.snackbar('Success', 'Payment method deleted successfully');
         return true;
       } else {
@@ -338,7 +318,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // For Merchant - Configure Payment Method
   Future<bool> configureMerchantPaymentMethod({
     required int paymentMethodId,
     required Map<String, dynamic> details,
@@ -366,7 +345,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchMerchantPaymentMethods(); // Refresh list
+        await fetchMerchantPaymentMethods();
         Get.snackbar('Success', 'Payment method configured successfully');
         return true;
       } else {
@@ -384,7 +363,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // For Merchant - Update Payment Method Configuration
   Future<bool> updateMerchantPaymentMethod({
     required int id,
     Map<String, dynamic>? details,
@@ -410,7 +388,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchMerchantPaymentMethods(); // Refresh list
+        await fetchMerchantPaymentMethods(); 
         Get.snackbar(
           'Success',
           'Payment method configuration updated successfully',
@@ -432,7 +410,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // For Merchant - Delete Payment Method Configuration
   Future<bool> deleteMerchantPaymentMethod(int id) async {
     try {
       _isLoading.value = true;
@@ -449,7 +426,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchMerchantPaymentMethods(); // Refresh list
+        await fetchMerchantPaymentMethods(); 
         Get.snackbar(
           'Success',
           'Payment method configuration deleted successfully',
@@ -471,17 +448,14 @@ class PaymentController extends GetxController {
     }
   }
 
-  // Method to set merchant payment methods from external call
   void setMerchantPaymentMethods(List<MerchantPaymentMethod> methods) {
     _merchantPaymentMethods.value = methods;
   }
 
-  // Alternative method that tries to use user_id when merchant_id fails
   Future<List<MerchantPaymentMethod>> getAvailablePaymentMethodsWithFallback(
     int merchantId,
   ) async {
     try {
-      // First try with merchant_id
       var result = await getAvailablePaymentMethodsForMerchant(merchantId);
 
       if (result.isEmpty) {
@@ -489,7 +463,6 @@ class PaymentController extends GetxController {
           'PaymentController: No payment methods found for merchant_id $merchantId, checking if this is a user_id issue...',
         );
 
-        // Try to fetch using user endpoints if available
         final token = await _authService.getToken();
         final fallbackResponse = await _apiService.get(
           '/users/$merchantId/payment-methods',
@@ -522,7 +495,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // Upload Payment Proof
   Future<Map<String, dynamic>> uploadPaymentProof({
     required int transactionId,
     required File proofFile,
@@ -544,8 +516,6 @@ class PaymentController extends GetxController {
       );
 
       if (response['success'] == true) {
-        // Extract the success message and proof URL from API response
-        // uploadPaymentProof spreads the API response directly: {'success': true, ...apiResponse}
         final message =
             response['message'] ?? 'Bukti pembayaran berhasil diupload';
         final proofUrl = response['proof_url'];
@@ -564,7 +534,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // Upload Payment Proof via URL
   Future<Map<String, dynamic>> uploadPaymentProofUrl({
     required int transactionId,
     required String proofUrl,
@@ -588,9 +557,7 @@ class PaymentController extends GetxController {
       print('PaymentController: uploadPaymentProofUrl response: $response');
 
       if (response['success'] == true) {
-        // Extract the success message from API response
-        // uploadPaymentProofUrl uses post method: {'success': true, 'data': apiResponse}
-        final apiResponse = response['data']; // This is the actual API response
+        final apiResponse = response['data']; 
         final message =
             apiResponse['message'] ?? 'Bukti pembayaran berhasil diupload';
 
@@ -610,7 +577,6 @@ class PaymentController extends GetxController {
     }
   }
 
-  // Mark Payment as Paid
   Future<bool> markAsPaid({required int transactionId}) async {
     try {
       _isLoading.value = true;

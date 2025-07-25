@@ -26,7 +26,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Payment Method'),
+        title: const Text('Tambahkan Metode Pembayaran'),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -80,19 +80,19 @@ class AddPaymentMethodScreen extends StatelessWidget {
             children: [
               // Header
               const Text(
-                'Add New Payment Method',
+                'Tambahkan Metode Pembayaran Baru',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               const Text(
-                'Choose a payment method and enter your account details.',
+                'Pilih metode pembayaran dan masukkan rincian akun Anda.',
                 style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
               ),
               const SizedBox(height: 24),
 
               // Payment Method Selection
               const Text(
-                'Select Payment Method',
+                'Pilih Metode Pembayaran',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 12),
@@ -110,7 +110,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
                       value: selectedPaymentMethod.value,
                       hint: const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('Choose payment method'),
+                        child: Text('Pilih metode pembayaran'),
                       ),
                       isExpanded: true,
                       items: paymentController.paymentMethods.map((method) {
@@ -153,14 +153,14 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
               // Account Number Field
               const Text(
-                'Account Number',
+                'Nomor Rekening',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: accountNumberController,
                 decoration: const InputDecoration(
-                  hintText: 'Enter your account number',
+                  hintText: 'Masukkan nomor akun Anda',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.account_balance),
                 ),
@@ -171,14 +171,14 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
               // Account Name Field
               const Text(
-                'Account Name',
+                'Nama Akun',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: accountNameController,
                 decoration: const InputDecoration(
-                  hintText: 'Enter account holder name',
+                  hintText: 'Masukkan nama pemegang akun',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
                 ),
@@ -212,8 +212,8 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
                             if (success) {
                               Get.snackbar(
-                                'Success',
-                                'Payment method added successfully!',
+                                'Sukses',
+                                'Metode pembayaran berhasil ditambahkan!',
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: AppTheme.goldenPoppy,
                                 colorText: AppTheme.royalBlueDark,
@@ -229,7 +229,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
                               // Show error message
                               Get.snackbar(
                                 'Error',
-                                'Failed to add payment method. Please try again.',
+                                'Gagal menambahkan metode pembayaran. Silakan coba lagi.',
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: Colors.red,
                                 colorText: AppTheme.white,
@@ -260,11 +260,11 @@ class AddPaymentMethodScreen extends StatelessWidget {
                                 ),
                               ),
                               SizedBox(width: 8),
-                              Text('Adding...'),
+                              Text('Menambahkan...'),
                             ],
                           )
                         : const Text(
-                            'Add Payment Method',
+                            'Tambahkan Metode Pembayaran',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -290,7 +290,7 @@ class AddPaymentMethodScreen extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Cancel',
+                    'Batal',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),

@@ -134,25 +134,25 @@ class ProfileScreen extends StatelessWidget {
               _buildMenuItem(
                 icon: Icons.edit,
                 title: 'Edit Profile',
-                subtitle: 'Update your personal information',
+                subtitle: 'Perbarui informasi pribadi Anda',
                 onTap: () => _showEditProfileDialog(),
               ),
               _buildMenuItem(
                 icon: Icons.lock,
-                title: 'Change Password',
-                subtitle: 'Update your password',
+                title: 'Ubah Password',
+                subtitle: 'Update password',
                 onTap: () => _showChangePasswordDialog(),
               ),
               _buildMenuItem(
                 icon: Icons.help_outline,
-                title: 'Help & Support',
-                subtitle: 'Get help and contact support',
+                title: 'Bantuan & Dukungan',
+                subtitle: 'Dapatkan bantuan dan hubungi dukungan',
                 onTap: () => _showComingSoon(),
               ),
               _buildMenuItem(
                 icon: Icons.info_outline,
-                title: 'About',
-                subtitle: 'App version and information',
+                title: 'Tentang',
+                subtitle: 'Versi Aplikasi dan Informasi',
                 onTap: () => _showComingSoon(),
               ),
               const SizedBox(height: 32),
@@ -181,7 +181,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         icon: const Icon(Icons.delete_outline),
                         label: const Text(
-                          'Delete Account',
+                          'Hapus Akun',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -197,7 +197,7 @@ class ProfileScreen extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => _showLogoutDialog(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.red,
+                          backgroundColor: AppTheme.royalBlueDark,
                           foregroundColor: AppTheme.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -300,8 +300,8 @@ class ProfileScreen extends StatelessWidget {
 
   void _showComingSoon() {
     Get.snackbar(
-      'Coming Soon',
-      'This feature will be available in the next update',
+      'Segera Hadir',
+      'Fitur ini akan tersedia pada pembaruan berikutnya',
       snackPosition: SnackPosition.BOTTOM,
     );
   }
@@ -358,12 +358,11 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                       if (success) {
-                        Get.back(); // Close modal after success
+                        Get.back(); 
 
-                        // Show success message
                         Get.snackbar(
-                          'Success',
-                          'Profile updated successfully',
+                          'Sukses',
+                          'Profil berhasil diperbarui',
                           snackPosition: SnackPosition.BOTTOM,
                           backgroundColor: Colors.green,
                           colorText: Colors.white,
@@ -465,9 +464,8 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                       if (success) {
-                        Get.back(); // Close modal after success
+                        Get.back(); 
 
-                        // Show success message and auto logout
                         Get.snackbar(
                           'Success',
                           'Password changed successfully. Please login again with your new password.',
@@ -480,7 +478,6 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         );
 
-                        // Auto logout after 2 seconds
                         Future.delayed(const Duration(seconds: 2), () {
                           authController.logout();
                         });
@@ -512,13 +509,13 @@ class ProfileScreen extends StatelessWidget {
             Icon(Icons.warning, color: Colors.red, size: 48),
             SizedBox(height: 16),
             Text(
-              'Are you sure you want to delete your account?',
+              'Apakah Anda yakin ingin menghapus akun Anda?',
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 8),
             Text(
-              'This action cannot be undone. All your data will be permanently deleted.',
+              'Tindakan ini tidak dapat dibatalkan. Semua data Anda akan dihapus secara permanen.',
               style: TextStyle(fontSize: 14, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -531,25 +528,24 @@ class ProfileScreen extends StatelessWidget {
               onPressed: authController.isLoading
                   ? null
                   : () async {
-                      // Show confirmation dialog
                       final TextEditingController confirmController =
                           TextEditingController();
 
                       final confirmed =
                           await Get.dialog<bool>(
                             AlertDialog(
-                              title: const Text('Final Confirmation'),
+                              title: const Text('Konfirmasi Akhir'),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Text(
-                                    'Type "DELETE" to confirm account deletion:',
+                                    'Ketik "DELETE" untuk mengonfirmasi penghapusan akun:',
                                   ),
                                   const SizedBox(height: 16),
                                   TextField(
                                     controller: confirmController,
                                     decoration: const InputDecoration(
-                                      hintText: 'Type DELETE here',
+                                      hintText: 'Ketik DELETE disini',
                                       border: OutlineInputBorder(),
                                     ),
                                   ),
@@ -558,7 +554,7 @@ class ProfileScreen extends StatelessWidget {
                               actions: [
                                 TextButton(
                                   onPressed: () => Get.back(result: false),
-                                  child: const Text('Cancel'),
+                                  child: const Text('Batal'),
                                 ),
                                 ElevatedButton(
                                   onPressed: () {
@@ -586,11 +582,10 @@ class ProfileScreen extends StatelessWidget {
                           false;
 
                       if (confirmed) {
-                        Get.back(); // Close delete dialog
+                        Get.back();  
                         final success = await authController.deleteAccount();
 
                         if (success) {
-                          // Show success message before redirect
                           Get.snackbar(
                             'Account Deleted',
                             'Your account has been successfully deleted',
@@ -603,7 +598,6 @@ class ProfileScreen extends StatelessWidget {
                               color: Colors.white,
                             ),
                           );
-                          // Account deleted, user will be redirected to login
                         }
                       }
                     },
@@ -629,9 +623,9 @@ class ProfileScreen extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        content: const Text('Apakah Anda yakin ingin keluar?'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {

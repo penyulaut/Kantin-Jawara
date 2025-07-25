@@ -66,15 +66,13 @@ class MenuController extends GetxController {
   void onInit() {
     super.onInit();
     fetchMenus();
-    fetchMerchants(); // Fetch merchants when controller initializes
-    // Test connectivity
+    fetchMerchants(); 
     _testImageConnectivity();
   }
 
   void _testImageConnectivity() async {
     try {
       print('Testing image connectivity...');
-      // You can add a simple connectivity test here
     } catch (e) {
       print('Connectivity test failed: $e');
     }
@@ -87,20 +85,19 @@ class MenuController extends GetxController {
   void setSelectedCategory(int categoryId) {
     _selectedCategoryId.value = categoryId;
     _selectedMerchantId.value =
-        0; // Clear merchant filter when category is selected
+        0; 
   }
 
   void setSelectedMerchant(int merchantId) {
     print('Setting selected merchant: $merchantId');
     _selectedMerchantId.value = merchantId;
     _selectedCategoryId.value =
-        0; // Clear category filter when merchant is selected
+        0; 
 
-    // Fetch menus for specific merchant if not "All Warung"
     if (merchantId > 0) {
       fetchMenusByMerchant(merchantId);
     } else {
-      fetchMenus(); // Fetch all menus
+      fetchMenus(); 
     }
   }
 
@@ -130,7 +127,6 @@ class MenuController extends GetxController {
         }
 
         _menus.value = menuData.map((json) => Menu.fromJson(json)).toList();
-        // Also update merchants after fetching menus
         await fetchMerchants();
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to fetch menus';
@@ -262,7 +258,6 @@ class MenuController extends GetxController {
 
       final Map<String, dynamic> response;
 
-      // Check if imageUrl is a local file path (for picked images)
       bool isLocalFile =
           imageUrl != null &&
           !imageUrl.startsWith('http://') &&
@@ -272,7 +267,6 @@ class MenuController extends GetxController {
       print('Is local file: $isLocalFile');
 
       if (isLocalFile) {
-        // Upload local file
         print('Uploading local file: $imageUrl');
         final fields = {
           'name': name,
@@ -290,7 +284,6 @@ class MenuController extends GetxController {
           token: token,
         );
       } else {
-        // Send as regular data (including URL images)
         print('Sending as data with imageUrl: $imageUrl');
         final data = {
           'name': name,
@@ -371,7 +364,6 @@ class MenuController extends GetxController {
 
       final Map<String, dynamic> response;
 
-      // Check if imageUrl is a local file path (for picked images)
       bool isLocalFile =
           imageUrl != null &&
           !imageUrl.startsWith('http://') &&
@@ -381,7 +373,6 @@ class MenuController extends GetxController {
       print('Is local file: $isLocalFile');
 
       if (isLocalFile) {
-        // Upload local file
         print('Uploading local file: $imageUrl');
         final fields = {
           '_method': 'PUT',
@@ -400,7 +391,6 @@ class MenuController extends GetxController {
           token: token,
         );
       } else {
-        // Send as regular data (including URL images)
         print('Sending as data with imageUrl: $imageUrl');
         final data = {
           'name': name,
@@ -545,14 +535,12 @@ class MenuController extends GetxController {
         print('Failed to fetch merchants: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to load merchants';
 
-        // Fallback: Extract unique merchants from existing menus
         _extractMerchantsFromMenus();
       }
     } catch (e) {
       print('Error fetching merchants: $e');
       _errorMessage.value = 'Error loading merchants: $e';
 
-      // Fallback: Extract unique merchants from existing menus
       _extractMerchantsFromMenus();
     }
   }
@@ -566,7 +554,7 @@ class MenuController extends GetxController {
         if (menu.penjualId != null) {
           merchantMap[menu.penjualId!] = Merchant(
             id: menu.penjualId!,
-            name: 'Kantin ${menu.penjualId}', // Default name
+            name: 'Kantin ${menu.penjualId}', 
             description: 'Delicious food from our kitchen',
             imageUrl: null,
           );

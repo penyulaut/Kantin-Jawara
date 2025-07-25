@@ -34,24 +34,20 @@ class CategoryController extends GetxController {
         final dynamic data = response['data'];
 
         if (data is List) {
-          // Data is already a list
           _categories.value = data
               .map((json) => Category.fromJson(json))
               .toList();
         } else if (data is Map && data.containsKey('categories')) {
-          // Data is wrapped in an object with 'categories' key
           final List<dynamic> categoryData = data['categories'];
           _categories.value = categoryData
               .map((json) => Category.fromJson(json))
               .toList();
         } else if (data is Map && data.containsKey('data')) {
-          // Data is wrapped in an object with 'data' key
           final List<dynamic> categoryData = data['data'];
           _categories.value = categoryData
               .map((json) => Category.fromJson(json))
               .toList();
         } else {
-          // Fallback: empty list
           _categories.value = [];
         }
       } else {
@@ -87,7 +83,7 @@ class CategoryController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchCategories(); // Refresh list
+        await fetchCategories(); 
         Get.snackbar('Success', 'Category created successfully');
         return true;
       } else {
@@ -123,7 +119,7 @@ class CategoryController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchCategories(); // Refresh list
+        await fetchCategories(); 
         Get.snackbar('Success', 'Category updated successfully');
         return true;
       } else {
@@ -158,7 +154,7 @@ class CategoryController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchCategories(); // Refresh list
+        await fetchCategories(); 
         Get.snackbar('Success', 'Category deleted successfully');
         return true;
       } else {

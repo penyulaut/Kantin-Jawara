@@ -45,10 +45,8 @@ class ChatController extends GetxController {
         final responseData = response['data'];
         List<dynamic> chatListData = [];
 
-        // Handle response data structure
         if (responseData is Map) {
           if (responseData.containsKey('chats')) {
-            // API returns {"success": true, "data": {"chats": [...]}}
             final chatsData = responseData['chats'];
             if (chatsData is List) {
               chatListData = chatsData;
@@ -61,7 +59,6 @@ class ChatController extends GetxController {
             );
           }
         } else if (responseData is List) {
-          // Direct list format
           chatListData = responseData;
         } else {
           print('ChatController: Unexpected response format: $responseData');
@@ -119,7 +116,6 @@ class ChatController extends GetxController {
       }
     } catch (e) {
       print('Error fetching unread count: $e');
-      // Set default value when API fails
       _unreadCount.value = 0;
     }
   }
@@ -149,11 +145,9 @@ class ChatController extends GetxController {
         if (responseData is Map) {
           List<Chat> chats = [];
 
-          // Handle the structure: {"transaction": {...}, "chats": {"data": [...]}, "unread_count": 0}
           if (responseData.containsKey('chats')) {
             final chatsSection = responseData['chats'];
             if (chatsSection is Map && chatsSection.containsKey('data')) {
-              // Paginated response format
               final List<dynamic> chatData =
                   chatsSection['data'] as List<dynamic>? ?? [];
               chats = chatData
@@ -171,7 +165,6 @@ class ChatController extends GetxController {
                   .cast<Chat>()
                   .toList();
             } else if (chatsSection is List) {
-              // Direct list format
               chats = chatsSection
                   .map((json) {
                     try {
@@ -325,7 +318,6 @@ class ChatController extends GetxController {
     _unreadCount.value = 0;
   }
 
-  // Get unread count for a specific transaction
   int getUnreadCountForTransaction(int transactionId) {
     final chatItem = _chatList.firstWhereOrNull(
       (item) => item.transactionId == transactionId,
@@ -333,12 +325,10 @@ class ChatController extends GetxController {
     return chatItem?.unreadCount ?? 0;
   }
 
-  // Check if transaction has unread messages
   bool hasUnreadMessages(int transactionId) {
     return getUnreadCountForTransaction(transactionId) > 0;
   }
 
-  // Get total unread count for seller (all transactions)
   int getTotalUnreadCount() {
     return _chatList.fold(0, (sum, item) => sum + item.unreadCount);
   }

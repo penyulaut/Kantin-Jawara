@@ -29,7 +29,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
 
     menuController = Get.find<menu_ctrl.MenuController>();
     cartController = Get.find<CartController>();
-    // Try to find existing CategoryController, if not found, create one
     if (Get.isRegistered<CategoryController>()) {
       categoryController = Get.find<CategoryController>();
     } else {
@@ -37,10 +36,8 @@ class _MenuListScreenState extends State<MenuListScreen> {
     }
     searchController = TextEditingController();
 
-    // Schedule role validation after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateAccess();
-      // Also refresh cart when menu screen is accessed
       print('MenuListScreen: Refreshing cart from initState...');
       cartController.refreshCart();
     });
@@ -50,7 +47,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
     if (!RoleValidator.pembeliOnly(
       customMessage: 'Only buyers can access the menu',
     )) {
-      // Access denied, user will be redirected
       return;
     }
   }
@@ -89,7 +85,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
             child: TextField(
               controller: searchController,
               decoration: InputDecoration(
-                hintText: 'Search menu...',
+                hintText: 'Cari menu disini bro...',
                 prefixIcon: Icon(Icons.search, color: AppTheme.royalBlueDark),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(25),
@@ -106,7 +102,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
                 fillColor: AppTheme.royalBlueDark.withOpacity(0.05),
               ),
               onChanged: (value) {
-                // Implement search functionality
                 menuController.searchMenus(value);
               },
             ),
@@ -119,7 +114,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
             );
             print('Selected merchant ID: ${menuController.selectedMerchantId}');
             return Container(
-              height: 140, // Increased height to prevent overflow
+              height: 140, 
               padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +122,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(
-                      'Choose Warung (${menuController.merchants.length} available)',
+                      'Pilih Kantin (${menuController.merchants.length} Tersedia)',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -143,14 +138,14 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         if (index == 0) {
                           return _buildMerchantCard(
                             isSelected: menuController.selectedMerchantId == 0,
-                            name: 'All Warung',
-                            description: 'View all menus',
+                            name: 'Semua Kantin',
+                            description: 'Lihat Semua Kantin',
                             imageUrl: null,
                             onTap: () {
                               print('Tapping All Warung card');
                               menuController.setSelectedMerchant(
                                 0,
-                              ); // Use setSelectedMerchant instead of clearFilters
+                              );  
                             },
                           );
                         }
@@ -161,7 +156,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               menuController.selectedMerchantId == merchant.id,
                           name: merchant.name,
                           description:
-                              merchant.description ?? 'Great food awaits!',
+                              merchant.description ?? 'Yu Pesen disini',
                           imageUrl: merchant.imageUrl,
                           onTap: () {
                             print(
@@ -187,7 +182,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Categories',
+                    'Kategori',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -205,10 +200,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
                             padding: const EdgeInsets.only(right: 8),
                             child: FilterChip(
                               key: const ValueKey('filter_all'),
-                              label: const Text('All'),
+                              label: const Text('Semua'),
                               selected: menuController.selectedCategoryId == 0,
                               onSelected: (selected) {
-                                // Always set to "All" when tapped
                                 menuController.setSelectedCategory(0);
                               },
                               selectedColor: AppTheme.royalBlueDark,
@@ -234,15 +228,11 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                 menuController.selectedCategoryId ==
                                 category.id,
                             onSelected: (selected) {
-                              if (category.id != null) {
-                                // Toggle behavior: if currently selected, deselect to "All"
-                                // If not selected, select this category
+                              if (category.id != null) {                             
                                 if (menuController.selectedCategoryId ==
                                     category.id) {
-                                  // Currently selected, go back to "All"
                                   menuController.setSelectedCategory(0);
                                 } else {
-                                  // Not selected, select this category
                                   menuController.setSelectedCategory(
                                     category.id!,
                                   );
@@ -357,7 +347,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'No menu items found',
+                        'Ga nemu menu nih!!',
                         style: TextStyle(
                           fontSize: 18,
                           color: AppTheme.royalBlueDark,
@@ -366,7 +356,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Try adjusting your search or filters',
+                        'Coba sesuaikan pencarian atau filter Anda',
                         style: TextStyle(
                           fontSize: 14,
                           color: AppTheme.mediumGray,
@@ -387,7 +377,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 0.8, // Adjusted ratio to prevent overflow
+                    childAspectRatio: 0.8, 
                   ),
                   itemCount: menuController.filteredMenus.length,
                   itemBuilder: (context, index) {
@@ -597,7 +587,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Stock: ${menu.stock}',
+                          'Stok: ${menu.stock}',
                           style: TextStyle(
                             fontSize: 11,
                             color: menu.stock > 0
@@ -660,7 +650,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               ),
                             ),
                             child: const Text(
-                              'Buy',
+                              'Beli',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
@@ -686,7 +676,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
       return;
     }
 
-    // Use CartController to add item to cart via API
     await cartController.quickAddToCart(menu);
   }
 
@@ -696,12 +685,10 @@ class _MenuListScreenState extends State<MenuListScreen> {
       return;
     }
 
-    // Create a single item cart for immediate checkout
     final buyNowCartItems = <Map<String, dynamic>>[
       {'menu_id': menu.id, 'menu': menu, 'quantity': 1, 'price': menu.price},
     ].obs;
 
-    // Navigate directly to checkout
     Get.to(() => CheckoutScreen(cartItems: buyNowCartItems));
   }
 
@@ -745,11 +732,10 @@ class _MenuListScreenState extends State<MenuListScreen> {
           padding: const EdgeInsets.all(8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min, // Prevent overflow
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Avatar/Icon
               Container(
-                width: 36, // Slightly smaller icon
+                width: 36, 
                 height: 36,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
@@ -782,8 +768,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         size: 20,
                       ),
               ),
-              const SizedBox(height: 6), // Reduced spacing
-              // Name
+              const SizedBox(height: 6), 
               Flexible(
                 child: Text(
                   name,
@@ -796,12 +781,11 @@ class _MenuListScreenState extends State<MenuListScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              // Description
               Flexible(
                 child: Text(
                   description,
                   style: TextStyle(
-                    fontSize: 9, // Slightly smaller font
+                    fontSize: 9, 
                     color: isSelected
                         ? Colors.white.withOpacity(0.8)
                         : AppTheme.mediumGray,

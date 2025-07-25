@@ -45,7 +45,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orders'),
+        title: const Text('Pesanan'),
         backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: AppTheme.white,
         automaticallyImplyLeading: false,
@@ -142,7 +142,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Loading orders...',
+                            'Memuat pesanan...',
                             style: TextStyle(
                               color: AppTheme.mediumGray,
                               fontSize: 14,
@@ -228,7 +228,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                           const SizedBox(height: 24),
                           Text(
                             controller.selectedStatus.value == null
-                                ? 'No orders yet'
+                                ? 'Belum ada pesanan'
                                 : 'No ${controller.selectedStatus.value.toString().split('.').last} orders',
                             style: TextStyle(
                               fontSize: 20,
@@ -239,8 +239,8 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                           const SizedBox(height: 8),
                           Text(
                             controller.selectedStatus.value == null
-                                ? 'Your orders will appear here'
-                                : 'Try changing the filter or check back later',
+                                ? 'Pesanan Anda akan muncul di sini'
+                                : 'Coba ganti filter atau periksa lagi nanti',
                             style: TextStyle(
                               fontSize: 14,
                               color: AppTheme.mediumGray,
@@ -252,7 +252,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                             TextButton(
                               onPressed: () => controller.setStatusFilter(null),
                               child: Text(
-                                'Show All Orders',
+                                'Tampilkan Semua Pesanan',
                                 style: TextStyle(
                                   color: AppTheme.royalBlueDark,
                                   fontWeight: FontWeight.w600,

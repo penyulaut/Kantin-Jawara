@@ -10,20 +10,17 @@ class AuthController extends GetxController {
   final ApiService _apiService = ApiService();
   final AuthService _authService = AuthService();
 
-  // Observable states
   final Rx<AuthStatus> _authStatus = AuthStatus.unauthenticated.obs;
   final Rx<User?> _currentUser = Rx<User?>(null);
   final RxString _errorMessage = ''.obs;
   final RxBool _isLoading = false.obs;
 
-  // Getters
   AuthStatus get authStatus => _authStatus.value;
   User? get currentUser => _currentUser.value;
   String get errorMessage => _errorMessage.value;
   bool get isLoading => _isLoading.value;
 
   bool get isLoggedIn {
-    // For synchronous getter, we'll check if currentUser exists
     return _currentUser.value != null;
   }
 
@@ -64,11 +61,9 @@ class AuthController extends GetxController {
           'AuthController: Token extracted: ${token != null ? "YES (${token.substring(0, 20)}...)" : "NO"}',
         );
 
-        // Save user data and token
         await _authService.saveUser(user);
         await _authService.saveToken(token);
 
-        // Verify saved token
         final savedToken = await _authService.getToken();
         print(
           'AuthController: Token saved successfully: ${savedToken != null}',
@@ -83,12 +78,10 @@ class AuthController extends GetxController {
           snackPosition: SnackPosition.TOP,
         );
 
-        // Refresh cart data for pembeli users after successful login
         if (user.role == 'pembeli') {
           try {
             if (Get.isRegistered<CartController>()) {
               final cartController = Get.find<CartController>();
-              // Delay to ensure token is properly saved
               Future.delayed(const Duration(milliseconds: 500), () {
                 cartController.refreshCart();
               });
@@ -98,7 +91,6 @@ class AuthController extends GetxController {
           }
         }
 
-        // Navigate based on user role
         _navigateBasedOnRole(user.role ?? 'pembeli');
       } else {
         _errorMessage.value = result['message'];
@@ -146,7 +138,6 @@ class AuthController extends GetxController {
         final user = User.fromJson(userData['user'] ?? userData);
         final token = userData['token'] ?? userData['access_token'];
 
-        // Save user data and token
         await _authService.saveUser(user);
         await _authService.saveToken(token);
 
@@ -200,7 +191,6 @@ class AuthController extends GetxController {
         snackPosition: SnackPosition.TOP,
       );
 
-      // Navigate to login screen
       Get.offAllNamed('/login');
     } catch (e) {
       Get.snackbar(
@@ -290,7 +280,6 @@ class AuthController extends GetxController {
       );
 
       if (result['success']) {
-        // Success will be handled in ProfileScreen with auto logout
         return true;
       } else {
         _errorMessage.value = result['message'];
@@ -366,13 +355,11 @@ class AuthController extends GetxController {
     _errorMessage.value = '';
   }
 
-  // Method untuk clear error saat navigasi
   void clearErrorOnNavigation() {
     _errorMessage.value = '';
     _isLoading.value = false;
   }
 
-  // Method untuk initial check (tanpa auto navigate)
   Future<bool> checkInitialAuthStatus() async {
     try {
       final isLoggedIn = await _authService.isLoggedIn();
@@ -416,7 +403,6 @@ class AuthController extends GetxController {
     }
   }
 
-  /// Handle unauthorized access - clear session and redirect to login
   Future<void> handleUnauthorizedAccess({
     String reason = 'Unauthorized access',
   }) async {
@@ -436,7 +422,6 @@ class AuthController extends GetxController {
     Get.offAllNamed('/login');
   }
 
-  /// Clear user data without API call (for local logout)
   Future<void> clearUserData() async {
     await _authService.clearUserData();
     _currentUser.value = null;

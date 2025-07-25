@@ -335,7 +335,7 @@ class ChatListScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'No messages yet',
+                          'Belum ada pesan',
                           style: TextStyle(
                             fontSize: 12,
                             color: AppTheme.mediumGray,
@@ -357,7 +357,7 @@ class ChatListScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '${chatItem.unreadCount} unread',
+                        '${chatItem.unreadCount} Belum dibaca',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,

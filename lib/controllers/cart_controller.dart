@@ -30,12 +30,9 @@ class CartController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
-    // Don't auto-fetch here since it might be called before auth is ready
-    // Let the dashboard handle the initial fetch
+    super.onInit();    
   }
 
-  // Fetch cart items from API
   Future<void> fetchCart() async {
     try {
       print('CartController: Starting fetchCart...');
@@ -45,7 +42,7 @@ class CartController extends GetxController {
       final token = await _authService.getToken();
       if (token == null) {
         print('CartController: No token available, user not authenticated');
-        _cartItems.clear(); // Clear cart items if not authenticated
+        _cartItems.clear();
         return;
       }
 
@@ -61,21 +58,16 @@ class CartController extends GetxController {
         final responseData = response['data'];
         final List<dynamic> cartData;
 
-        // Handle nested response structure
         if (responseData is Map && responseData.containsKey('data')) {
-          // Nested structure: {"success": true, "data": {"message": "...", "data": [...]}}
           cartData = responseData['data'] ?? [];
         } else if (responseData is List) {
-          // Direct array: {"success": true, "data": [...]}
           cartData = responseData;
         } else {
-          // Unknown structure
           cartData = [];
         }
 
         print('CartController: Raw cart data: $cartData');
 
-        // Flatten cart items from all carts
         final List<Map<String, dynamic>> allCartItems = [];
 
         for (final cart in cartData) {
@@ -89,7 +81,6 @@ class CartController extends GetxController {
               final merchantIdFromCart =
                   int.tryParse(cart['merchant_id'].toString()) ?? 0;
 
-              // Debug logging for merchant_id type consistency
               print(
                 'CartController: Adding item with merchant_id: $merchantIdFromCart (type: ${merchantIdFromCart.runtimeType})',
               );
@@ -98,7 +89,6 @@ class CartController extends GetxController {
                   ? Menu.fromJson(item['menu'])
                   : null;
 
-              // Debug: Log menu image URL
               if (menuData != null) {
                 print(
                   'CartController: Item ${item['id']} - Menu: ${menuData.name}, Image: ${menuData.imageUrl}',
@@ -123,7 +113,6 @@ class CartController extends GetxController {
         _cartItems.value = allCartItems;
         print('CartController: Cart updated with ${allCartItems.length} items');
 
-        // Debug: Print each cart item
         for (int i = 0; i < allCartItems.length; i++) {
           final item = allCartItems[i];
           final menu = item['menu'] as Menu?;
@@ -144,7 +133,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Add item to cart via API
   Future<bool> addToCart({
     required int menuId,
     required int quantity,
@@ -170,7 +158,6 @@ class CartController extends GetxController {
       );
 
       if (response['success']) {
-        // Refresh cart after adding
         await fetchCart();
         return true;
       } else {
@@ -189,7 +176,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Update cart item quantity via API
   Future<bool> updateCartItem({
     required int itemId,
     required int quantity,
@@ -213,7 +199,6 @@ class CartController extends GetxController {
       );
 
       if (response['success']) {
-        // Update local cart item
         final index = _cartItems.indexWhere(
           (item) => int.tryParse(item['id'].toString()) == itemId,
         );
@@ -240,7 +225,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Remove item from cart via API
   Future<bool> removeFromCart(int itemId) async {
     try {
       _isLoading.value = true;
@@ -258,7 +242,6 @@ class CartController extends GetxController {
       );
 
       if (response['success']) {
-        // Remove from local cart
         _cartItems.removeWhere(
           (item) => int.tryParse(item['id'].toString()) == itemId,
         );
@@ -278,7 +261,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Clear entire cart via API
   Future<bool> clearCart() async {
     try {
       _isLoading.value = true;
@@ -307,7 +289,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Get cart for specific merchant
   Future<List<Map<String, dynamic>>> getCartByMerchant(int merchantId) async {
     try {
       final token = await _authService.getToken();
@@ -321,7 +302,6 @@ class CartController extends GetxController {
         final responseData = response['data'];
         final List<dynamic> cartData;
 
-        // Handle nested response structure
         if (responseData is Map && responseData.containsKey('data')) {
           cartData = responseData['data'] ?? [];
         } else if (responseData is List) {
@@ -330,7 +310,6 @@ class CartController extends GetxController {
           cartData = [];
         }
 
-        // Flatten cart items from all carts for this merchant
         final List<Map<String, dynamic>> merchantCartItems = [];
 
         for (final cart in cartData) {
@@ -343,7 +322,6 @@ class CartController extends GetxController {
                   ? Menu.fromJson(item['menu'])
                   : null;
 
-              // Debug: Log menu image URL for merchant cart
               if (menuData != null) {
                 print(
                   'CartController: Merchant $merchantId - Item ${item['id']} - Menu: ${menuData.name}, Image: ${menuData.imageUrl}',
@@ -375,7 +353,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Checkout specific merchant cart
   Future<bool> checkoutMerchantCart({
     required int merchantId,
     required String customerName,
@@ -407,9 +384,7 @@ class CartController extends GetxController {
       );
 
       if (response['success']) {
-        // Remove checked out items from local cart
         _cartItems.removeWhere((item) {
-          // Use merchant_id from cart data if available, otherwise fallback to menu's penjualId
           int? itemMerchantId = item['merchant_id'];
 
           if (itemMerchantId == null) {
@@ -438,18 +413,15 @@ class CartController extends GetxController {
     }
   }
 
-  // Helper method to safely compare merchant IDs (handles both int and string)
   bool _isSameMerchantId(dynamic id1, dynamic id2) {
     if (id1 == null || id2 == null) return false;
 
-    // Convert both to string for comparison to handle int/string mismatch
     final str1 = id1.toString();
     final str2 = id2.toString();
 
     return str1 == str2;
   }
 
-  // Helper method to group cart items by merchant
   Map<int, List<Map<String, dynamic>>> get cartItemsByMerchant {
     final Map<int, List<Map<String, dynamic>>> grouped = {};
 
@@ -457,12 +429,9 @@ class CartController extends GetxController {
       'CartController: Grouping ${cartItems.length} cart items by merchant...',
     );
 
-    // Use the observable cartItems getter to ensure reactivity
     for (final item in cartItems) {
-      // Use merchant_id from cart data if available, otherwise fallback to menu's penjualId
       int? merchantId;
 
-      // Try to get merchant_id from item data
       if (item['merchant_id'] != null) {
         merchantId = int.tryParse(item['merchant_id'].toString());
         print(
@@ -470,7 +439,6 @@ class CartController extends GetxController {
         );
       }
 
-      // Fallback to menu's penjualId if merchant_id is not available
       if (merchantId == null) {
         final menu = item['menu'] as Menu?;
         merchantId = menu?.penjualId;
@@ -488,7 +456,6 @@ class CartController extends GetxController {
           'CartController: Added item ${item['id']} to merchant group $merchantId',
         );
       } else {
-        // If no merchant ID found, log for debugging
         print(
           'CartController: WARNING - No merchant ID found for item: ${item['id']}',
         );
@@ -501,12 +468,10 @@ class CartController extends GetxController {
     return grouped;
   }
 
-  // Get cart item count for badge
   int getCartItemCount() {
     return totalItems;
   }
 
-  // Quick add to cart with success message
   Future<void> quickAddToCart(Menu menu, {int quantity = 1}) async {
     final success = await addToCart(
       menuId: menu.id!,
@@ -526,7 +491,6 @@ class CartController extends GetxController {
     }
   }
 
-  // Force refresh cart - useful for UI refreshes
   Future<void> refreshCart() async {
     print('CartController: Force refreshing cart...');
     await fetchCart();

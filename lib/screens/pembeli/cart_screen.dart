@@ -14,7 +14,7 @@ class CartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
+        title: const Text('Keranjang Belanja'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -31,12 +31,12 @@ class CartScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16),
                 Text(
-                  'Your cart is empty',
+                  'Keranjang Anda kosong',
                   style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Add some delicious items to get started',
+                  'Tambahkan beberapa item lezat untuk memulai',
                   style: TextStyle(fontSize: 14, color: Colors.grey),
                 ),
               ],
@@ -61,7 +61,6 @@ class CartScreen extends StatelessWidget {
               ),
             ),
 
-            // Total and Checkout
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -139,7 +138,6 @@ class CartScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Image
             Container(
               width: 60,
               height: 60,
@@ -165,7 +163,6 @@ class CartScreen extends StatelessWidget {
             ),
             const SizedBox(width: 12),
 
-            // Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -187,7 +184,6 @@ class CartScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Quantity Controls
                   Row(
                     children: [
                       IconButton(
@@ -255,7 +251,6 @@ class CartScreen extends StatelessWidget {
     final int currentQuantity = cartItem['quantity'];
 
     if (currentQuantity < menu.stock) {
-      // If cart item has an ID (from API), update via API
       if (cartItem.containsKey('id') && cartItem['id'] != null) {
         final success = await cartController.updateCartItem(
           itemId: cartItem['id'],
@@ -266,12 +261,11 @@ class CartScreen extends StatelessWidget {
           cartItems.refresh();
         }
       } else {
-        // Local cart item, update directly
         cartItems[index]['quantity']++;
         cartItems.refresh();
       }
     } else {
-      Get.snackbar('Error', 'Cannot exceed available stock');
+      Get.snackbar('Error', 'Tidak dapat melebihi stok yang tersedia');
     }
   }
 
@@ -280,7 +274,6 @@ class CartScreen extends StatelessWidget {
     final int currentQuantity = cartItem['quantity'];
 
     if (currentQuantity > 1) {
-      // If cart item has an ID (from API), update via API
       if (cartItem.containsKey('id') && cartItem['id'] != null) {
         final success = await cartController.updateCartItem(
           itemId: cartItem['id'],
@@ -291,7 +284,6 @@ class CartScreen extends StatelessWidget {
           cartItems.refresh();
         }
       } else {
-        // Local cart item, update directly
         cartItems[index]['quantity']--;
         cartItems.refresh();
       }
@@ -301,25 +293,24 @@ class CartScreen extends StatelessWidget {
   void _removeItem(int index) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Remove Item'),
+        title: const Text('Hapus Item'),
         content: const Text(
-          'Are you sure you want to remove this item from cart?',
+          'Apakah Anda yakin ingin menghapus item ini dari keranjang?',
         ),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               final cartItem = cartItems[index];
 
-              // If cart item has an ID (from API), remove via API
               if (cartItem.containsKey('id') && cartItem['id'] != null) {
                 final success = await cartController.removeFromCart(
                   cartItem['id'],
                 );
                 if (success) {
                   cartItems.removeAt(index);
-                  Get.back(); // Close dialog
+                  Get.back(); 
                   Get.snackbar(
                     'Removed',
                     'Item berhasil dihapus dari keranjang',
@@ -330,7 +321,7 @@ class CartScreen extends StatelessWidget {
                     icon: const Icon(Icons.check_circle, color: Colors.white),
                   );
                 } else {
-                  Get.back(); // Close dialog
+                  Get.back(); 
                   Get.snackbar(
                     'Error',
                     'Gagal menghapus item dari keranjang',
@@ -342,9 +333,8 @@ class CartScreen extends StatelessWidget {
                   );
                 }
               } else {
-                // Local cart item, remove directly
                 cartItems.removeAt(index);
-                Get.back(); // Close dialog
+                Get.back(); 
                 Get.snackbar(
                   'Removed',
                   'Item berhasil dihapus dari keranjang',

@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../models/transaction.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
-import '../utils/enums.dart';
+// import '../utils/enums.dart';
 
 class PenjualController extends GetxController {
   final ApiService _apiService = ApiService();

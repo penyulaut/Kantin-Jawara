@@ -26,7 +26,6 @@ class AdminController extends GetxController {
     fetchDashboardStats();
   }
 
-  // Fetch dashboard statistics
   Future<void> fetchDashboardStats() async {
     Map<String, dynamic>? response;
     try {
@@ -44,7 +43,6 @@ class AdminController extends GetxController {
       if (response['success'] == true) {
         final dynamic data = response['data'];
         if (data is Map<String, dynamic>) {
-          // Parse the new dashboard format
           Map<String, dynamic> stats = {};
 
           if (data.containsKey('users')) {
@@ -98,7 +96,6 @@ class AdminController extends GetxController {
     }
   }
 
-  // Fetch all users
   Future<void> fetchUsers() async {
     Map<String, dynamic>? response;
     try {
@@ -117,18 +114,14 @@ class AdminController extends GetxController {
         final dynamic data = response['data'];
 
         if (data is List) {
-          // Data is already a list
           _users.value = data.map((json) => User.fromJson(json)).toList();
         } else if (data is Map && data.containsKey('users')) {
-          // Data is wrapped in an object with 'users' key
           final List<dynamic> userData = data['users'];
           _users.value = userData.map((json) => User.fromJson(json)).toList();
         } else if (data is Map && data.containsKey('data')) {
-          // Data is wrapped in an object with 'data' key
           final List<dynamic> userData = data['data'];
           _users.value = userData.map((json) => User.fromJson(json)).toList();
         } else {
-          // Fallback: treat single user as list
           _users.value = [User.fromJson(data)];
         }
       } else {
@@ -146,7 +139,6 @@ class AdminController extends GetxController {
     }
   }
 
-  // Fetch user details by ID
   Future<User?> getUserDetails(int userId) async {
     try {
       _isLoading.value = true;
@@ -178,7 +170,6 @@ class AdminController extends GetxController {
     }
   }
 
-  // Fetch all transactions
   Future<void> fetchTransactions() async {
     try {
       _isLoading.value = true;
@@ -203,7 +194,6 @@ class AdminController extends GetxController {
         print('Debug - Raw data: $data');
 
         if (data is Map<String, dynamic>) {
-          // Check if data contains nested 'data' key (Laravel pagination response)
           if (data.containsKey('data')) {
             final dynamic transactionList = data['data'];
             if (transactionList is List) {
@@ -231,7 +221,6 @@ class AdminController extends GetxController {
             _errorMessage.value = 'Invalid response structure';
           }
         } else if (data is List) {
-          // Direct list response
           _transactions.value = data
               .map((json) {
                 try {
@@ -259,11 +248,10 @@ class AdminController extends GetxController {
       print('Debug - fetchTransactions error: $e');
     } finally {
       _isLoading.value = false;
-      update(); // Update UI after data change
+      update(); 
     }
   }
 
-  // Fetch transaction details by ID
   Future<Transaction?> getTransactionDetails(int transactionId) async {
     try {
       _isLoading.value = true;
@@ -295,12 +283,10 @@ class AdminController extends GetxController {
     }
   }
 
-  // Filter users by role
   List<User> getUsersByRole(String role) {
     return _users.where((user) => user.role == role).toList();
   }
 
-  // Get transaction statistics
   Map<String, int> getTransactionStatistics() {
     final stats = <String, int>{};
     for (final transaction in _transactions) {
@@ -310,7 +296,6 @@ class AdminController extends GetxController {
     return stats;
   }
 
-  // Get revenue statistics
   double getTotalRevenue() {
     return _transactions
         .where(
@@ -320,7 +305,6 @@ class AdminController extends GetxController {
         .fold(0.0, (sum, transaction) => sum + transaction.totalPrice);
   }
 
-  // Get user count by role
   Map<String, int> getUserCountByRole() {
     final counts = <String, int>{};
     for (final user in _users) {
@@ -330,7 +314,6 @@ class AdminController extends GetxController {
     return counts;
   }
 
-  // Update user
   Future<bool> updateUser({
     required int userId,
     required String name,
@@ -354,7 +337,6 @@ class AdminController extends GetxController {
       );
 
       if (response['success'] == true) {
-        // Refresh users list after successful update
         await fetchUsers();
         return true;
       } else {
@@ -370,7 +352,6 @@ class AdminController extends GetxController {
     }
   }
 
-  // Change user password
   Future<bool> changeUserPassword({
     required int userId,
     required String newPassword,
@@ -407,7 +388,6 @@ class AdminController extends GetxController {
     }
   }
 
-  // Toggle user status
   Future<bool> toggleUserStatus(int userId) async {
     try {
       _isLoading.value = true;
@@ -426,7 +406,6 @@ class AdminController extends GetxController {
       );
 
       if (response['success'] == true) {
-        // Refresh users list after successful status toggle
         await fetchUsers();
         return true;
       } else {
@@ -443,7 +422,6 @@ class AdminController extends GetxController {
     }
   }
 
-  // Delete user
   Future<bool> deleteUser(int userId) async {
     try {
       _isLoading.value = true;
@@ -461,7 +439,6 @@ class AdminController extends GetxController {
       );
 
       if (response['success'] == true) {
-        // Refresh users list after successful deletion
         await fetchUsers();
         return true;
       } else {
