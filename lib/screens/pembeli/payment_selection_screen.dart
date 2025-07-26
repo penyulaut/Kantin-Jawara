@@ -24,7 +24,6 @@ class PaymentSelectionScreen extends StatefulWidget {
 }
 
 class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
-  // Local state for merchant payment methods (not from PaymentController)
   final RxList<MerchantPaymentMethod> _merchantPaymentMethods =
       <MerchantPaymentMethod>[].obs;
   final RxBool _isLoading = false.obs;
@@ -34,7 +33,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
   Widget build(BuildContext context) {
     final PaymentController controller = Get.put(PaymentController());
 
-    // Load merchant's specific available payment methods
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadMerchantPaymentMethods(controller);
     });
@@ -48,7 +46,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
       ),
       body: Column(
         children: [
-          // Amount Display
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -82,7 +79,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             ),
           ),
 
-          // Payment Methods List
           Expanded(
             child: Obx(() {
               if (_isLoading.value) {
@@ -244,7 +240,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
           ),
           child: Row(
             children: [
-              // Payment Method Icon
               Container(
                 width: 56,
                 height: 56,
@@ -271,7 +266,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
               ),
               const SizedBox(width: 16),
 
-              // Payment Method Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,7 +315,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                 ),
               ),
 
-              // Arrow Icon
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -374,7 +367,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header
             Row(
               children: [
                 Container(
@@ -420,7 +412,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Payment Details
             Text(
               'Detail Pembayaran',
               style: TextStyle(
@@ -452,7 +443,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
 
             const SizedBox(height: 20),
 
-            // Action Buttons
             Row(
               children: [
                 Expanded(
@@ -485,7 +475,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                           merchantPaymentMethod,
                         );
                       } else {
-                        // Default action - show payment proof upload
                         _showPaymentProofUpload(
                           paymentMethod,
                           merchantPaymentMethod,
@@ -555,7 +544,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                 if (copyable) ...[
                   InkWell(
                     onTap: () {
-                      // Copy to clipboard functionality
                       Get.snackbar(
                         'Copied',
                         'Nomor akun disalin ke papan klip',
@@ -591,7 +579,6 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
     PaymentMethod paymentMethod,
     MerchantPaymentMethod merchantPaymentMethod,
   ) {
-    // This would navigate to a payment proof upload screen
     Get.snackbar(
       'Pembayaran Dipilih',
       'Terpilih ${paymentMethod.name}. Fitur unggah bukti pembayaran akan segera hadir!',
@@ -602,28 +589,18 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
     );
   }
 
-  // Load payment methods specific to this merchant using efficient endpoint
   Future<void> _loadMerchantPaymentMethods(PaymentController controller) async {
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
 
-      // print(
-      // 'PaymentSelectionScreen: Loading payment methods for merchant: ${widget.merchantId}',
-      // );
       final availablePaymentMethods = await controller
           .getAvailablePaymentMethodsWithFallback(widget.merchantId);
 
-      // print(
-      // 'PaymentSelectionScreen: Found ${availablePaymentMethods.length} payment methods for merchant ${widget.merchantId}',
-      // );
 
-      // Update local state instead of controller state
       _merchantPaymentMethods.value = availablePaymentMethods;
     } catch (e) {
-      // Error handling
       _errorMessage.value = 'Failed to load payment methods: $e';
-      // print('Error loading merchant payment methods: $e');
     } finally {
       _isLoading.value = false;
     }

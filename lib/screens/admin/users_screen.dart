@@ -17,7 +17,6 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   void initState() {
     super.initState();
-    // Defer the API call to avoid calling during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchUsers();
     });
@@ -119,7 +118,6 @@ class _UsersScreenState extends State<UsersScreen> {
         backgroundColor: AppTheme.white,
         child: Column(
           children: [
-            // Statistics Cards
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -253,7 +251,6 @@ class _UsersScreenState extends State<UsersScreen> {
                 );
               }),
             ),
-            // Users List
             Expanded(
               child: Obx(() {
                 if (controller.isLoading) {

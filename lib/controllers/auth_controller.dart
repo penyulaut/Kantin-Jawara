@@ -47,27 +47,18 @@ class AuthController extends GetxController {
       _authStatus.value = AuthStatus.loading;
 
       final result = await _apiService.login(email: email, password: password);
-      // print('AuthController: Login response: $result');
 
       if (result['success']) {
         final userData = result['data'];
-        // print('AuthController: User data: $userData');
 
         final user = User.fromJson(userData['user'] ?? userData);
         final token = userData['token'] ?? userData['access_token'];
 
-        // print('AuthController: Parsed user: ${user.toJson()}');
-        // print(
-        // 'AuthController: Token extracted: ${token != null ? "YES (${token.substring(0, 20)}...)" : "NO"}',
-        // );
 
         await _authService.saveUser(user);
         await _authService.saveToken(token);
 
         final savedToken = await _authService.getToken();
-        // print(
-        // 'AuthController: Token saved successfully: ${savedToken != null}',
-        // );
 
         _currentUser.value = user;
         _authStatus.value = AuthStatus.authenticated;
@@ -87,7 +78,6 @@ class AuthController extends GetxController {
               });
             }
           } catch (e) {
-            // print('AuthController: Error refreshing cart after login: $e');
           }
         }
 
@@ -227,14 +217,11 @@ class AuthController extends GetxController {
         await _authService.saveUser(updatedUser);
         _currentUser.value = updatedUser;
 
-        // print('AuthController: Profile fetched and updated successfully');
       } else {
         _errorMessage.value = result['message'];
-        // print('AuthController: Failed to fetch profile: ${result['message']}');
       }
     } catch (e) {
       _errorMessage.value = 'An unexpected error occurred';
-      // print('AuthController: Error fetching profile: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -417,24 +404,19 @@ class AuthController extends GetxController {
   }
 
   void _navigateBasedOnRole(String role) {
-    // print('AuthController: Navigating based on role: "$role"');
     switch (role.toLowerCase()) {
       case 'admin':
-        // print('AuthController: Navigating to /admin');
         Get.offAllNamed('/admin');
         break;
       case 'pembeli':
       case 'buyer':
-        // print('AuthController: Navigating to /pembeli');
         Get.offAllNamed('/pembeli');
         break;
       case 'penjual':
       case 'seller':
-        // print('AuthController: Navigating to /penjual');
         Get.offAllNamed('/penjual');
         break;
       default:
-        // print('AuthController: Unknown role "$role", navigating to /home');
         Get.offAllNamed('/');
         break;
     }
@@ -443,7 +425,6 @@ class AuthController extends GetxController {
   Future<void> handleUnauthorizedAccess({
     String reason = 'Unauthorized access',
   }) async {
-    // print('AuthController: Handling unauthorized access - $reason');
 
     await clearUserData();
 

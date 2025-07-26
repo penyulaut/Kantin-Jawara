@@ -20,7 +20,6 @@ class Payment {
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) {
-    // Handle different field names for proof
     String? proof;
     if (json.containsKey('proof_url') && json['proof_url'] != null) {
       proof = json['proof_url'];

@@ -24,7 +24,6 @@ class MenuDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             Container(
               height: 300,
               width: double.infinity,
@@ -49,7 +48,6 @@ class MenuDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name and Price
                   Text(
                     menu.name,
                     style: const TextStyle(
@@ -68,7 +66,6 @@ class MenuDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Stock
                   Row(
                     children: [
                       Icon(
@@ -87,7 +84,6 @@ class MenuDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Category
                   if (menu.category != null) ...[
                     Row(
                       children: [
@@ -102,7 +98,6 @@ class MenuDetailScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
 
-                  // Description
                   if (menu.description != null &&
                       menu.description!.isNotEmpty) ...[
                     const Text(
@@ -120,7 +115,6 @@ class MenuDetailScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                   ],
 
-                  // Quantity Selector
                   if (menu.stock > 0) ...[
                     const Text(
                       'Quantity',
@@ -183,7 +177,6 @@ class MenuDetailScreen extends StatelessWidget {
               child: Obx(
                 () => Row(
                   children: [
-                    // Add to Cart Button
                     Expanded(
                       child: OutlinedButton(
                         onPressed: () => _addToCart(),
@@ -202,7 +195,6 @@ class MenuDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Buy Now Button
                     Expanded(
                       flex: 2,
                       child: ElevatedButton(
@@ -254,7 +246,6 @@ class MenuDetailScreen extends StatelessWidget {
       return;
     }
 
-    // Use CartController to add item to cart via API
     final success = await cartController.addToCart(
       menuId: menu.id!,
       quantity: quantity.value,
@@ -274,7 +265,6 @@ class MenuDetailScreen extends StatelessWidget {
   }
 
   void _buyNow() {
-    // Create a single item cart for immediate checkout
     final cartItems = <Map<String, dynamic>>[
       {
         'menu_id': menu.id,
@@ -285,7 +275,6 @@ class MenuDetailScreen extends StatelessWidget {
       },
     ].obs;
 
-    // Navigate directly to checkout
     Get.to(() => CheckoutScreen(cartItems: cartItems));
   }
 }

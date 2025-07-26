@@ -11,10 +11,6 @@ class ChatListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final ChatController controller = Get.put(ChatController());
 
-    // Add debug information
-    // print(
-    // 'ChatListScreen: Building screen, controller chat list length: ${controller.chatList.length}',
-    // );
 
     return Scaffold(
       backgroundColor: AppTheme.lightGray.withOpacity(0.1),
@@ -31,7 +27,6 @@ class ChatListScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              // print('ChatListScreen: Manual refresh triggered');
               controller.fetchChatList();
             },
             tooltip: 'Refresh Chats',
@@ -197,10 +192,6 @@ class ChatListScreen extends StatelessWidget {
   }
 
   Widget _buildChatItem(BuildContext context, ChatItem chatItem) {
-    // Add debug information
-    // print(
-    // 'ChatListScreen: Building chat item - Transaction ID: ${chatItem.transactionId}, Status: ${chatItem.transactionStatus}',
-    // );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -220,13 +211,7 @@ class ChatListScreen extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
             onTap: () {
-              // print(
-              // 'ChatListScreen: Tapping on transaction - ID: ${chatItem.transactionId}',
-              // );
 
-              // print(
-              // 'ChatListScreen: Navigating to chat with ID: ${chatItem.transactionId}',
-              // );
 
               try {
                 Get.toNamed(
@@ -234,7 +219,6 @@ class ChatListScreen extends StatelessWidget {
                   arguments: {'transactionId': chatItem.transactionId},
                 );
               } catch (e) {
-                // print('ChatListScreen: Error navigating to chat: $e');
                 Get.snackbar(
                   'Error',
                   'Failed to open chat: $e',

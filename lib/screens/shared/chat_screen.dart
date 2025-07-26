@@ -19,7 +19,6 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Load messages when screen is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchChatMessages(transactionId);
     });
@@ -51,7 +50,6 @@ class ChatScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Messages List
           Expanded(
             child: Obx(() {
               final messages = controller.getChatMessages(transactionId);
@@ -137,7 +135,6 @@ class ChatScreen extends StatelessWidget {
             }),
           ),
 
-          // Message Input
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -153,7 +150,6 @@ class ChatScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Image upload button
                 Container(
                   decoration: BoxDecoration(
                     color: AppTheme.goldenPoppy.withOpacity(0.2),
@@ -250,7 +246,6 @@ class ChatScreen extends StatelessWidget {
   }
 
   Widget _buildMessageBubble(Chat message) {
-    // Check if message is from current user by comparing sender ID
     final currentUserId = authController.currentUser?.id;
     final isFromCurrentUser = message.senderId == currentUserId;
 
@@ -432,7 +427,6 @@ class ChatScreen extends StatelessWidget {
 
   Future<void> _pickAndSendImage() async {
     try {
-      // Request camera permission for camera option
       final cameraPermission = await Permission.camera.request();
       if (cameraPermission.isDenied) {
         Get.snackbar(
@@ -445,7 +439,6 @@ class ChatScreen extends StatelessWidget {
         return;
       }
 
-      // Show options dialog for camera or gallery
       final result = await Get.dialog<ImageSource>(
         AlertDialog(
           title: Text(
@@ -490,7 +483,6 @@ class ChatScreen extends StatelessWidget {
 
       if (pickedFile == null) return;
 
-      // Check file size (max 5MB)
       final file = File(pickedFile.path);
       final fileSize = await file.length();
       if (fileSize > 5 * 1024 * 1024) {
@@ -504,7 +496,6 @@ class ChatScreen extends StatelessWidget {
         return;
       }
 
-      // Show loading indicator
       Get.dialog(
         AlertDialog(
           content: Column(
@@ -529,7 +520,6 @@ class ChatScreen extends StatelessWidget {
         barrierDismissible: false,
       );
 
-      // Send image
       final success = await controller.sendImageMessage(
         transactionId: transactionId,
         imagePath: pickedFile.path,
@@ -538,7 +528,6 @@ class ChatScreen extends StatelessWidget {
             : null,
       );
 
-      // Close loading dialog
       Get.back();
 
       if (success) {
@@ -560,7 +549,6 @@ class ChatScreen extends StatelessWidget {
         );
       }
     } catch (e) {
-      // Close any open dialogs
       if (Get.isDialogOpen == true) Get.back();
 
       Get.snackbar(

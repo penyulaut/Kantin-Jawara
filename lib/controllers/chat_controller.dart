@@ -39,7 +39,6 @@ class ChatController extends GetxController {
       }
 
       final response = await _apiService.get('/chats', token: token);
-      // print('ChatController: Full API response: $response');
 
       if (response['success']) {
         final responseData = response['data'];
@@ -51,21 +50,14 @@ class ChatController extends GetxController {
             if (chatsData is List) {
               chatListData = chatsData;
             } else {
-              // print('ChatController: chats field is not a list: $chatsData');
             }
           } else {
-            // print(
-            // 'ChatController: Response data does not contain chats field: $responseData',
-            // );
           }
         } else if (responseData is List) {
           chatListData = responseData;
         } else {
-          // print('ChatController: Unexpected response format: $responseData');
         }
 
-        // print('ChatController: Processing ${chatListData.length} chat items');
-        // print('ChatController: Raw chat data: $chatListData');
 
         try {
           _chatList.value = chatListData
@@ -73,7 +65,6 @@ class ChatController extends GetxController {
                 if (json is Map<String, dynamic>) {
                   return ChatItem.fromJson(json);
                 } else {
-                  // print('ChatController: Invalid chat item format: $json');
                   return null;
                 }
               })
@@ -81,14 +72,9 @@ class ChatController extends GetxController {
               .cast<ChatItem>()
               .toList();
 
-          // print('ChatController: Processed ${_chatList.length} chat items');
           for (var item in _chatList) {
-            // print(
-            // 'ChatController: Chat item - Transaction ID: ${item.transactionId}, Status: ${item.transactionStatus}',
-            // );
           }
         } catch (e) {
-          // print('ChatController: Error parsing chat items: $e');
           _errorMessage.value = 'Error parsing chat data: $e';
         }
       } else {
@@ -115,7 +101,6 @@ class ChatController extends GetxController {
         _unreadCount.value = response['data']['unread_count'] ?? 0;
       }
     } catch (e) {
-      // print('Error fetching unread count: $e');
       _unreadCount.value = 0;
     }
   }
@@ -136,11 +121,9 @@ class ChatController extends GetxController {
         token: token,
       );
 
-      // print('ChatController: fetchChatMessages response: $response');
 
       if (response['success']) {
         final responseData = response['data'];
-        // print('ChatController: fetchChatMessages responseData: $responseData');
 
         if (responseData is Map) {
           List<Chat> chats = [];
@@ -155,9 +138,6 @@ class ChatController extends GetxController {
                     try {
                       return Chat.fromJson(json);
                     } catch (e) {
-                      // print(
-                      // 'ChatController: Error parsing chat message: $e, JSON: $json',
-                      // );
                       return null;
                     }
                   })
@@ -170,9 +150,6 @@ class ChatController extends GetxController {
                     try {
                       return Chat.fromJson(json);
                     } catch (e) {
-                      // print(
-                      // 'ChatController: Error parsing chat message: $e, JSON: $json',
-                      // );
                       return null;
                     }
                   })
@@ -183,16 +160,9 @@ class ChatController extends GetxController {
           }
 
           _chatsByTransaction[transactionId] = chats;
-          // print(
-          // 'ChatController: Stored ${chats.length} messages for transaction $transactionId',
-          // );
 
-          // Update unread count
           _unreadCount.value = responseData['unread_count'] ?? 0;
         } else {
-          // print(
-          // 'ChatController: Unexpected chat response format: $responseData',
-          // );
           _chatsByTransaction[transactionId] = [];
         }
       } else {
@@ -222,7 +192,6 @@ class ChatController extends GetxController {
       Map<String, dynamic> response;
 
       if (attachmentPath != null && messageType == MessageType.image) {
-        // Use multipart upload for image attachments
         final fields = <String, String>{
           'message_type': messageType.toString().split('.').last,
         };
@@ -239,7 +208,6 @@ class ChatController extends GetxController {
           token: token,
         );
       } else {
-        // Use regular post for text messages
         final data = <String, dynamic>{
           'message_type': messageType.toString().split('.').last,
         };
@@ -255,7 +223,6 @@ class ChatController extends GetxController {
       }
 
       if (response['success']) {
-        // Add the new message to local list
         final newChat = Chat.fromJson(response['data']['chat']);
         if (_chatsByTransaction.containsKey(transactionId)) {
           _chatsByTransaction[transactionId]!.add(newChat);
@@ -263,7 +230,6 @@ class ChatController extends GetxController {
           _chatsByTransaction[transactionId] = [newChat];
         }
 
-        // Refresh chat list to update latest message
         await fetchChatList();
         return true;
       } else {
@@ -301,7 +267,6 @@ class ChatController extends GetxController {
 
       final response = await _apiService.delete('/chats/$chatId', token: token);
       if (response['success']) {
-        // Remove message from local lists
         for (var transactionId in _chatsByTransaction.keys) {
           _chatsByTransaction[transactionId]?.removeWhere(
             (chat) => chat.id == chatId,

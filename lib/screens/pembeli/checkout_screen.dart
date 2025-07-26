@@ -40,7 +40,6 @@ class CheckoutScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Order Summary
             Text(
               'Order Summary',
               style: TextStyle(
@@ -94,7 +93,6 @@ class CheckoutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Customer Information
             Text(
               'Informasi Pembeli  ',
               style: TextStyle(
@@ -144,7 +142,6 @@ class CheckoutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Order Type
             Text(
               'Tipe Pesanan',
               style: TextStyle(
@@ -230,7 +227,6 @@ class CheckoutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Payment Method
             Text(
               'Metode Pembayaran',
               style: TextStyle(
@@ -329,7 +325,6 @@ class CheckoutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Notes
             Text(
               'Catatan (Opsional)',
               style: TextStyle(
@@ -497,7 +492,6 @@ class CheckoutScreen extends StatelessWidget {
   }
 
   void _placeOrder() async {
-    // Validate inputs
     if (customerNameController.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
@@ -531,7 +525,6 @@ class CheckoutScreen extends StatelessWidget {
       return;
     }
 
-    // Prepare items for API
     final List<Map<String, dynamic>> items = cartItems
         .map(
           (item) => {
@@ -542,7 +535,6 @@ class CheckoutScreen extends StatelessWidget {
         )
         .toList();
 
-    // Create transaction
     final success = await pembeliController.createTransaction(
       totalPrice: _calculateTotal(),
       items: items,
@@ -556,39 +548,30 @@ class CheckoutScreen extends StatelessWidget {
     );
 
     if (success) {
-      // Clear cart both locally and through CartController
       cartItems.clear();
       cartController.clearCart();
 
-      // Navigate back to orders
       Get.until((route) => route.isFirst);
     }
   }
 
   void _selectPaymentMethod() {
-    // Get merchant_id from cart data
     int merchantId = 1; // Default fallback
     if (cartItems.isNotEmpty) {
-      // Extract merchant_id from first cart item since all items should be from same merchant
       final firstItem = cartItems.first;
       if (firstItem.containsKey('merchant_id') &&
           firstItem['merchant_id'] != null) {
         merchantId = firstItem['merchant_id'];
-        // print('CheckoutScreen: Found merchant_id directly: $merchantId');
       } else if (firstItem.containsKey('menu')) {
-        // Extract from menu.penjualId
         final menu = firstItem['menu'];
         if (menu is Menu && menu.penjualId != null) {
           merchantId = menu.penjualId!;
-          // print('CheckoutScreen: Using penjualId from menu: $merchantId');
         } else if (menu is Map && menu['penjual_id'] != null) {
           merchantId = int.tryParse(menu['penjual_id'].toString()) ?? 1;
-          // print('CheckoutScreen: Using penjual_id from menu map: $merchantId');
         }
       }
     }
 
-    // print('CheckoutScreen: Using merchant_id: $merchantId for payment methods');
 
     Get.to(
       () => PaymentSelectionScreen(

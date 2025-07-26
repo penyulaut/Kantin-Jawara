@@ -39,7 +39,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Order Status Card
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -109,7 +108,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Payment Proof Section
             if (transaction.paymentProof != null &&
                 transaction.paymentProof!.isNotEmpty) ...[
               Card(
@@ -181,7 +179,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
 
-                        // Payment proof preview
                         GestureDetector(
                           onTap: () {
                             Get.to(
@@ -261,7 +258,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
                                       );
                                     },
                                   ),
-                                  // Overlay with view button
                                   Positioned.fill(
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -313,7 +309,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
 
                         const SizedBox(height: 12),
 
-                        // Verification info
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -373,7 +368,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
               const SizedBox(height: 16),
             ],
 
-            // Order Items
             if (transaction.items != null && transaction.items!.isNotEmpty) ...[
               Card(
                 elevation: 3,
@@ -417,7 +411,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
               const SizedBox(height: 16),
             ],
 
-            // Action Buttons
             _buildActionButtons(controller),
           ],
         ),
@@ -683,7 +676,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Chat button
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(

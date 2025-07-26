@@ -34,7 +34,6 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Initial fetch for menu and cart when dashboard opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeData();
     });
@@ -49,9 +48,7 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    // Refresh cart when app comes back to foreground
     if (state == AppLifecycleState.resumed) {
-      // print('PembeliDashboard: App resumed, refreshing cart...');
       if (authController.isLoggedIn) {
         cartController.refreshCart();
       }
@@ -59,33 +56,19 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
   }
 
   Future<void> _initializeData() async {
-    // Wait for auth to be ready
     await Future.delayed(const Duration(milliseconds: 200));
 
-    // Double check auth status
     if (authController.isLoggedIn && authController.currentUser != null) {
-      // print('PembeliDashboard: User authenticated, initializing data...');
 
-      // Fetch menus first (no auth required)
       menuController.fetchMenus();
 
-      // Then fetch cart (requires auth)
-      // print('PembeliDashboard: Fetching cart...');
       await cartController.fetchCart();
-      // print(
-      // 'PembeliDashboard: Cart items count: ${cartController.cartItems.length}',
-      // );
 
-      // Also fetch chat unread count
       try {
         chatController.fetchUnreadCount();
       } catch (e) {
-        // print('PembeliDashboard: Error fetching unread count: $e');
       }
     } else {
-      // print(
-      // 'PembeliDashboard: User not authenticated, skipping data initialization',
-      // );
     }
   }
 
@@ -120,28 +103,15 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
                 _currentIndex = index;
               });
 
-              // Fetch data when specific tabs are selected
               if (index == 1) {
-                // My Orders tab - fetch transactions
-                // print(
-                // 'PembeliDashboard: Orders tab selected, fetching transactions...',
-                // );
                 pembeliController.fetchTransactions();
               } else if (index == 0) {
-                // Menu tab - fetch menus and cart
-                // print('PembeliDashboard: Menu tab selected, fetching data...');
                 menuController.fetchMenus();
                 cartController.fetchCart();
               } else if (index == 2) {
-                // Chat tab - fetch chat list and unread count
-                // print('PembeliDashboard: Chat tab selected, fetching data...');
                 chatController.fetchChatList();
                 chatController.fetchUnreadCount();
               } else if (index == 3) {
-                // Profile tab - fetch profile data
-                // print(
-                // 'PembeliDashboard: Profile tab selected, fetching profile...',
-                // );
                 authController.fetchProfile();
               }
             },

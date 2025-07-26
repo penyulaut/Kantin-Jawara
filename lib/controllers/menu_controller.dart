@@ -72,9 +72,7 @@ class MenuController extends GetxController {
 
   void _testImageConnectivity() async {
     try {
-      // print('Testing image connectivity...');
     } catch (e) {
-      // print('Connectivity test failed: $e');
     }
   }
 
@@ -89,7 +87,6 @@ class MenuController extends GetxController {
   }
 
   void setSelectedMerchant(int merchantId) {
-    // print('Setting selected merchant: $merchantId');
     _selectedMerchantId.value = merchantId;
     _selectedCategoryId.value =
         0; 
@@ -133,7 +130,6 @@ class MenuController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      // print('Error fetching menus: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -162,16 +158,12 @@ class MenuController extends GetxController {
 
   Future<void> fetchMyMenus() async {
     try {
-      // print('Starting fetchMyMenus...');
       _isLoading.value = true;
       _errorMessage.value = '';
 
       final currentUser = await _authService.getUser();
       final token = await _authService.getToken();
 
-      // print(
-      // 'Current user: ${currentUser?.id}, Token: ${token != null ? 'exists' : 'null'}',
-      // );
 
       if (currentUser == null || token == null) {
         _errorMessage.value = 'User not authenticated';
@@ -179,9 +171,7 @@ class MenuController extends GetxController {
       }
 
       try {
-        // print('Trying penjual menus endpoint...');
         final response = await _apiService.getMyMenus(token);
-        // print('Response: $response');
 
         if (response['success'] == true ||
             response['message'] == 'Menus retrieved successfully') {
@@ -196,15 +186,12 @@ class MenuController extends GetxController {
             menusData = [];
           }
 
-          // print('Found ${menusData.length} menus');
           _myMenus.value = menusData
               .map((json) => Menu.fromJson(json))
               .toList();
-          // print('Successfully loaded ${_myMenus.length} menus');
           return;
         }
       } catch (e) {
-        // print('Fallback to general menus endpoint: $e');
       }
 
       final response = await _apiService.get('/menus', token: token);
@@ -231,7 +218,6 @@ class MenuController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = e.toString();
-      // print('Error fetching my menus: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -246,7 +232,6 @@ class MenuController extends GetxController {
     String? imageUrl,
   }) async {
     try {
-      // print('Creating menu with imageUrl: $imageUrl');
       _isLoading.value = true;
       _errorMessage.value = '';
 
@@ -264,10 +249,8 @@ class MenuController extends GetxController {
           !imageUrl.startsWith('https://') &&
           File(imageUrl).existsSync();
 
-      // print('Is local file: $isLocalFile');
 
       if (isLocalFile) {
-        // print('Uploading local file: $imageUrl');
         final fields = {
           'name': name,
           'description': description,
@@ -284,7 +267,6 @@ class MenuController extends GetxController {
           token: token,
         );
       } else {
-        // print('Sending as data with imageUrl: $imageUrl');
         final data = {
           'name': name,
           'description': description,
@@ -294,11 +276,9 @@ class MenuController extends GetxController {
           if (imageUrl != null && imageUrl.isNotEmpty) 'image_url': imageUrl,
         };
 
-        // print('Data being sent: $data');
         response = await _apiService.post('/menus', data: data, token: token);
       }
 
-      // print('Response: $response');
 
       if (response['success']) {
         await fetchMyMenus();
@@ -315,7 +295,6 @@ class MenuController extends GetxController {
         );
         return true;
       } else {
-        // print('Failed to create menu: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to create menu';
         Get.snackbar(
           'Error',
@@ -327,7 +306,6 @@ class MenuController extends GetxController {
         return false;
       }
     } catch (e) {
-      // print('Exception creating menu: $e');
       _errorMessage.value = 'Error: $e';
       Get.snackbar(
         'Error',
@@ -352,7 +330,6 @@ class MenuController extends GetxController {
     String? imageUrl,
   }) async {
     try {
-      // print('Updating menu ID: $id with imageUrl: $imageUrl');
       _isLoading.value = true;
       _errorMessage.value = '';
 
@@ -370,10 +347,8 @@ class MenuController extends GetxController {
           !imageUrl.startsWith('https://') &&
           File(imageUrl).existsSync();
 
-      // print('Is local file: $isLocalFile');
 
       if (isLocalFile) {
-        // print('Uploading local file: $imageUrl');
         final fields = {
           '_method': 'PUT',
           'name': name,
@@ -391,7 +366,6 @@ class MenuController extends GetxController {
           token: token,
         );
       } else {
-        // print('Sending as data with imageUrl: $imageUrl');
         final data = {
           'name': name,
           'description': description,
@@ -401,7 +375,6 @@ class MenuController extends GetxController {
           if (imageUrl != null && imageUrl.isNotEmpty) 'image_url': imageUrl,
         };
 
-        // print('Data being sent: $data');
         response = await _apiService.put(
           '/menus/$id',
           data: data,
@@ -409,7 +382,6 @@ class MenuController extends GetxController {
         );
       }
 
-      // print('Response: $response');
 
       if (response['success']) {
         await fetchMyMenus();
@@ -424,7 +396,6 @@ class MenuController extends GetxController {
         );
         return true;
       } else {
-        // print('Failed to update menu: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to update menu';
         Get.snackbar(
           'Error',
@@ -436,7 +407,6 @@ class MenuController extends GetxController {
         return false;
       }
     } catch (e) {
-      // print('Exception updating menu: $e');
       _errorMessage.value = 'Error: $e';
       Get.snackbar(
         'Error',
@@ -506,10 +476,8 @@ class MenuController extends GetxController {
 
   Future<void> fetchMerchants() async {
     try {
-      // print('Fetching merchants from API...');
 
       final response = await _apiService.get('/merchants');
-      // print('Merchants API response: $response');
 
       if (response['success']) {
         final responseData = response['data'];
@@ -527,18 +495,14 @@ class MenuController extends GetxController {
             .map((data) => Merchant.fromJson(data as Map<String, dynamic>))
             .toList();
 
-        // print('Successfully loaded ${_merchants.length} merchants');
         for (var merchant in _merchants) {
-          // print('Merchant: ${merchant.name} (ID: ${merchant.id})');
         }
       } else {
-        // print('Failed to fetch merchants: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to load merchants';
 
         _extractMerchantsFromMenus();
       }
     } catch (e) {
-      // print('Error fetching merchants: $e');
       _errorMessage.value = 'Error loading merchants: $e';
 
       _extractMerchantsFromMenus();
@@ -546,7 +510,6 @@ class MenuController extends GetxController {
   }
 
   void _extractMerchantsFromMenus() {
-    // print('Extracting merchants from existing menus...');
     if (_menus.isNotEmpty) {
       final Map<int, Merchant> merchantMap = {};
 
@@ -562,18 +525,15 @@ class MenuController extends GetxController {
       }
 
       _merchants.value = merchantMap.values.toList();
-      // print('Extracted ${_merchants.length} merchants from menus');
     }
   }
 
   Future<void> fetchMenusByMerchant(int merchantId) async {
     try {
-      // print('Fetching menus for merchant: $merchantId');
       _isLoading.value = true;
       _errorMessage.value = '';
 
       final response = await _apiService.get('/merchants/$merchantId/menus');
-      // print('Merchant menus API response: $response');
 
       if (response['success']) {
         final responseData = response['data'];
@@ -593,16 +553,11 @@ class MenuController extends GetxController {
             .map((data) => Menu.fromJson(data as Map<String, dynamic>))
             .toList();
 
-        // print(
-        // 'Successfully loaded ${_menus.length} menus for merchant $merchantId',
-        // );
       } else {
-        // print('Failed to fetch merchant menus: ${response['message']}');
         _errorMessage.value =
             response['message'] ?? 'Failed to load merchant menus';
       }
     } catch (e) {
-      // print('Error fetching merchant menus: $e');
       _errorMessage.value = 'Error loading merchant menus: $e';
     } finally {
       _isLoading.value = false;

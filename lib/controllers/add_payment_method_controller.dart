@@ -39,7 +39,6 @@ class AddPaymentMethodController extends GetxController {
         'is_active': isActive,
       };
 
-      // print('Adding payment method with data: $data');
 
       final response = await _apiService.post(
         '/merchant-payment-methods',
@@ -47,7 +46,6 @@ class AddPaymentMethodController extends GetxController {
         token: token,
       );
 
-      // print('Response: $response');
 
       if (response['success']) {
         return true;
@@ -65,7 +63,6 @@ class AddPaymentMethodController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      // print('AddPaymentMethodController: Error adding payment method: $e');
       Get.snackbar(
         'Error',
         'Failed to add payment method',

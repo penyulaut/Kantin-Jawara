@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'register.dart';
-// import 'products_list.dart';
 import 'maps.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,7 +33,6 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setString('token', token);
       Navigator.pushReplacement(
         context,
-        // MaterialPageRoute(builder: (_) => const ProductsListScreen()),
         MaterialPageRoute(builder: (_) => const MapsPage()),
       );
     } else {
@@ -115,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 32),
 
-              // Social Login
               Row(
                 children: [
                   socialButton('Google', Icons.g_mobiledata),
@@ -125,7 +122,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 24),
 
-              // Email & Password Fields
               inputField(hint: 'Email', controller: emailCtrl),
               inputField(
                 hint: 'Password',
@@ -139,7 +135,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              // Login Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -175,7 +170,6 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 12),
               TextButton(
                 onPressed: () {
-                  // TODO: Arahkan ke halaman register
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => RegisterScreen()),

@@ -19,7 +19,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
     final accountNameController = TextEditingController();
     final selectedPaymentMethod = Rxn<PaymentMethod>();
 
-    // Load available payment methods
     WidgetsBinding.instance.addPostFrameCallback((_) {
       paymentController.fetchPaymentMethods();
     });
@@ -78,7 +77,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               const Text(
                 'Tambahkan Metode Pembayaran Baru',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -90,7 +88,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Payment Method Selection
               const Text(
                 'Pilih Metode Pembayaran',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -151,7 +148,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Account Number Field
               const Text(
                 'Nomor Rekening',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -169,7 +165,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Account Name Field
               const Text(
                 'Nama Akun',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -187,7 +182,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
               const SizedBox(height: 32),
 
-              // Add Button
               SizedBox(
                 width: double.infinity,
                 child: Obx(
@@ -220,13 +214,11 @@ class AddPaymentMethodScreen extends StatelessWidget {
                                 duration: const Duration(seconds: 2),
                               );
 
-                              // Auto close screen setelah sukses
                               await Future.delayed(
                                 const Duration(milliseconds: 500),
                               );
                               Get.back(result: true);
                             } else {
-                              // Show error message
                               Get.snackbar(
                                 'Error',
                                 'Gagal menambahkan metode pembayaran. Silakan coba lagi.',
@@ -276,7 +268,6 @@ class AddPaymentMethodScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Cancel Button
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton(

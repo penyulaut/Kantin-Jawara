@@ -84,7 +84,6 @@ class _KantinMenuPageState extends State<KantinMenuPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Row(
                 children: [
                   const Column(
@@ -106,7 +105,6 @@ class _KantinMenuPageState extends State<KantinMenuPage> {
               ),
               const SizedBox(height: 16),
 
-              // Search bar
               TextField(
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search),
@@ -121,7 +119,6 @@ class _KantinMenuPageState extends State<KantinMenuPage> {
               ),
               const SizedBox(height: 16),
 
-              // Category Filter
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -133,7 +130,6 @@ class _KantinMenuPageState extends State<KantinMenuPage> {
 
               const SizedBox(height: 16),
 
-              // Menu Grid
               Expanded(
                 child: GridView.count(
                   crossAxisCount: 2,

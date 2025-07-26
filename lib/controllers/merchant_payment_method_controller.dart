@@ -34,13 +34,9 @@ class MerchantPaymentMethodController extends GetxController {
       final token = await _authService.getToken();
       if (token == null) {
         _errorMessage.value = 'User not authenticated';
-        // print('MerchantPaymentMethodController: No token found');
         return;
       }
 
-      // print(
-      // 'MerchantPaymentMethodController: Fetching with token: ${token.substring(0, 20)}...',
-      // );
 
       final paymentMethodsResponse = await _apiService.getPaymentMethods();
 
@@ -54,27 +50,18 @@ class MerchantPaymentMethodController extends GetxController {
           .map((json) => PaymentMethod.fromJson(json))
           .toList();
 
-      // print(
-      // 'MerchantPaymentMethodController: Found ${availablePaymentMethods.length} available payment methods',
-      // );
 
       List<MerchantPaymentMethod> allMerchantPaymentMethods = [];
 
       for (PaymentMethod paymentMethod in availablePaymentMethods) {
         if (paymentMethod.id == null) continue; 
 
-        // print(
-        // 'MerchantPaymentMethodController: Fetching merchant payment methods for payment method ID ${paymentMethod.id}',
-        // );
 
         final response = await _apiService.getMerchantPaymentMethodsByPaymentId(
           token: token,
           paymentMethodId: paymentMethod.id!,
         );
 
-        // print(
-        // 'MerchantPaymentMethodController: Response for payment method ${paymentMethod.id}: $response',
-        // );
 
         if (response['success']) {
           final dynamic data = response['data'];
@@ -87,33 +74,17 @@ class MerchantPaymentMethodController extends GetxController {
                 )
                 .toList();
             allMerchantPaymentMethods.addAll(merchantPaymentMethods);
-            // print(
-            // 'MerchantPaymentMethodController: Found ${merchantPaymentMethods.length} merchant payment methods for payment method ${paymentMethod.id}',
-            // );
           } else if (data is Map<String, dynamic>) {
             allMerchantPaymentMethods.add(MerchantPaymentMethod.fromJson(data));
-            // print(
-            // 'MerchantPaymentMethodController: Found 1 merchant payment method for payment method ${paymentMethod.id}',
-            // );
           } else {
-            // print(
-            // 'MerchantPaymentMethodController: No merchant payment methods configured for payment method ${paymentMethod.id} (${paymentMethod.name})',
-            // );
           }
         } else {
-          // print(
-          // 'MerchantPaymentMethodController: Error fetching merchant payment methods for payment method ${paymentMethod.id}: ${response['message']}',
-          // );
         }
       }
 
       _merchantPaymentMethods.value = allMerchantPaymentMethods;
-      // print(
-      // 'MerchantPaymentMethodController: Total merchant payment methods found: ${allMerchantPaymentMethods.length}',
-      // );
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      // print('MerchantPaymentMethodController: Error: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -167,7 +138,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Create merchant payment method
   Future<bool> createMerchantPaymentMethod({
     required int paymentMethodId,
     required String accountNumber,
@@ -230,7 +200,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Update merchant payment method
   Future<bool> updateMerchantPaymentMethod({
     required int id,
     required int paymentMethodId,
@@ -293,7 +262,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Delete merchant payment method
   Future<bool> deleteMerchantPaymentMethod(int id) async {
     try {
       _isLoading.value = true;
@@ -341,7 +309,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Get merchant payment method by ID
   Future<MerchantPaymentMethod?> getMerchantPaymentMethodById(int id) async {
     try {
       _isLoading.value = true;
@@ -373,7 +340,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Toggle payment method status
   Future<bool> togglePaymentMethodStatus(int id, bool isActive) async {
     try {
       final merchantPaymentMethod = _merchantPaymentMethods.firstWhere(
@@ -398,7 +364,6 @@ class MerchantPaymentMethodController extends GetxController {
     }
   }
 
-  // Get active payment methods only
   List<MerchantPaymentMethod> getActivePaymentMethods() {
     return _merchantPaymentMethods.where((mpm) => mpm.isActive).toList();
   }

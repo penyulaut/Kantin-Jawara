@@ -10,7 +10,6 @@ class TransactionItem {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Compatibility getters for transaction.dart TransactionItem
   double get unitPrice => price;
   double get totalPrice => price * quantity;
 

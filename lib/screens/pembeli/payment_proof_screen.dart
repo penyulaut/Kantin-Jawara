@@ -14,7 +14,6 @@ class PaymentProofScreen extends StatelessWidget {
   final PaymentMethod paymentMethod;
   final MerchantPaymentMethod merchantPaymentMethod;
 
-  // Add these properties
   final RxString selectedImagePath = ''.obs;
   final RxString proofUrl = ''.obs;
   final RxBool useUrl = false.obs;
@@ -46,7 +45,6 @@ class PaymentProofScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Transaction Info
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -80,7 +78,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Payment Method Info
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -130,7 +127,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Instructions
             Card(
               color: Colors.blue[50],
               child: Padding(
@@ -170,7 +166,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Upload Section
             Text(
               'Upload Bukti Pembayaran',
               style: TextStyle(
@@ -186,7 +181,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Toggle between Image Upload and URL
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
@@ -282,7 +276,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Image Upload Section or URL Input
             Obx(
               () => !useUrl.value
                   ? Container(
@@ -424,7 +417,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Notes
             TextField(
               controller: notesController,
               decoration: const InputDecoration(
@@ -444,7 +436,6 @@ class PaymentProofScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Submit Button
             SizedBox(
               width: double.infinity,
               child: Obx(
@@ -506,7 +497,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
 
-            // Payment Note Section
             Text(
               'Payment Note (Opsional)',
               style: TextStyle(
@@ -540,7 +530,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Mark as Paid Button
             SizedBox(
               width: double.infinity,
               child: Container(
@@ -577,7 +566,6 @@ class PaymentProofScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Later Button
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
@@ -630,7 +618,6 @@ class PaymentProofScreen extends StatelessWidget {
                 if (copyable) ...[
                   InkWell(
                     onTap: () {
-                      // Copy to clipboard functionality
                       Get.snackbar(
                         'Copied',
                         'Account number copied to clipboard',
@@ -772,12 +759,10 @@ class PaymentProofScreen extends StatelessWidget {
       );
 
       if (image != null) {
-        // Check file size (2MB limit)
         final file = File(image.path);
         final fileSize = await file.length();
 
         if (fileSize > 2 * 1024 * 1024) {
-          // 2MB in bytes
           Get.snackbar(
             'Error',
             'Ukuran file terlalu besar. Maksimal 2MB.',
@@ -803,7 +788,6 @@ class PaymentProofScreen extends StatelessWidget {
 
   Future<void> _markAsPaid() async {
     try {
-      // Show confirmation dialog
       final confirmed = await Get.dialog<bool>(
         AlertDialog(
           title: Text('Konfirmasi Pembayaran'),
@@ -831,7 +815,6 @@ class PaymentProofScreen extends StatelessWidget {
 
       if (confirmed != true) return;
 
-      // Show beautiful loading dialog
       Get.dialog(
         WillPopScope(
           onWillPop: () async => false, // Prevent dismissing while processing
@@ -891,7 +874,6 @@ class PaymentProofScreen extends StatelessWidget {
         barrierDismissible: false,
       );
 
-      // Get PembeliController and mark transaction as paid
       final pembeliController = Get.find<PembeliController>();
       final result = await pembeliController.markTransactionAsPaid(
         transactionId: transaction.id!,
@@ -900,13 +882,10 @@ class PaymentProofScreen extends StatelessWidget {
             : paymentNoteController.text.trim(),
       );
 
-      // print('PaymentProofScreen: markTransactionAsPaid result: $result');
 
-      // Close loading dialog
       Get.back();
 
       if (result['success'] == true) {
-        // Show success message from API
         Get.snackbar(
           'Sukses',
           result['message'] ??
@@ -920,15 +899,9 @@ class PaymentProofScreen extends StatelessWidget {
           borderRadius: 12,
         );
 
-        // Navigate to orders screen
-        // print('PaymentProofScreen: Navigating to /orders');
         try {
           Get.offAllNamed('/orders'); // Navigate to orders page
         } catch (e) {
-          // print(
-          // 'PaymentProofScreen: Failed to navigate to /orders, trying fallback: $e',
-          // );
-          // Fallback: go back to previous screen multiple times to get to orders
           Get.until((route) => route.isFirst);
         }
       } else {
@@ -979,7 +952,6 @@ class PaymentProofScreen extends StatelessWidget {
     }
 
     try {
-      // Show beautiful loading dialog
       Get.dialog(
         WillPopScope(
           onWillPop: () async => false, // Prevent dismissing while uploading
@@ -1043,26 +1015,21 @@ class PaymentProofScreen extends StatelessWidget {
       PaymentController paymentController = Get.find<PaymentController>();
 
       if (useUrl.value) {
-        // Upload using URL
         result = await paymentController.uploadPaymentProofUrl(
           transactionId: transaction.id!,
           proofUrl: proofUrl.value,
         );
       } else {
-        // Upload payment proof using PaymentController
         result = await paymentController.uploadPaymentProof(
           transactionId: transaction.id!,
           proofFile: File(selectedImagePath.value),
         );
       }
 
-      // Close loading dialog
       Get.back();
 
-      // print('PaymentProofScreen: Upload result: $result');
 
       if (result['success'] == true) {
-        // Show success message from API
         Get.snackbar(
           'Sukses',
           result['message'] ?? 'Bukti pembayaran berhasil diupload',

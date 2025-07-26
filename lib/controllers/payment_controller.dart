@@ -64,9 +64,7 @@ class PaymentController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      // print('Debug - fetchPaymentMethods error: $e');
       if (response != null) {
-        // print('Debug - payment methods response: $response');
       }
     } finally {
       _isLoading.value = false;
@@ -77,7 +75,6 @@ class PaymentController extends GetxController {
     try {
       _isLoading.value = true;
       _errorMessage.value = '';
-      // print('PaymentController: Fetching merchant payment methods...');
 
       final token = await _authService.getToken();
       if (token == null) {
@@ -89,7 +86,6 @@ class PaymentController extends GetxController {
       if (user?.role != 'penjual') {
         _errorMessage.value =
             'Access denied: This endpoint is only for sellers';
-        // print('PaymentController: Access denied - user role: ${user?.role}');
         return;
       }
 
@@ -98,7 +94,6 @@ class PaymentController extends GetxController {
         token: token,
       );
 
-      // print('PaymentController: Merchant payment methods response: $response');
 
       if (response['success']) {
         final responseData = response['data'];
@@ -116,17 +111,12 @@ class PaymentController extends GetxController {
             .map((json) => MerchantPaymentMethod.fromJson(json))
             .toList();
 
-        // print(
-        // 'PaymentController: Parsed ${_merchantPaymentMethods.length} merchant payment methods',
-        // );
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch merchant payment methods';
-        // print('PaymentController: Error: ${_errorMessage.value}');
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      // print('PaymentController: Exception in fetchMerchantPaymentMethods: $e');
     } finally {
       _isLoading.value = false;
     }
@@ -136,16 +126,12 @@ class PaymentController extends GetxController {
     int merchantId,
   ) async {
     try {
-      // print(
-      // 'PaymentController: Fetching payment methods for merchant $merchantId',
-      // );
       final token = await _authService.getToken();
       final response = await _apiService.get(
         '/merchants/$merchantId/payment-methods',
         token: token,
       );
 
-      // print('PaymentController: Response for merchant $merchantId: $response');
 
       if (response['success'] && response['data'] is List) {
         final data = response['data'] as List;
@@ -178,14 +164,10 @@ class PaymentController extends GetxController {
             .map((json) => MerchantPaymentMethod.fromJson(json))
             .toList();
 
-        // print('PaymentController: Parsed ${result.length} payment methods');
         return result;
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch available payment methods';
-        // print(
-        // 'PaymentController: Error fetching payment methods: ${_errorMessage.value}',
-        // );
         return [];
       }
     } catch (e) {
@@ -459,9 +441,6 @@ class PaymentController extends GetxController {
       var result = await getAvailablePaymentMethodsForMerchant(merchantId);
 
       if (result.isEmpty) {
-        // print(
-        // 'PaymentController: No payment methods found for merchant_id $merchantId, checking if this is a user_id issue...',
-        // );
 
         final token = await _authService.getToken();
         final fallbackResponse = await _apiService.get(
@@ -475,9 +454,6 @@ class PaymentController extends GetxController {
               .map((json) => MerchantPaymentMethod.fromJson(json))
               .toList();
 
-          // print(
-          // 'PaymentController: Found ${result.length} payment methods using user_id $merchantId',
-          // );
 
           CustomSnackbar.showInfo(
             title: 'Info',
@@ -488,9 +464,6 @@ class PaymentController extends GetxController {
 
       return result;
     } catch (e) {
-      // print(
-      // 'PaymentController: Error in getAvailablePaymentMethodsWithFallback: $e',
-      // );
       return [];
     }
   }
@@ -554,14 +527,12 @@ class PaymentController extends GetxController {
         proofUrl: proofUrl,
       );
 
-      // print('PaymentController: uploadPaymentProofUrl response: $response');
 
       if (response['message'] == "Bukti pembayaran berhasil diupload") {
         final apiResponse = response['data'];
         final message =
             apiResponse['message'] ?? 'Bukti pembayaran berhasil diupload';
 
-        // print('PaymentController: Extracted message: $message');
 
         return {'success': true, 'message': message};
       } else {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../utils/enums.dart';
 import '../utils/route_guard.dart';
 
-/// Widget untuk membungkus komponen yang membutuhkan permission tertentu
 class PermissionWrapper extends StatelessWidget {
   final List<UserRole> allowedRoles;
   final Widget child;
@@ -27,7 +26,6 @@ class PermissionWrapper extends StatelessWidget {
       return child;
     }
 
-    // Call callback if access denied
     if (onAccessDenied != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         onAccessDenied!();
@@ -42,7 +40,6 @@ class PermissionWrapper extends StatelessWidget {
   }
 }
 
-/// Widget khusus untuk admin only
 class AdminOnly extends StatelessWidget {
   final Widget child;
   final Widget? fallback;
@@ -66,7 +63,6 @@ class AdminOnly extends StatelessWidget {
   }
 }
 
-/// Widget khusus untuk penjual only
 class PenjualOnly extends StatelessWidget {
   final Widget child;
   final Widget? fallback;
@@ -90,7 +86,6 @@ class PenjualOnly extends StatelessWidget {
   }
 }
 
-/// Widget khusus untuk pembeli only
 class PembeliOnly extends StatelessWidget {
   final Widget child;
   final Widget? fallback;
@@ -114,7 +109,6 @@ class PembeliOnly extends StatelessWidget {
   }
 }
 
-/// Widget untuk menampilkan konten berbeda berdasarkan role
 class RoleBasedWidget extends StatelessWidget {
   final Widget? adminWidget;
   final Widget? penjualWidget;
@@ -148,7 +142,6 @@ class RoleBasedWidget extends StatelessWidget {
   }
 }
 
-/// AppBar dengan role protection
 class ProtectedAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<UserRole> allowedRoles;
@@ -195,7 +188,6 @@ class ProtectedAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-/// Button dengan role protection
 class ProtectedButton extends StatelessWidget {
   final List<UserRole> allowedRoles;
   final Widget child;

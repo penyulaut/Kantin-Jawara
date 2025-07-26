@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Primary colors from the provided hex codes
   static const Color royalBlueDark = Color(0xFF00296B);
   static const Color darkCornflowerBlue = Color(0xFF003F88);
   static const Color usafaBlue = Color(0xFF00509D);
   static const Color goldenPoppy = Color(0xFFFDC500);
   static const Color goldWebGolden = Color(0xFFFFD500);
 
-  // Additional colors for better theming
   static const Color white = Color(0xFFFFFFFF);
   static const Color lightGray = Color(0xFFF5F5F5);
   static const Color mediumGray = Color(0xFF9E9E9E);
@@ -17,7 +15,6 @@ class AppTheme {
   static const Color red = Color(0xFFD32F2F);
   static const Color green = Color(0xFF388E3C);
 
-  // Theme configuration
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -110,7 +107,6 @@ class AppTheme {
     );
   }
 
-  // Color schemes for different user roles
   static ColorScheme get adminColorScheme {
     return ColorScheme.fromSeed(
       seedColor: red,
@@ -138,7 +134,6 @@ class AppTheme {
     );
   }
 
-  // Helper methods for role-based colors
   static Color getRoleColor(String? role) {
     switch (role?.toLowerCase()) {
       case 'admin':
@@ -194,13 +189,11 @@ class AppTheme {
     );
   }
 
-  // Status colors
   static const Color successColor = green;
   static const Color warningColor = goldenPoppy;
   static const Color errorColor = red;
   static const Color infoColor = usafaBlue;
 
-  // Transaction status colors
   static Color getTransactionStatusColor(String? status) {
     switch (status?.toLowerCase()) {
       case 'pending':
@@ -222,7 +215,6 @@ class AppTheme {
     }
   }
 
-  // For TransactionStatus enum (Import dari models)
   static Color getStatusColorFromEnum(dynamic status) {
     final statusString = status.toString().split('.').last;
     return getTransactionStatusColor(statusString);

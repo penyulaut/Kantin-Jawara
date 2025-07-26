@@ -35,26 +35,19 @@ class CartController extends GetxController {
 
   Future<void> fetchCart() async {
     try {
-      // print('CartController: Starting fetchCart...');
       _isLoading.value = true;
       _errorMessage.value = '';
 
       final token = await _authService.getToken();
       if (token == null) {
-        // print('CartController: No token available, user not authenticated');
         _cartItems.clear();
         return;
       }
 
-      // print(
-      // 'CartController: Fetching cart with token: ${token.substring(0, 20)}...',
-      // );
       final response = await _apiService.get('/cart', token: token);
 
-      // print('CartController: Cart API response: $response');
 
       if (response['success']) {
-        // print('CartController: Cart fetch successful');
         final responseData = response['data'];
         final List<dynamic> cartData;
 
@@ -66,33 +59,23 @@ class CartController extends GetxController {
           cartData = [];
         }
 
-        // print('CartController: Raw cart data: $cartData');
 
         final List<Map<String, dynamic>> allCartItems = [];
 
         for (final cart in cartData) {
           if (cart is Map<String, dynamic> && cart.containsKey('cart_items')) {
             final List<dynamic> cartItems = cart['cart_items'] ?? [];
-            // print(
-            // 'CartController: Processing cart with ${cartItems.length} items for merchant ${cart['merchant_id']}',
-            // );
 
             for (final item in cartItems) {
               final merchantIdFromCart =
                   int.tryParse(cart['merchant_id'].toString()) ?? 0;
 
-              // print(
-              // 'CartController: Adding item with merchant_id: $merchantIdFromCart (type: ${merchantIdFromCart.runtimeType})',
-              // );
 
               final menuData = item['menu'] != null
                   ? Menu.fromJson(item['menu'])
                   : null;
 
               if (menuData != null) {
-                // print(
-                // 'CartController: Item ${item['id']} - Menu: ${menuData.name}, Image: ${menuData.imageUrl}',
-                // );
               }
 
               allCartItems.add({
@@ -111,25 +94,18 @@ class CartController extends GetxController {
         }
 
         _cartItems.value = allCartItems;
-        // print('CartController: Cart updated with ${allCartItems.length} items');
 
         for (int i = 0; i < allCartItems.length; i++) {
           final item = allCartItems[i];
           final menu = item['menu'] as Menu?;
-          // print(
-          // 'CartController: Item $i: ${menu?.name} x${item['quantity']} = Rp${item['total_price']}',
-          // );
         }
       } else {
-        // print('CartController: Cart fetch failed: ${response['message']}');
         _errorMessage.value = response['message'] ?? 'Failed to fetch cart';
       }
     } catch (e) {
-      // print('CartController: Error fetching cart: $e');
       _errorMessage.value = 'Error: $e';
     } finally {
       _isLoading.value = false;
-      // print('CartController: fetchCart completed');
     }
   }
 
@@ -169,7 +145,6 @@ class CartController extends GetxController {
     } catch (e) {
       _errorMessage.value = 'Error: $e';
       Get.snackbar('Error', 'Failed to add item to cart');
-      // print('CartController: Error adding to cart: $e');
       return false;
     } finally {
       _isLoading.value = false;
@@ -323,9 +298,6 @@ class CartController extends GetxController {
                   : null;
 
               if (menuData != null) {
-                // print(
-                // 'CartController: Merchant $merchantId - Item ${item['id']} - Menu: ${menuData.name}, Image: ${menuData.imageUrl}',
-                // );
               }
 
               merchantCartItems.add({
@@ -348,7 +320,6 @@ class CartController extends GetxController {
       }
       return [];
     } catch (e) {
-      // print('CartController: Error getting cart by merchant: $e');
       return [];
     }
   }
@@ -425,26 +396,17 @@ class CartController extends GetxController {
   Map<int, List<Map<String, dynamic>>> get cartItemsByMerchant {
     final Map<int, List<Map<String, dynamic>>> grouped = {};
 
-    // print(
-    // 'CartController: Grouping ${cartItems.length} cart items by merchant...',
-    // );
 
     for (final item in cartItems) {
       int? merchantId;
 
       if (item['merchant_id'] != null) {
         merchantId = int.tryParse(item['merchant_id'].toString());
-        // print(
-        // 'CartController: Item ${item['id']} has merchant_id: ${item['merchant_id']} (parsed as: $merchantId)',
-        // );
       }
 
       if (merchantId == null) {
         final menu = item['menu'] as Menu?;
         merchantId = menu?.penjualId;
-        // print(
-        // 'CartController: Using fallback penjualId: $merchantId for item ${item['id']}',
-        // );
       }
 
       if (merchantId != null) {
@@ -452,19 +414,10 @@ class CartController extends GetxController {
           grouped[merchantId] = [];
         }
         grouped[merchantId]!.add(item);
-        // print(
-        // 'CartController: Added item ${item['id']} to merchant group $merchantId',
-        // );
       } else {
-        // print(
-        // 'CartController: WARNING - No merchant ID found for item: ${item['id']}',
-        // );
       }
     }
 
-    // print(
-    // 'CartController: Grouped into ${grouped.keys.length} merchant groups: ${grouped.keys.toList()}',
-    // );
     return grouped;
   }
 
@@ -492,7 +445,6 @@ class CartController extends GetxController {
   }
 
   Future<void> refreshCart() async {
-    // print('CartController: Force refreshing cart...');
     await fetchCart();
   }
 }

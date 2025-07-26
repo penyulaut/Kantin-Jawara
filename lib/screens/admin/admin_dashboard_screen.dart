@@ -143,7 +143,6 @@ class AdminDashboardScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 8,
-                          // Tambahkan constraints untuk mencegah overflow
                           constraints: const BoxConstraints(
                             minWidth: 120,
                             maxWidth: 200,
@@ -152,7 +151,6 @@ class AdminDashboardScreen extends StatelessWidget {
                             PopupMenuItem(
                               value: 'logout',
                               child: Container(
-                                // Gunakan Container dengan width yang terbatas
                                 width: double.infinity,
                                 constraints: const BoxConstraints(
                                   maxWidth: 180,
@@ -174,7 +172,6 @@ class AdminDashboardScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      // Gunakan Expanded untuk mencegah overflow
                                       child: Text(
                                         'Keluar',
                                         style: TextStyle(
@@ -671,7 +668,6 @@ class AdminDashboardScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min, // Tambahkan ini
               children: [
                 Flexible(
-                  // Gunakan Flexible untuk icon container
                   flex: 2,
                   child: Container(
                     padding: const EdgeInsets.all(16), // Kurangi padding
@@ -692,20 +688,17 @@ class AdminDashboardScreen extends StatelessWidget {
                       ],
                     ),
                     child: FittedBox(
-                      // Tambahkan FittedBox
                       child: Icon(icon, size: 32, color: AppTheme.white),
                     ),
                   ),
                 ),
                 const SizedBox(height: 12), // Kurangi spacing
                 Flexible(
-                  // Gunakan Flexible untuk text
                   flex: 1,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       FittedBox(
-                        // Tambahkan FittedBox untuk title
                         fit: BoxFit.scaleDown,
                         child: Text(
                           title,
@@ -720,7 +713,6 @@ class AdminDashboardScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       FittedBox(
-                        // Tambahkan FittedBox untuk subtitle
                         fit: BoxFit.scaleDown,
                         child: Text(
                           subtitle,

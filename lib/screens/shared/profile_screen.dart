@@ -295,13 +295,9 @@ class ProfileScreen extends StatelessWidget {
 
   void _showAppInfoDialog() async {
     try {
-      // Debug: pastikan method dipanggil
-      // print('_showAppInfoDialog called');
 
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-      // Debug: pastikan packageInfo berhasil didapat
-      // print('Package info loaded: ${packageInfo.appName}');
 
       Get.dialog(
         AlertDialog(
@@ -404,7 +400,6 @@ class ProfileScreen extends StatelessWidget {
         ),
       );
     } catch (e) {
-      // print('Error in _showAppInfoDialog: $e');
 
       Get.dialog(
         AlertDialog(

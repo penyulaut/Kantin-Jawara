@@ -19,7 +19,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
   void initState() {
     super.initState();
     controller = Get.find<AdminController>();
-    // Fetch transactions when screen loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchTransactions();
     });
@@ -105,7 +104,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
       ),
       body: Column(
         children: [
-          // Filter Chips
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -133,7 +131,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
             ),
           ),
 
-          // Transactions List
           Expanded(
             child: GetBuilder<AdminController>(
               builder: (adminController) {
@@ -316,13 +313,9 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
         width: 1,
       ),
       onSelected: (selected) {
-        // Implement filter logic here
         if (status == null) {
-          // Show all transactions
           controller.fetchTransactions();
         } else {
-          // Filter by status - you can implement this in the controller
-          // For now, just fetch all
           controller.fetchTransactions();
         }
       },
@@ -356,7 +349,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Row
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -373,7 +365,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
               ),
               const SizedBox(height: 12),
 
-              // Customer Info
               if (transaction.customerName != null) ...[
                 Row(
                   children: [
@@ -395,7 +386,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
                 const SizedBox(height: 8),
               ],
 
-              // Seller Info
               if (transaction.penjual != null) ...[
                 Row(
                   children: [
@@ -417,7 +407,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
                 const SizedBox(height: 8),
               ],
 
-              // Order Type & Total
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -464,7 +453,6 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
                 ],
               ),
 
-              // Date
               if (transaction.createdAt != null) ...[
                 const SizedBox(height: 12),
                 Row(

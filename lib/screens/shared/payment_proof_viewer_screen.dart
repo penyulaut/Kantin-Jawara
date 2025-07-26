@@ -30,7 +30,6 @@ class PaymentProofViewerScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Payment proof image
             if (transaction.paymentProof != null &&
                 transaction.paymentProof!.isNotEmpty)
               Container(
@@ -130,7 +129,6 @@ class PaymentProofViewerScreen extends StatelessWidget {
                 ),
               ),
 
-            // Payment details card
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
@@ -149,7 +147,6 @@ class PaymentProofViewerScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
                     Row(
                       children: [
                         Container(
@@ -180,7 +177,6 @@ class PaymentProofViewerScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Order details
                     _buildDetailRow('Order ID', '#${transaction.id ?? 'N/A'}'),
                     _buildDetailRow(
                       'Total Pembayaran',
@@ -197,7 +193,6 @@ class PaymentProofViewerScreen extends StatelessWidget {
                         transaction.customerPhone!,
                       ),
 
-                    // Payment proof details
                     if (transaction.paymentProof != null &&
                         transaction.paymentProof!.isNotEmpty) ...[
                       const SizedBox(height: 16),
@@ -252,7 +247,6 @@ class PaymentProofViewerScreen extends StatelessWidget {
                       ),
                     ],
 
-                    // Instructions for seller
                     if (userRole == 'seller' &&
                         transaction.paymentProof != null &&
                         transaction.paymentProof!.isNotEmpty) ...[
