@@ -42,7 +42,7 @@ mixin RouteProtectionMixin<T extends StatefulWidget> on State<T> {
   /// Override untuk custom behavior
   void onAccessDenied() {
     // Default implementation - you can override this
-    print('RouteProtectionMixin: Access denied for ${T.toString()}');
+    // print('RouteProtectionMixin: Access denied for ${T.toString()}');
   }
 
   /// Helper method untuk check permission dalam widget

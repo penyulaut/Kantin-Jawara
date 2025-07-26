@@ -39,28 +39,28 @@ class PenjualController extends GetxController {
         token: token,
       );
 
-      print('PenjualController: Fetch transactions response: $response');
+      // print('PenjualController: Fetch transactions response: $response');
 
       if (response['success']) {
         final List<dynamic> transactionData = response['data'];
-        print(
-          'PenjualController: Processing ${transactionData.length} transactions',
-        );
+        // print(
+        // 'PenjualController: Processing ${transactionData.length} transactions',
+        // );
 
         _transactions.value = transactionData.map((json) {
           try {
-            print('PenjualController: Processing transaction: $json');
+            // print('PenjualController: Processing transaction: $json');
             return Transaction.fromJson(json);
           } catch (e) {
-            print('PenjualController: Error parsing transaction: $e');
-            print('PenjualController: Problematic JSON: $json');
+            // print('PenjualController: Error parsing transaction: $e');
+            // print('PenjualController: Problematic JSON: $json');
             rethrow;
           }
         }).toList();
 
-        print(
-          'PenjualController: Successfully loaded ${_transactions.length} transactions',
-        );
+        // print(
+        // 'PenjualController: Successfully loaded ${_transactions.length} transactions',
+        // );
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch transactions';
@@ -171,7 +171,7 @@ class PenjualController extends GetxController {
         }
       }
     } catch (e) {
-      print('PenjualController: Error calculating total sales: $e');
+      // print('PenjualController: Error calculating total sales: $e');
     }
     return total;
   }

@@ -30,7 +30,7 @@ DATA INCONSISTENCY DETECTED:
 - Recommendation: Use user_id ($actualUserId) instead of merchant_id ($requestedMerchantId)
         ''';
 
-        print('WARNING: $warningMessage');
+        // print('WARNING: $warningMessage');
 
         if (showWarning) {
           CustomSnackbar.warning(
@@ -41,9 +41,9 @@ DATA INCONSISTENCY DETECTED:
         return;
       }
 
-      print('MerchantIdUtils: ID mapping is consistent ($requestedMerchantId)');
+      // print('MerchantIdUtils: ID mapping is consistent ($requestedMerchantId)');
     } catch (e) {
-      print('MerchantIdUtils: Error validating merchant data: $e');
+      // print('MerchantIdUtils: Error validating merchant data: $e');
     }
   }
 
@@ -68,21 +68,21 @@ DATA INCONSISTENCY DETECTED:
 
   /// Provides debugging information about merchant/user ID mapping
   static void debugMerchantMapping(Map<String, dynamic> data) {
-    print('=== MERCHANT ID MAPPING DEBUG ===');
-    print('Raw data keys: ${data.keys.toList()}');
+    // print('=== MERCHANT ID MAPPING DEBUG ===');
+    // print('Raw data keys: ${data.keys.toList()}');
 
     if (data.containsKey('user_id')) {
-      print('user_id: ${data['user_id']}');
+      // print('user_id: ${data['user_id']}');
     }
     if (data.containsKey('merchant_id')) {
-      print('merchant_id: ${data['merchant_id']}');
+      // print('merchant_id: ${data['merchant_id']}');
     }
     if (data.containsKey('penjual_id')) {
-      print('penjual_id: ${data['penjual_id']}');
+      // print('penjual_id: ${data['penjual_id']}');
     }
     if (data.containsKey('merchant')) {
-      print('merchant data: ${data['merchant']}');
+      // print('merchant data: ${data['merchant']}');
     }
-    print('==================================');
+    // print('==================================');
   }
 }

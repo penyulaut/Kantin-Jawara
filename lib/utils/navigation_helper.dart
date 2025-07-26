@@ -83,7 +83,7 @@ class NavigationHelper {
   /// Check if current route is accessible and redirect if not
   static Future<void> validateCurrentRoute() async {
     final currentRoute = Get.currentRoute;
-    print('NavigationHelper: Validating current route: $currentRoute');
+    // print('NavigationHelper: Validating current route: $currentRoute');
 
     // Define route permissions
     final Map<String, List<UserRole>> routePermissions = {
@@ -100,9 +100,9 @@ class NavigationHelper {
       );
 
       if (!hasAccess) {
-        print(
-          'NavigationHelper: Access denied for current route, redirecting...',
-        );
+        // print(
+        // 'NavigationHelper: Access denied for current route, redirecting...',
+        // );
         // RouteGuard.checkAccess will handle the redirect
       }
     }

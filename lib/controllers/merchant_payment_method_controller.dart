@@ -34,13 +34,13 @@ class MerchantPaymentMethodController extends GetxController {
       final token = await _authService.getToken();
       if (token == null) {
         _errorMessage.value = 'User not authenticated';
-        print('MerchantPaymentMethodController: No token found');
+        // print('MerchantPaymentMethodController: No token found');
         return;
       }
 
-      print(
-        'MerchantPaymentMethodController: Fetching with token: ${token.substring(0, 20)}...',
-      );
+      // print(
+      // 'MerchantPaymentMethodController: Fetching with token: ${token.substring(0, 20)}...',
+      // );
 
       final paymentMethodsResponse = await _apiService.getPaymentMethods();
 
@@ -54,27 +54,27 @@ class MerchantPaymentMethodController extends GetxController {
           .map((json) => PaymentMethod.fromJson(json))
           .toList();
 
-      print(
-        'MerchantPaymentMethodController: Found ${availablePaymentMethods.length} available payment methods',
-      );
+      // print(
+      // 'MerchantPaymentMethodController: Found ${availablePaymentMethods.length} available payment methods',
+      // );
 
       List<MerchantPaymentMethod> allMerchantPaymentMethods = [];
 
       for (PaymentMethod paymentMethod in availablePaymentMethods) {
         if (paymentMethod.id == null) continue; 
 
-        print(
-          'MerchantPaymentMethodController: Fetching merchant payment methods for payment method ID ${paymentMethod.id}',
-        );
+        // print(
+        // 'MerchantPaymentMethodController: Fetching merchant payment methods for payment method ID ${paymentMethod.id}',
+        // );
 
         final response = await _apiService.getMerchantPaymentMethodsByPaymentId(
           token: token,
           paymentMethodId: paymentMethod.id!,
         );
 
-        print(
-          'MerchantPaymentMethodController: Response for payment method ${paymentMethod.id}: $response',
-        );
+        // print(
+        // 'MerchantPaymentMethodController: Response for payment method ${paymentMethod.id}: $response',
+        // );
 
         if (response['success']) {
           final dynamic data = response['data'];
@@ -87,33 +87,33 @@ class MerchantPaymentMethodController extends GetxController {
                 )
                 .toList();
             allMerchantPaymentMethods.addAll(merchantPaymentMethods);
-            print(
-              'MerchantPaymentMethodController: Found ${merchantPaymentMethods.length} merchant payment methods for payment method ${paymentMethod.id}',
-            );
+            // print(
+            // 'MerchantPaymentMethodController: Found ${merchantPaymentMethods.length} merchant payment methods for payment method ${paymentMethod.id}',
+            // );
           } else if (data is Map<String, dynamic>) {
             allMerchantPaymentMethods.add(MerchantPaymentMethod.fromJson(data));
-            print(
-              'MerchantPaymentMethodController: Found 1 merchant payment method for payment method ${paymentMethod.id}',
-            );
+            // print(
+            // 'MerchantPaymentMethodController: Found 1 merchant payment method for payment method ${paymentMethod.id}',
+            // );
           } else {
-            print(
-              'MerchantPaymentMethodController: No merchant payment methods configured for payment method ${paymentMethod.id} (${paymentMethod.name})',
-            );
+            // print(
+            // 'MerchantPaymentMethodController: No merchant payment methods configured for payment method ${paymentMethod.id} (${paymentMethod.name})',
+            // );
           }
         } else {
-          print(
-            'MerchantPaymentMethodController: Error fetching merchant payment methods for payment method ${paymentMethod.id}: ${response['message']}',
-          );
+          // print(
+          // 'MerchantPaymentMethodController: Error fetching merchant payment methods for payment method ${paymentMethod.id}: ${response['message']}',
+          // );
         }
       }
 
       _merchantPaymentMethods.value = allMerchantPaymentMethods;
-      print(
-        'MerchantPaymentMethodController: Total merchant payment methods found: ${allMerchantPaymentMethods.length}',
-      );
+      // print(
+      // 'MerchantPaymentMethodController: Total merchant payment methods found: ${allMerchantPaymentMethods.length}',
+      // );
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('MerchantPaymentMethodController: Error: $e');
+      // print('MerchantPaymentMethodController: Error: $e');
     } finally {
       _isLoading.value = false;
     }

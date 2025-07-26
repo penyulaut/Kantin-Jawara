@@ -87,9 +87,9 @@ class AdminController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - fetchDashboardStats error: $e');
+      // print('Debug - fetchDashboardStats error: $e');
       if (response != null) {
-        print('Debug - dashboard response: $response');
+        // print('Debug - dashboard response: $response');
       }
     } finally {
       _isLoading.value = false;
@@ -129,10 +129,10 @@ class AdminController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - fetchUsers error: $e');
+      // print('Debug - fetchUsers error: $e');
       if (response != null) {
-        print('Debug - response type: ${response.runtimeType}');
-        print('Debug - response: $response');
+        // print('Debug - response type: ${response.runtimeType}');
+        // print('Debug - response: $response');
       }
     } finally {
       _isLoading.value = false;
@@ -186,12 +186,12 @@ class AdminController extends GetxController {
         token: token,
       );
 
-      print('Debug - fetchTransactions response: $response');
+      // print('Debug - fetchTransactions response: $response');
 
       if (response['success'] == true) {
         final dynamic data = response['data'];
-        print('Debug - Raw data type: ${data.runtimeType}');
-        print('Debug - Raw data: $data');
+        // print('Debug - Raw data type: ${data.runtimeType}');
+        // print('Debug - Raw data: $data');
 
         if (data is Map<String, dynamic>) {
           if (data.containsKey('data')) {
@@ -202,8 +202,8 @@ class AdminController extends GetxController {
                     try {
                       return Transaction.fromJson(json as Map<String, dynamic>);
                     } catch (e) {
-                      print('Debug - Error parsing transaction: $e');
-                      print('Debug - Transaction data: $json');
+                      // print('Debug - Error parsing transaction: $e');
+                      // print('Debug - Transaction data: $json');
                       return null;
                     }
                   })
@@ -211,13 +211,13 @@ class AdminController extends GetxController {
                   .cast<Transaction>()
                   .toList();
             } else {
-              print(
-                'Debug - Expected list in data.data but got: ${transactionList.runtimeType}',
-              );
+              // print(
+              // 'Debug - Expected list in data.data but got: ${transactionList.runtimeType}',
+              // );
               _errorMessage.value = 'Invalid transaction data format';
             }
           } else {
-            print('Debug - No nested data key found in response');
+            // print('Debug - No nested data key found in response');
             _errorMessage.value = 'Invalid response structure';
           }
         } else if (data is List) {
@@ -226,8 +226,8 @@ class AdminController extends GetxController {
                 try {
                   return Transaction.fromJson(json as Map<String, dynamic>);
                 } catch (e) {
-                  print('Debug - Error parsing transaction: $e');
-                  print('Debug - Transaction data: $json');
+                  // print('Debug - Error parsing transaction: $e');
+                  // print('Debug - Transaction data: $json');
                   return null;
                 }
               })
@@ -235,17 +235,17 @@ class AdminController extends GetxController {
               .cast<Transaction>()
               .toList();
         } else {
-          print('Debug - Expected Map or List but got: ${data.runtimeType}');
+          // print('Debug - Expected Map or List but got: ${data.runtimeType}');
           _errorMessage.value = 'Invalid data format received';
         }
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch transactions';
-        print('Debug - API error: ${response['message']}');
+        // print('Debug - API error: ${response['message']}');
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - fetchTransactions error: $e');
+      // print('Debug - fetchTransactions error: $e');
     } finally {
       _isLoading.value = false;
       update(); 
@@ -345,7 +345,7 @@ class AdminController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - updateUser error: $e');
+      // print('Debug - updateUser error: $e');
       return false;
     } finally {
       _isLoading.value = false;
@@ -381,7 +381,7 @@ class AdminController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - changeUserPassword error: $e');
+      // print('Debug - changeUserPassword error: $e');
       return false;
     } finally {
       _isLoading.value = false;
@@ -415,7 +415,7 @@ class AdminController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - toggleUserStatus error: $e');
+      // print('Debug - toggleUserStatus error: $e');
       return false;
     } finally {
       _isLoading.value = false;
@@ -447,7 +447,7 @@ class AdminController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - deleteUser error: $e');
+      // print('Debug - deleteUser error: $e');
       return false;
     } finally {
       _isLoading.value = false;

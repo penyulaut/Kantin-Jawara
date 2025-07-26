@@ -900,7 +900,7 @@ class PaymentProofScreen extends StatelessWidget {
             : paymentNoteController.text.trim(),
       );
 
-      print('PaymentProofScreen: markTransactionAsPaid result: $result');
+      // print('PaymentProofScreen: markTransactionAsPaid result: $result');
 
       // Close loading dialog
       Get.back();
@@ -921,13 +921,13 @@ class PaymentProofScreen extends StatelessWidget {
         );
 
         // Navigate to orders screen
-        print('PaymentProofScreen: Navigating to /orders');
+        // print('PaymentProofScreen: Navigating to /orders');
         try {
           Get.offAllNamed('/orders'); // Navigate to orders page
         } catch (e) {
-          print(
-            'PaymentProofScreen: Failed to navigate to /orders, trying fallback: $e',
-          );
+          // print(
+          // 'PaymentProofScreen: Failed to navigate to /orders, trying fallback: $e',
+          // );
           // Fallback: go back to previous screen multiple times to get to orders
           Get.until((route) => route.isFirst);
         }
@@ -1059,7 +1059,7 @@ class PaymentProofScreen extends StatelessWidget {
       // Close loading dialog
       Get.back();
 
-      print('PaymentProofScreen: Upload result: $result');
+      // print('PaymentProofScreen: Upload result: $result');
 
       if (result['success'] == true) {
         // Show success message from API

@@ -72,23 +72,23 @@ class _PenjualDashboardScreenState extends State<PenjualDashboardScreen> {
               });
 
               if (index == 2) {
-                print('PenjualDashboard: Menus tab selected, fetching data...');
+                // print('PenjualDashboard: Menus tab selected, fetching data...');
                 menuController.fetchMyMenus();
               } else if (index == 1) {
-                print(
-                  'PenjualDashboard: Orders tab selected, fetching data...',
-                );
+                // print(
+                // 'PenjualDashboard: Orders tab selected, fetching data...',
+                // );
                 penjualController.fetchTransactions();
                 chatController.fetchChatList();
               } else if (index == 0) {
-                print(
-                  'PenjualDashboard: Dashboard tab selected, fetching data...',
-                );
+                // print(
+                // 'PenjualDashboard: Dashboard tab selected, fetching data...',
+                // );
                 penjualController.fetchTransactions();
               } else if (index == 3) {
-                print(
-                  'PenjualDashboard: Profile tab selected, fetching profile...',
-                );
+                // print(
+                // 'PenjualDashboard: Profile tab selected, fetching profile...',
+                // );
                 authController.fetchProfile();
               }
             },

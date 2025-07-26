@@ -574,21 +574,21 @@ class CheckoutScreen extends StatelessWidget {
       if (firstItem.containsKey('merchant_id') &&
           firstItem['merchant_id'] != null) {
         merchantId = firstItem['merchant_id'];
-        print('CheckoutScreen: Found merchant_id directly: $merchantId');
+        // print('CheckoutScreen: Found merchant_id directly: $merchantId');
       } else if (firstItem.containsKey('menu')) {
         // Extract from menu.penjualId
         final menu = firstItem['menu'];
         if (menu is Menu && menu.penjualId != null) {
           merchantId = menu.penjualId!;
-          print('CheckoutScreen: Using penjualId from menu: $merchantId');
+          // print('CheckoutScreen: Using penjualId from menu: $merchantId');
         } else if (menu is Map && menu['penjual_id'] != null) {
           merchantId = int.tryParse(menu['penjual_id'].toString()) ?? 1;
-          print('CheckoutScreen: Using penjual_id from menu map: $merchantId');
+          // print('CheckoutScreen: Using penjual_id from menu map: $merchantId');
         }
       }
     }
 
-    print('CheckoutScreen: Using merchant_id: $merchantId for payment methods');
+    // print('CheckoutScreen: Using merchant_id: $merchantId for payment methods');
 
     Get.to(
       () => PaymentSelectionScreen(

@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: Image.asset(
-                  '/image/logokantinjawara.png',
+                  'assets/image/logokantinjawara.png',
                   width: 120,
                   height: 120,
                   fit: BoxFit.contain,
@@ -121,9 +121,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const Text(
                 'Selamat Datang di Kantin Jawara',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 24,
+                  fontSize: 16,
                   color: AppTheme.royalBlueDark,
                 ),
               ),

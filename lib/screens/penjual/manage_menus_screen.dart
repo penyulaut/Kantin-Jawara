@@ -174,9 +174,9 @@ class ManageMenusScreen extends StatelessWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          print('Error loading image: ${menu.imageUrl}');
-                          print('Error details: $error');
-                          print('Stack trace: $stackTrace');
+                          // print('Error loading image: ${menu.imageUrl}');
+                          // print('Error details: $error');
+                          // print('Stack trace: $stackTrace');
 
                           return const Icon(
                             Icons.restaurant,
@@ -773,26 +773,26 @@ class ManageMenusScreen extends StatelessWidget {
               bool success;
               String? finalImageUrl;
 
-              print('Image source type: ${imageSourceType.value}');
-              print('Selected image path: ${selectedImagePath.value}');
-              print('Image URL controller text: ${imageUrlController.text}');
-              print('Existing menu image URL: ${menu?.imageUrl}');
+              // print('Image source type: ${imageSourceType.value}');
+              // print('Selected image path: ${selectedImagePath.value}');
+              // print('Image URL controller text: ${imageUrlController.text}');
+              // print('Existing menu image URL: ${menu?.imageUrl}');
 
               if (imageSourceType.value == 0) {
                 // Pick Image mode
                 if (selectedImagePath.value.isNotEmpty) {
                   // User picked a new image file
                   finalImageUrl = selectedImagePath.value;
-                  print('Using new picked image: $finalImageUrl');
+                  // print('Using new picked image: $finalImageUrl');
                 } else if (menu != null &&
                     menu.imageUrl != null &&
                     menu.imageUrl!.isNotEmpty) {
                   // Keep existing image URL for updates when no new image is picked
                   finalImageUrl = menu.imageUrl;
-                  print('Keeping existing image: $finalImageUrl');
+                  // print('Keeping existing image: $finalImageUrl');
                 } else {
                   finalImageUrl = null;
-                  print('No image selected');
+                  // print('No image selected');
                 }
               } else {
                 // Image URL mode
@@ -801,21 +801,21 @@ class ManageMenusScreen extends StatelessWidget {
                     (urlText.startsWith('http://') ||
                         urlText.startsWith('https://'))) {
                   finalImageUrl = urlText;
-                  print('Using new URL: $finalImageUrl');
+                  // print('Using new URL: $finalImageUrl');
                 } else if (menu != null &&
                     menu.imageUrl != null &&
                     menu.imageUrl!.isNotEmpty &&
                     urlText.isEmpty) {
                   // Keep existing URL if no new URL is provided
                   finalImageUrl = menu.imageUrl;
-                  print('Keeping existing URL: $finalImageUrl');
+                  // print('Keeping existing URL: $finalImageUrl');
                 } else {
                   finalImageUrl = null;
-                  print('No valid URL provided');
+                  // print('No valid URL provided');
                 }
               }
 
-              print('Final image URL to be sent: $finalImageUrl');
+              // print('Final image URL to be sent: $finalImageUrl');
 
               if (menu == null) {
                 success = await menuController.createMenu(

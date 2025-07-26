@@ -608,22 +608,22 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
       _isLoading.value = true;
       _errorMessage.value = '';
 
-      print(
-        'PaymentSelectionScreen: Loading payment methods for merchant: ${widget.merchantId}',
-      );
+      // print(
+      // 'PaymentSelectionScreen: Loading payment methods for merchant: ${widget.merchantId}',
+      // );
       final availablePaymentMethods = await controller
           .getAvailablePaymentMethodsWithFallback(widget.merchantId);
 
-      print(
-        'PaymentSelectionScreen: Found ${availablePaymentMethods.length} payment methods for merchant ${widget.merchantId}',
-      );
+      // print(
+      // 'PaymentSelectionScreen: Found ${availablePaymentMethods.length} payment methods for merchant ${widget.merchantId}',
+      // );
 
       // Update local state instead of controller state
       _merchantPaymentMethods.value = availablePaymentMethods;
     } catch (e) {
       // Error handling
       _errorMessage.value = 'Failed to load payment methods: $e';
-      print('Error loading merchant payment methods: $e');
+      // print('Error loading merchant payment methods: $e');
     } finally {
       _isLoading.value = false;
     }

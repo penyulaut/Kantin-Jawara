@@ -30,6 +30,7 @@ dependencies:
   permission_handler: ^11.0.1
   url_launcher: ^6.3.2
   package_info_plus: ^8.3.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -41,3 +42,9 @@ flutter:
 
   assets:
     - assets/image/
+    - assets/image/logokantinjawara.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/image/logokantinjawara.png"

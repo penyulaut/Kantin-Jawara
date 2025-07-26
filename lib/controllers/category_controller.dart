@@ -56,9 +56,9 @@ class CategoryController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('Debug - fetchCategories error: $e');
+      // print('Debug - fetchCategories error: $e');
       if (response != null) {
-        print('Debug - categories response: $response');
+        // print('Debug - categories response: $response');
       }
     } finally {
       _isLoading.value = false;

@@ -24,11 +24,11 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
 
     if (isLoggedIn && authController.currentUser != null) {
-      print('User already logged in: ${authController.currentUser?.name}');
-      print('User role: ${authController.currentUser?.role}');
+      // print('User already logged in: ${authController.currentUser?.name}');
+      // print('User role: ${authController.currentUser?.role}');
       NavigationHelper.navigateToDashboard();
     } else {
-      print('User not logged in, redirecting to login');
+      // print('User not logged in, redirecting to login');
       Get.offAllNamed('/login');
     }
   }

@@ -11,13 +11,13 @@ class AuthMiddleware extends GetMiddleware {
 
   @override
   GetPage? onPageCalled(GetPage? page) {
-    print('AuthMiddleware: Checking access for ${page?.name}');
+    // print('AuthMiddleware: Checking access for ${page?.name}');
     return super.onPageCalled(page);
   }
 
   @override
   Future<GetNavConfig?> redirectDelegate(GetNavConfig route) async {
-    print('AuthMiddleware: Checking access for route: ${route.location}');
+    // print('AuthMiddleware: Checking access for route: ${route.location}');
 
     final hasAccess = await RouteGuard.checkAccess(
       allowedRoles: allowedRoles,
@@ -25,7 +25,7 @@ class AuthMiddleware extends GetMiddleware {
     );
 
     if (!hasAccess) {
-      print('AuthMiddleware: Access denied, redirecting...');
+      // print('AuthMiddleware: Access denied, redirecting...');
       return null; // This will prevent navigation to the requested route
     }
 
@@ -58,12 +58,12 @@ class AuthenticatedMiddleware extends AuthMiddleware {
 class GuestMiddleware extends GetMiddleware {
   @override
   Future<GetNavConfig?> redirectDelegate(GetNavConfig route) async {
-    print('GuestMiddleware: Checking if user is authenticated');
+    // print('GuestMiddleware: Checking if user is authenticated');
 
     final isAuthenticated = await RouteGuard.isAuthenticated();
 
     if (isAuthenticated) {
-      print('GuestMiddleware: User is authenticated, redirecting to dashboard');
+      // print('GuestMiddleware: User is authenticated, redirecting to dashboard');
 
       // Get user role and redirect to appropriate dashboard
       final userRole = RouteGuard.getCurrentUserRole();

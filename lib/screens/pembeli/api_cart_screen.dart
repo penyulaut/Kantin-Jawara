@@ -87,12 +87,12 @@ class ApiCartScreen extends StatelessWidget {
         final groupedItems = cartController.cartItemsByMerchant;
 
         // Debug log to check grouped items
-        print(
-          'ApiCartScreen: Grouped items keys: ${groupedItems.keys.toList()}',
-        );
-        print(
-          'ApiCartScreen: Total grouped merchants: ${groupedItems.keys.length}',
-        );
+        // print(
+        // 'ApiCartScreen: Grouped items keys: ${groupedItems.keys.toList()}',
+        // );
+        // print(
+        // 'ApiCartScreen: Total grouped merchants: ${groupedItems.keys.length}',
+        // );
 
         return Column(
           children: [
@@ -133,9 +133,9 @@ class ApiCartScreen extends StatelessWidget {
         final merchantId = groupedItems.keys.elementAt(merchantIndex);
         final merchantItems = groupedItems[merchantId]!;
 
-        print(
-          'ApiCartScreen: Building UI for merchant $merchantId with ${merchantItems.length} items',
-        );
+        // print(
+        // 'ApiCartScreen: Building UI for merchant $merchantId with ${merchantItems.length} items',
+        // );
 
         // Get merchant name - for now using merchant ID
         // In the future, you might want to add merchant info to Menu model or fetch it separately
@@ -277,9 +277,9 @@ class ApiCartScreen extends StatelessWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          print(
-                            'CartScreen: Error loading image: ${menu.imageUrl}',
-                          );
+                          // print(
+                          // 'CartScreen: Error loading image: ${menu.imageUrl}',
+                          // );
                           return Container(
                             width: 70,
                             height: 70,

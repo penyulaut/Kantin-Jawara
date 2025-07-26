@@ -38,7 +38,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateAccess();
-      print('MenuListScreen: Refreshing cart from initState...');
+      // print('MenuListScreen: Refreshing cart from initState...');
       cartController.refreshCart();
     });
   }
@@ -107,10 +107,10 @@ class _MenuListScreenState extends State<MenuListScreen> {
           ),
 
           Obx(() {
-            print(
-              'Building merchants section. Merchants count: ${menuController.merchants.length}',
-            );
-            print('Selected merchant ID: ${menuController.selectedMerchantId}');
+            // print(
+            // 'Building merchants section. Merchants count: ${menuController.merchants.length}',
+            // );
+            // print('Selected merchant ID: ${menuController.selectedMerchantId}');
             return Container(
               height: 120,
               padding: const EdgeInsets.only(left: 16, bottom: 8),
@@ -140,7 +140,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                             description: 'Lihat Semua Kantin',
                             imageUrl: null,
                             onTap: () {
-                              print('Tapping All Warung card');
+                              // print('Tapping All Warung card');
                               menuController.setSelectedMerchant(0);
                             },
                           );
@@ -155,9 +155,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               merchant.description ?? 'Yu Pesen disini',
                           imageUrl: merchant.imageUrl,
                           onTap: () {
-                            print(
-                              'Tapping merchant card: ${merchant.name} (ID: ${merchant.id})',
-                            );
+                            // print(
+                            // 'Tapping merchant card: ${merchant.name} (ID: ${merchant.id})',
+                            // );
                             menuController.setSelectedMerchant(merchant.id);
                           },
                         );
@@ -461,10 +461,10 @@ class _MenuListScreenState extends State<MenuListScreen> {
                             );
                           },
                           errorBuilder: (context, error, stackTrace) {
-                            print(
-                              'Failed to load menu image: ${menu.imageUrl}',
-                            );
-                            print('Error: $error');
+                            // print(
+                            // 'Failed to load menu image: ${menu.imageUrl}',
+                            // );
+                            // print('Error: $error');
                             return Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(

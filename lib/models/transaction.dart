@@ -103,10 +103,10 @@ class Transaction {
         paymentProof: paymentProof,
       );
     } catch (e) {
-      print('Transaction.fromJson error: $e');
-      print('Transaction JSON keys: ${json.keys.toList()}');
+      // print('Transaction.fromJson error: $e');
+      // print('Transaction JSON keys: ${json.keys.toList()}');
       if (json['items'] != null) {
-        print('Items data: ${json['items']}');
+        // print('Items data: ${json['items']}');
       }
       rethrow;
     }
@@ -248,9 +248,9 @@ class TransactionItem {
         menu: json['menu'] != null ? Menu.fromJson(json['menu']) : null,
       );
     } catch (e) {
-      print('TransactionItem.fromJson error: $e');
-      print('TransactionItem JSON: $json');
-      print('Available keys: ${json.keys.toList()}');
+      // print('TransactionItem.fromJson error: $e');
+      // print('TransactionItem JSON: $json');
+      // print('Available keys: ${json.keys.toList()}');
       rethrow;
     }
   }

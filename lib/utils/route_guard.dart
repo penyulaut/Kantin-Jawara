@@ -21,7 +21,7 @@ class RouteGuard {
       final isLoggedIn = await _authService.isLoggedIn();
 
       if (!isLoggedIn) {
-        print('RouteGuard: User not logged in, redirecting to login');
+        // print('RouteGuard: User not logged in, redirecting to login');
         // Use WidgetsBinding to avoid calling during build
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.offAllNamed('/login');
@@ -33,7 +33,7 @@ class RouteGuard {
       final currentUser = authController.currentUser;
 
       if (currentUser == null) {
-        print('RouteGuard: Current user is null, redirecting to login');
+        // print('RouteGuard: Current user is null, redirecting to login');
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.offAllNamed('/login');
         });
@@ -44,7 +44,7 @@ class RouteGuard {
       final userRole = UserRole.fromString(currentUser.role ?? 'pembeli');
 
       if (!allowedRoles.contains(userRole)) {
-        print('RouteGuard: Access denied for role ${userRole.value}');
+        // print('RouteGuard: Access denied for role ${userRole.value}');
 
         // Show unauthorized message
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -61,10 +61,10 @@ class RouteGuard {
         return false;
       }
 
-      print('RouteGuard: Access granted for role ${userRole.value}');
+      // print('RouteGuard: Access granted for role ${userRole.value}');
       return true;
     } catch (e) {
-      print('RouteGuard: Error checking access: $e');
+      // print('RouteGuard: Error checking access: $e');
       Get.offAllNamed('/login');
       return false;
     }
@@ -166,7 +166,7 @@ class RouteGuard {
         Get.offAllNamed('/login');
       });
     } catch (e) {
-      print('RouteGuard: Error during force logout: $e');
+      // print('RouteGuard: Error during force logout: $e');
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Get.offAllNamed('/login');
       });

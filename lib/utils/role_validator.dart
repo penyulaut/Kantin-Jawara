@@ -34,7 +34,7 @@ class RoleValidator {
 
       return true;
     } catch (e) {
-      print('RoleValidator: Error - $e');
+      // print('RoleValidator: Error - $e');
       _redirectToLogin('Authentication error, please login again');
       return false;
     }

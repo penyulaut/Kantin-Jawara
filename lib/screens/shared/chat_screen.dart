@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 import '../../controllers/chat_controller.dart';
 import '../../controllers/auth_controller.dart';
 import '../../models/chat.dart';
@@ -10,6 +13,7 @@ class ChatScreen extends StatelessWidget {
   final ChatController controller = Get.put(ChatController());
   final AuthController authController = Get.find<AuthController>();
   final TextEditingController messageController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
   ChatScreen({super.key, required this.transactionId});
 
@@ -149,6 +153,27 @@ class ChatScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
+                // Image upload button
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.goldenPoppy.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(
+                      color: AppTheme.goldenPoppy.withOpacity(0.5),
+                      width: 1,
+                    ),
+                  ),
+                  child: IconButton(
+                    onPressed: _pickAndSendImage,
+                    icon: Icon(
+                      Icons.image,
+                      color: AppTheme.goldenPoppy,
+                      size: 20,
+                    ),
+                    tooltip: 'Send image',
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     controller: messageController,
@@ -286,22 +311,69 @@ class ChatScreen extends StatelessWidget {
 
                   if (message.attachmentUrl != null) ...[
                     const SizedBox(height: 8),
-                    Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.grey[300],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          message.attachmentUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(Icons.error, color: Colors.grey),
-                            );
-                          },
+                    GestureDetector(
+                      onTap: () => _showFullScreenImage(message.attachmentUrl!),
+                      child: Container(
+                        constraints: BoxConstraints(
+                          maxHeight: 250,
+                          maxWidth: Get.width * 0.6,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.grey[300],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            message.attachmentUrl!,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Container(
+                                height: 150,
+                                child: Center(
+                                  child: CircularProgressIndicator(
+                                    value:
+                                        loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                  .cumulativeBytesLoaded /
+                                              loadingProgress
+                                                  .expectedTotalBytes!
+                                        : null,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppTheme.royalBlueDark,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 150,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.error,
+                                        color: Colors.grey,
+                                        size: 32,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Failed to load image',
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ),
@@ -356,5 +428,210 @@ class ChatScreen extends StatelessWidget {
 
   Future<void> _refreshMessages() async {
     await controller.fetchChatMessages(transactionId);
+  }
+
+  Future<void> _pickAndSendImage() async {
+    try {
+      // Request camera permission for camera option
+      final cameraPermission = await Permission.camera.request();
+      if (cameraPermission.isDenied) {
+        Get.snackbar(
+          'Permission Required',
+          'Camera permission is required to take photos.',
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+          icon: Icon(Icons.warning, color: Colors.white),
+        );
+        return;
+      }
+
+      // Show options dialog for camera or gallery
+      final result = await Get.dialog<ImageSource>(
+        AlertDialog(
+          title: Text(
+            'Select Image Source',
+            style: TextStyle(
+              color: AppTheme.royalBlueDark,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.camera_alt, color: AppTheme.royalBlueDark),
+                title: const Text('Camera'),
+                onTap: () => Get.back(result: ImageSource.camera),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.photo_library,
+                  color: AppTheme.royalBlueDark,
+                ),
+                title: const Text('Gallery'),
+                onTap: () => Get.back(result: ImageSource.gallery),
+              ),
+            ],
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+
+      if (result == null) return;
+
+      final XFile? pickedFile = await _picker.pickImage(
+        source: result,
+        maxWidth: 1920,
+        maxHeight: 1920,
+        imageQuality: 85,
+      );
+
+      if (pickedFile == null) return;
+
+      // Check file size (max 5MB)
+      final file = File(pickedFile.path);
+      final fileSize = await file.length();
+      if (fileSize > 5 * 1024 * 1024) {
+        Get.snackbar(
+          'Error',
+          'Image size too large. Please select an image smaller than 5MB.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          icon: Icon(Icons.error, color: Colors.white),
+        );
+        return;
+      }
+
+      // Show loading indicator
+      Get.dialog(
+        AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppTheme.royalBlueDark,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Sending image...',
+                style: TextStyle(
+                  color: AppTheme.royalBlueDark,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        barrierDismissible: false,
+      );
+
+      // Send image
+      final success = await controller.sendImageMessage(
+        transactionId: transactionId,
+        imagePath: pickedFile.path,
+        message: messageController.text.trim().isNotEmpty
+            ? messageController.text.trim()
+            : null,
+      );
+
+      // Close loading dialog
+      Get.back();
+
+      if (success) {
+        messageController.clear();
+        Get.snackbar(
+          'Success',
+          'Image sent successfully!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          icon: Icon(Icons.check_circle, color: Colors.white),
+        );
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to send image. Please try again.',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          icon: Icon(Icons.error, color: Colors.white),
+        );
+      }
+    } catch (e) {
+      // Close any open dialogs
+      if (Get.isDialogOpen == true) Get.back();
+
+      Get.snackbar(
+        'Error',
+        'Failed to pick image: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        icon: Icon(Icons.error, color: Colors.white),
+      );
+    }
+  }
+
+  void _showFullScreenImage(String imageUrl) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.black,
+        insetPadding: EdgeInsets.zero,
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                            : null,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error, color: Colors.white, size: 64),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Failed to load image',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: IconButton(
+                  onPressed: () => Get.back(),
+                  icon: Icon(Icons.close, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

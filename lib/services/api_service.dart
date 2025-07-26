@@ -18,11 +18,11 @@ class ApiService {
 
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
-      print(
-        'ApiService: Added Authorization header - Bearer ${token.substring(0, 20)}...',
-      );
+      // print(
+      // 'ApiService: Added Authorization header - Bearer ${token.substring(0, 20)}...',
+      // );
     } else {
-      print('ApiService: No token provided for headers');
+      // print('ApiService: No token provided for headers');
     }
 
     return headers;
@@ -39,8 +39,8 @@ class ApiService {
         body: jsonEncode({'email': email, 'password': password}),
       );
 
-      print('Login Response Status: ${response.statusCode}');
-      print('Login Response Body: ${response.body}');
+      // print('Login Response Status: ${response.statusCode}');
+      // print('Login Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -59,7 +59,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('Login Error: $e');
+      // print('Login Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -82,8 +82,8 @@ class ApiService {
         }),
       );
 
-      print('Register Response Status: ${response.statusCode}');
-      print('Register Response Body: ${response.body}');
+      // print('Register Response Status: ${response.statusCode}');
+      // print('Register Response Body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -113,7 +113,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('Register Error: $e');
+      // print('Register Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -125,8 +125,8 @@ class ApiService {
         headers: _getHeaders(token: token),
       );
 
-      print('Logout Response Status: ${response.statusCode}');
-      print('Logout Response Body: ${response.body}');
+      // print('Logout Response Status: ${response.statusCode}');
+      // print('Logout Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         return {'success': true, 'message': 'Logged out successfully'};
@@ -134,7 +134,7 @@ class ApiService {
         return {'success': false, 'message': 'Logout failed'};
       }
     } catch (e) {
-      print('Logout Error: $e');
+      // print('Logout Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -251,15 +251,15 @@ class ApiService {
   Future<Map<String, dynamic>> get(String endpoint, {String? token}) async {
     try {
       final headers = _getHeaders(token: token);
-      print('GET $endpoint - Headers: $headers');
+      // print('GET $endpoint - Headers: $headers');
 
       final response = await http.get(
         Uri.parse('$_baseUrl$endpoint'),
         headers: headers,
       );
 
-      print('GET $endpoint - Status: ${response.statusCode}');
-      print('GET $endpoint - Body: ${response.body}');
+      // print('GET $endpoint - Status: ${response.statusCode}');
+      // print('GET $endpoint - Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -285,7 +285,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('GET $endpoint Error: $e');
+      // print('GET $endpoint Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -302,9 +302,9 @@ class ApiService {
         body: data != null ? jsonEncode(data) : null,
       );
 
-      print('POST $endpoint - Status: ${response.statusCode}');
-      print('POST $endpoint - Body: ${response.body}');
-      print('POST $endpoint - Request Data: $data');
+      // print('POST $endpoint - Status: ${response.statusCode}');
+      // print('POST $endpoint - Body: ${response.body}');
+      // print('POST $endpoint - Request Data: $data');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
@@ -341,7 +341,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('POST $endpoint Error: $e');
+      // print('POST $endpoint Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -358,9 +358,9 @@ class ApiService {
         body: data != null ? jsonEncode(data) : null,
       );
 
-      print('PUT $endpoint - Status: ${response.statusCode}');
-      print('PUT $endpoint - Body: ${response.body}');
-      print('PUT $endpoint - Request Data: $data');
+      // print('PUT $endpoint - Status: ${response.statusCode}');
+      // print('PUT $endpoint - Body: ${response.body}');
+      // print('PUT $endpoint - Request Data: $data');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -382,7 +382,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('PUT $endpoint Error: $e');
+      // print('PUT $endpoint Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -394,8 +394,8 @@ class ApiService {
         headers: _getHeaders(token: token),
       );
 
-      print('DELETE $endpoint - Status: ${response.statusCode}');
-      print('DELETE $endpoint - Body: ${response.body}');
+      // print('DELETE $endpoint - Status: ${response.statusCode}');
+      // print('DELETE $endpoint - Body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -410,7 +410,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('DELETE $endpoint Error: $e');
+      // print('DELETE $endpoint Error: $e');
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
@@ -628,9 +628,9 @@ class ApiService {
     required File proofFile,
   }) async {
     try {
-      print(
-        'ApiService: Uploading payment proof for transaction $transactionId',
-      );
+      // print(
+      // 'ApiService: Uploading payment proof for transaction $transactionId',
+      // );
 
       final uri = Uri.parse('$_baseUrl/payments/proof');
       final request = http.MultipartRequest('POST', uri);
@@ -651,12 +651,12 @@ class ApiService {
       );
       request.files.add(multipartFile);
 
-      print('ApiService: Sending multipart request to ${uri.toString()}');
+      // print('ApiService: Sending multipart request to ${uri.toString()}');
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      print('ApiService: Upload proof response status: ${response.statusCode}');
-      print('ApiService: Upload proof response body: ${response.body}');
+      // print('ApiService: Upload proof response status: ${response.statusCode}');
+      // print('ApiService: Upload proof response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -669,7 +669,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('ApiService: Exception in uploadPaymentProof: $e');
+      // print('ApiService: Exception in uploadPaymentProof: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -681,7 +681,7 @@ class ApiService {
     String? paymentNote,
   }) async {
     try {
-      print('ApiService: Marking transaction $transactionId as paid');
+      // print('ApiService: Marking transaction $transactionId as paid');
 
       final data = <String, dynamic>{};
       if (paymentNote != null && paymentNote.isNotEmpty) {
@@ -694,10 +694,10 @@ class ApiService {
         token: token,
       );
 
-      print('ApiService: Mark as paid response: $response');
+      // print('ApiService: Mark as paid response: $response');
       return response;
     } catch (e) {
-      print('ApiService: Exception in markTransactionAsPaid: $e');
+      // print('ApiService: Exception in markTransactionAsPaid: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -709,18 +709,18 @@ class ApiService {
     required String proofUrl,
   }) async {
     try {
-      print(
-        'ApiService: Uploading payment proof URL for transaction $transactionId',
-      );
+      // print(
+      // 'ApiService: Uploading payment proof URL for transaction $transactionId',
+      // );
 
       final data = {'transaction_id': transactionId, 'proof_url': proofUrl};
 
       final response = await post('/payments/proof', data: data, token: token);
 
-      print('ApiService: Upload proof URL response: $response');
+      // print('ApiService: Upload proof URL response: $response');
       return response;
     } catch (e) {
-      print('ApiService: Exception in uploadPaymentProofUrl: $e');
+      // print('ApiService: Exception in uploadPaymentProofUrl: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -865,17 +865,17 @@ class ApiService {
       if (filePath != null && fileFieldName != null) {
         final file = await http.MultipartFile.fromPath(fileFieldName, filePath);
         request.files.add(file);
-        print('ApiService: Added file $filePath as $fileFieldName');
+        // print('ApiService: Added file $filePath as $fileFieldName');
       }
 
-      print('ApiService: POST multipart $endpoint');
-      print('ApiService: Fields: $fields');
+      // print('ApiService: POST multipart $endpoint');
+      // print('ApiService: Fields: $fields');
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      print('ApiService: Status ${response.statusCode}');
-      print('ApiService: Body: ${response.body}');
+      // print('ApiService: Status ${response.statusCode}');
+      // print('ApiService: Body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -893,7 +893,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('ApiService: Exception in postMultipart: $e');
+      // print('ApiService: Exception in postMultipart: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -904,9 +904,9 @@ class ApiService {
     required String token,
   }) async {
     try {
-      print(
-        'ApiService: Marking payment as paid for transaction $transactionId',
-      );
+      // print(
+      // 'ApiService: Marking payment as paid for transaction $transactionId',
+      // );
 
       final response = await http.post(
         Uri.parse('$_baseUrl/api/payments/mark-paid'),
@@ -914,8 +914,8 @@ class ApiService {
         body: jsonEncode({'transaction_id': transactionId}),
       );
 
-      print('ApiService: Mark as paid response status: ${response.statusCode}');
-      print('ApiService: Mark as paid response body: ${response.body}');
+      // print('ApiService: Mark as paid response status: ${response.statusCode}');
+      // print('ApiService: Mark as paid response body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -928,7 +928,7 @@ class ApiService {
         };
       }
     } catch (e) {
-      print('ApiService: Exception in markPaymentAsPaid: $e');
+      // print('ApiService: Exception in markPaymentAsPaid: $e');
       return {'success': false, 'message': 'Network error: $e'};
     }
   }

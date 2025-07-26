@@ -598,9 +598,9 @@ class MyOrdersScreen extends StatelessWidget {
       }
     }
 
-    print(
-      'MyOrdersScreen: Navigating to upload proof for transaction ${transaction.id}',
-    );
+    // print(
+    // 'MyOrdersScreen: Navigating to upload proof for transaction ${transaction.id}',
+    // );
 
     // Navigate to payment selection screen first to choose payment method
     Get.to(
@@ -640,7 +640,7 @@ class MyOrdersScreen extends StatelessWidget {
       }
     }
 
-    print('MyOrdersScreen: Using merchant_id: $merchantId for payment methods');
+    // print('MyOrdersScreen: Using merchant_id: $merchantId for payment methods');
 
     // Navigate to payment selection screen
     Get.to(
