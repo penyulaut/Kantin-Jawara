@@ -129,28 +129,47 @@ class _MenuListScreenState extends State<MenuListScreen> {
                       itemCount: menuController.merchants.length + 1,
                       itemBuilder: (context, index) {
                         if (index == 0) {
-                          return _buildMerchantCard(
-                            isSelected: menuController.selectedMerchantId == 0,
-                            name: 'Semua Kantin',
-                            description: 'Lihat Semua Kantin',
-                            imageUrl: null,
-                            onTap: () {
-                              menuController.setSelectedMerchant(0);
-                            },
+                          return Obx(
+                            () => _buildMerchantCard(
+                              key: const ValueKey('merchant_all'),
+                              isSelected:
+                                  menuController.selectedMerchantId == 0,
+                              name: 'Semua Kantin',
+                              description: 'Lihat Semua Kantin',
+                              imageUrl: null,
+                              onTap: () {
+                                if (menuController.selectedMerchantId != 0) {
+                                  print(
+                                    'Selecting all merchants (ID: 0)',
+                                  ); // Debug
+                                  menuController.setSelectedMerchant(0);
+                                }
+                              },
+                            ),
                           );
                         }
 
                         final merchant = menuController.merchants[index - 1];
-                        return _buildMerchantCard(
-                          isSelected:
-                              menuController.selectedMerchantId == merchant.id,
-                          name: merchant.name,
-                          description:
-                              merchant.description ?? 'Yu Pesen disini',
-                          imageUrl: merchant.imageUrl,
-                          onTap: () {
-                            menuController.setSelectedMerchant(merchant.id);
-                          },
+                        return Obx(
+                          () => _buildMerchantCard(
+                            key: ValueKey('merchant_${merchant.id}'),
+                            isSelected:
+                                menuController.selectedMerchantId ==
+                                merchant.id,
+                            name: merchant.name,
+                            description:
+                                merchant.description ?? 'Yu Pesen disini',
+                            imageUrl: merchant.imageUrl,
+                            onTap: () {
+                              if (menuController.selectedMerchantId !=
+                                  merchant.id) {
+                                print(
+                                  'Selecting merchant: ${merchant.name} (ID: ${merchant.id})',
+                                ); // Debug
+                                menuController.setSelectedMerchant(merchant.id);
+                              }
+                            },
+                          ),
                         );
                       },
                     ),
@@ -184,20 +203,25 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         if (index == 0) {
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
-                            child: FilterChip(
-                              key: const ValueKey('filter_all'),
-                              label: const Text('Semua'),
-                              selected: menuController.selectedCategoryId == 0,
-                              onSelected: (selected) {
-                                menuController.setSelectedCategory(0);
-                              },
-                              selectedColor: AppTheme.royalBlueDark,
-                              checkmarkColor: Colors.white,
-                              labelStyle: TextStyle(
-                                color: menuController.selectedCategoryId == 0
-                                    ? Colors.white
-                                    : AppTheme.royalBlueDark,
-                                fontWeight: FontWeight.w600,
+                            child: Obx(
+                              () => FilterChip(
+                                key: const ValueKey('filter_all'),
+                                label: const Text('Semua'),
+                                selected:
+                                    menuController.selectedCategoryId == 0,
+                                onSelected: (selected) {
+                                  if (menuController.selectedCategoryId != 0) {
+                                    menuController.setSelectedCategory(0);
+                                  }
+                                },
+                                selectedColor: AppTheme.royalBlueDark,
+                                checkmarkColor: Colors.white,
+                                labelStyle: TextStyle(
+                                  color: menuController.selectedCategoryId == 0
+                                      ? Colors.white
+                                      : AppTheme.royalBlueDark,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           );
@@ -207,33 +231,32 @@ class _MenuListScreenState extends State<MenuListScreen> {
                             categoryController.categories[index - 1];
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
-                          child: FilterChip(
-                            key: ValueKey('filter_${category.id}'),
-                            label: Text(category.name),
-                            selected:
-                                menuController.selectedCategoryId ==
-                                category.id,
-                            onSelected: (selected) {
-                              if (category.id != null) {
-                                if (menuController.selectedCategoryId ==
-                                    category.id) {
-                                  menuController.setSelectedCategory(0);
-                                } else {
+                          child: Obx(
+                            () => FilterChip(
+                              key: ValueKey('filter_${category.id}'),
+                              label: Text(category.name),
+                              selected:
+                                  menuController.selectedCategoryId ==
+                                  category.id,
+                              onSelected: (selected) {
+                                if (category.id != null &&
+                                    menuController.selectedCategoryId !=
+                                        category.id) {
                                   menuController.setSelectedCategory(
                                     category.id!,
                                   );
                                 }
-                              }
-                            },
-                            selectedColor: AppTheme.royalBlueDark,
-                            checkmarkColor: Colors.white,
-                            labelStyle: TextStyle(
-                              color:
-                                  menuController.selectedCategoryId ==
-                                      category.id
-                                  ? Colors.white
-                                  : AppTheme.royalBlueDark,
-                              fontWeight: FontWeight.w600,
+                              },
+                              selectedColor: AppTheme.royalBlueDark,
+                              checkmarkColor: Colors.white,
+                              labelStyle: TextStyle(
+                                color:
+                                    menuController.selectedCategoryId ==
+                                        category.id
+                                    ? Colors.white
+                                    : AppTheme.royalBlueDark,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         );
@@ -673,16 +696,20 @@ class _MenuListScreenState extends State<MenuListScreen> {
   }
 
   Widget _buildMerchantCard({
+    Key? key,
     required bool isSelected,
     required String name,
     required String description,
     String? imageUrl,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
+    return InkWell(
+      key: key,
+      onTap: isSelected ? null : onTap, // Prevent tap if already selected
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         width: 110,
+        height: 95, // Fixed height to prevent overflow
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),

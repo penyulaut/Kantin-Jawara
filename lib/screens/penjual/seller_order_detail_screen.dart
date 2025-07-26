@@ -16,7 +16,7 @@ class SellerOrderDetailScreen extends StatelessWidget {
     final PenjualController controller = Get.find<PenjualController>();
 
     return Scaffold(
-      backgroundColor: AppTheme.lightGray.withOpacity(0.1),
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text('Detail Pesanan #${transaction.id ?? 'N/A'}'),
         backgroundColor: AppTheme.royalBlueDark,
@@ -34,6 +34,7 @@ class SellerOrderDetailScreen extends StatelessWidget {
             ),
         ],
       ),
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

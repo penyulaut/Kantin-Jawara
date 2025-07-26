@@ -48,6 +48,7 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
+      resizeToAvoidBottomInset: true,
       body: Column(
         children: [
           Expanded(
@@ -528,35 +529,43 @@ class ChatScreen extends StatelessWidget {
             : null,
       );
 
-      Get.back();
+      // Close loading dialog
+      if (Get.isDialogOpen == true) {
+        Get.back();
+      }
+
+      // Add a small delay to refresh the chat messages
+      await Future.delayed(const Duration(milliseconds: 200));
+      await controller.fetchChatMessages(transactionId);
 
       if (success) {
         messageController.clear();
-        Get.snackbar(
-          'Success',
-          'Image sent successfully!',
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-          icon: Icon(Icons.check_circle, color: Colors.white),
-        );
+        // Don't show success snackbar since it's obvious the message was sent
       } else {
-        Get.snackbar(
-          'Error',
-          'Failed to send image. Please try again.',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-          icon: Icon(Icons.error, color: Colors.white),
-        );
+        // Only show error if there was actually an error
+        if (controller.errorMessage.isNotEmpty) {
+          Get.snackbar(
+            'Error',
+            controller.errorMessage,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            icon: Icon(Icons.error, color: Colors.white),
+            duration: const Duration(seconds: 3),
+          );
+        }
       }
     } catch (e) {
+      // Close loading dialog if it's open
       if (Get.isDialogOpen == true) Get.back();
 
+      print('Image picker error: $e'); // Debug
       Get.snackbar(
         'Error',
-        'Failed to pick image: $e',
+        'Failed to process image: ${e.toString()}',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         icon: Icon(Icons.error, color: Colors.white),
+        duration: const Duration(seconds: 3),
       );
     }
   }
