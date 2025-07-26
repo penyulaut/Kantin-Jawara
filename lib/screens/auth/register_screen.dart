@@ -34,40 +34,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Name is required';
+      return 'Nama wajib diisi';
     }
     if (value.length < 2) {
-      return 'Name must be at least 2 characters';
+      return 'Nama minimal 2 karakter';
     }
     return null;
   }
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return 'Email wajib diisi';
     }
     if (!GetUtils.isEmail(value)) {
-      return 'Please enter a valid email';
+      return 'Masukkan email yang valid';
     }
     return null;
   }
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return 'Kata sandi wajib diisi';
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters';
+      return 'Kata sandi minimal 6 karakter';
     }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please confirm your password';
+      return 'Konfirmasi kata sandi wajib diisi';
     }
     if (value != _passwordController.text) {
-      return 'Passwords do not match';
+      return 'Kata sandi tidak cocok';
     }
     return null;
   }
@@ -102,53 +102,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Logo/Icon
-                Container(
-                  width: 80,
-                  height: 80,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.royalBlueDark,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.royalBlueDark.withOpacity(0.3),
-                        blurRadius: 15,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: const Icon(
-                    Icons.restaurant,
-                    size: 40,
-                    color: AppTheme.white,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Image.asset(
+                    '/image/logokantinjawara.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    color: Colors.transparent,
+                    colorBlendMode: BlendMode.multiply,
                   ),
                 ),
-
                 const Text(
-                  'Kantin Jawara',
+                  'Selamat Datang di Kantin Jawara',
                   style: TextStyle(
-                    fontSize: 24,
                     fontWeight: FontWeight.bold,
+                    fontSize: 24,
                     color: AppTheme.royalBlueDark,
                   ),
                 ),
-                const SizedBox(height: 4),
                 const Text(
                   'Solusi Untuk Kantin Untirta yang sangat ramai',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
                 ),
-                const SizedBox(height: 24),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _socialButton("Google", Icons.g_mobiledata),
-                    _socialButton("Facebook", Icons.facebook),
-                  ],
-                ),
-
                 const SizedBox(height: 24),
 
                 _inputField("Nama", _nameController, _validateName),
@@ -178,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: DropdownButtonFormField<UserRole>(
                     value: _selectedRole,
                     decoration: const InputDecoration(
-                      labelText: 'Role',
+                      labelText: 'Daftar sebagai',
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(
                         horizontal: 16,
@@ -208,12 +185,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onChanged: (val) =>
                           setState(() => _agreed = val ?? false),
                     ),
-                    const Flexible(
-                      child: Text(
-                        "Saya setuju dengan Ketentuan Layanan & Kebijakan Privasi",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.mediumGray,
+                    Flexible(
+                      child: RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.mediumGray,
+                          ),
+                          children: [
+                            const TextSpan(text: "Saya setuju dengan "),
+                            WidgetSpan(
+                              child: GestureDetector(
+                                onTap: _showTermsAndConditions,
+                                child: const Text(
+                                  "Ketentuan Layanan & Kebijakan Privasi",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppTheme.usafaBlue,
+                                    decoration: TextDecoration.underline,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -297,6 +292,94 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+  void _showTermsAndConditions() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Ketentuan Layanan & Kebijakan Privasi',
+            style: TextStyle(
+              color: AppTheme.royalBlueDark,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 400,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSectionTitle('Ketentuan Layanan'),
+                  _buildSectionContent(
+                    '1. Dengan menggunakan aplikasi Kantin Jawara, Anda setuju untuk mematuhi semua ketentuan yang berlaku.\n\n'
+                    '2. Anda bertanggung jawab atas keakuratan informasi yang Anda berikan saat registrasi.\n\n'
+                    '3. Dilarang menggunakan aplikasi ini untuk kegiatan yang melanggar hukum atau merugikan pihak lain.\n\n'
+                    '4. Kami berhak untuk menangguhkan atau menghapus akun yang melanggar ketentuan.',
+                  ),
+                  const SizedBox(height: 16),
+                  _buildSectionTitle('Kebijakan Privasi'),
+                  _buildSectionContent(
+                    '1. Kami menghargai privasi Anda dan berkomitmen untuk melindungi data personal Anda.\n\n'
+                    '2. Data yang dikumpulkan meliputi nama, email, dan informasi profil lainnya.\n\n'
+                    '3. Data Anda hanya akan digunakan untuk keperluan operasional aplikasi dan tidak akan dibagikan kepada pihak ketiga tanpa persetujuan Anda.\n\n'
+                    '4. Anda memiliki hak untuk mengakses, mengubah, atau menghapus data personal Anda.',
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Tutup',
+                style: TextStyle(color: AppTheme.mediumGray),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() => _agreed = true);
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.goldenPoppy,
+                foregroundColor: AppTheme.royalBlueDark,
+              ),
+              child: const Text('Setuju'),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppTheme.royalBlueDark,
+      ),
+    );
+  }
+
+  Widget _buildSectionContent(String content) {
+    return Text(
+      content,
+      style: const TextStyle(
+        fontSize: 14,
+        color: AppTheme.mediumGray,
+        height: 1.4,
+      ),
+    );
+  }
+
   Widget _inputField(
     String label,
     TextEditingController controller,
@@ -364,31 +447,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               onPressed: () =>
                   setState(() => _passwordVisible = !_passwordVisible),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _socialButton(String text, IconData icon) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6),
-        child: ElevatedButton.icon(
-          icon: Icon(icon, color: AppTheme.royalBlueDark),
-          label: Text(
-            text,
-            style: const TextStyle(color: AppTheme.royalBlueDark),
-          ),
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            elevation: 2,
-            backgroundColor: AppTheme.white,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: AppTheme.mediumGray.withOpacity(0.3)),
             ),
           ),
         ),

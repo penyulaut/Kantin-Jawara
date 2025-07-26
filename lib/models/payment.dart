@@ -20,13 +20,21 @@ class Payment {
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) {
+    // Handle different field names for proof
+    String? proof;
+    if (json.containsKey('proof_url') && json['proof_url'] != null) {
+      proof = json['proof_url'];
+    } else if (json.containsKey('proof') && json['proof'] != null) {
+      proof = json['proof'];
+    }
+
     return Payment(
       id: int.tryParse(json['id'].toString()),
       transactionId: int.tryParse(json['transaction_id'].toString()),
       amount: double.tryParse(json['amount'].toString()) ?? 0.0,
       method: json['method'] ?? '',
       paidAt: json['paid_at'] != null ? DateTime.parse(json['paid_at']) : null,
-      proof: json['proof'],
+      proof: proof,
       paymentMethod: json['payment_method'] != null
           ? PaymentMethod.fromJson(json['payment_method'])
           : null,

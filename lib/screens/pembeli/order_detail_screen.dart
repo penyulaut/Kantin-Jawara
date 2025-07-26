@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../models/transaction.dart';
 import '../../controllers/chat_controller.dart';
 import '../../utils/app_theme.dart';
+import '../shared/payment_proof_viewer_screen.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Transaction transaction;
@@ -13,10 +14,12 @@ class OrderDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightGray.withOpacity(0.1),
+      backgroundColor: AppTheme.lightGray.withOpacity(
+        0.1,
+      ), // Light background instead of white
       appBar: AppBar(
         title: Text(
-          'Order #${transaction.id}',
+          'Order #${transaction.id ?? "Unknown"}',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         backgroundColor: AppTheme.royalBlueDark,
@@ -32,204 +35,54 @@ class OrderDetailScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              onPressed: () => Get.toNamed(
-                '/chat',
-                arguments: {'transactionId': transaction.id!},
-              ),
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
+          if (transaction.id != null)
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              child: IconButton(
+                onPressed: () => Get.toNamed(
+                  '/chat',
+                  arguments: {'transactionId': transaction.id!},
                 ),
-                child: const Icon(Icons.chat_bubble_outline, size: 20),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.chat_bubble_outline, size: 20),
+                ),
               ),
             ),
-          ),
         ],
       ),
       body: SingleChildScrollView(
+        // Remove the dark gradient container wrapper
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Status Card
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Order Status',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        _buildStatusChip(transaction.status),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _buildOrderTimeline(),
-                  ],
-                ),
-              ),
-            ),
+            _buildStatusCard(),
             const SizedBox(height: 16),
 
             // Order Info
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Order Information',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildInfoRow('Order ID', '#${transaction.id}'),
-                    _buildInfoRow(
-                      'Date',
-                      transaction.createdAt?.toString().substring(0, 16) ?? '',
-                    ),
-                    _buildInfoRow(
-                      'Order Type',
-                      _getOrderTypeDisplay(transaction.orderType),
-                    ),
-                    if (transaction.customerName != null)
-                      _buildInfoRow('Customer', transaction.customerName!),
-                    if (transaction.customerPhone != null)
-                      _buildInfoRow('Phone', transaction.customerPhone!),
-                    if (transaction.notes != null &&
-                        transaction.notes!.isNotEmpty)
-                      _buildInfoRow('Notes', transaction.notes!),
-                  ],
-                ),
-              ),
-            ),
+            _buildOrderInfoCard(),
             const SizedBox(height: 16),
 
             // Items
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Order Items',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    if (transaction.items != null) ...[
-                      ...transaction.items!.map(
-                        (item) => _buildOrderItem(item),
-                      ),
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Total:',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Rp ${transaction.totalPrice.toStringAsFixed(0)}',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.goldenPoppy,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
+            _buildOrderItemsCard(),
             const SizedBox(height: 16),
 
-            // Payment Info
+            // Payment Info (if exists)
             if (transaction.payment != null) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Informasi Pembayaran',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildInfoRow('Method', transaction.payment!.method),
-                      _buildInfoRow(
-                        'Amount',
-                        'Rp ${transaction.payment!.amount.toStringAsFixed(0)}',
-                      ),
-                      if (transaction.payment!.paidAt != null)
-                        _buildInfoRow(
-                          'Paid At',
-                          transaction.payment!.paidAt!.toString().substring(
-                            0,
-                            16,
-                          ),
-                        ),
-                      if (transaction.payment!.proof != null) ...[
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Payment Proof:',
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          height: 200,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              transaction.payment!.proof!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(
-                                  child: Text('Gagal memuat gambar'),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
+              _buildPaymentInfoCard(),
               const SizedBox(height: 16),
+            ],
+
+            // Payment Proof Section (if exists)
+            if (transaction.paymentProof != null &&
+                transaction.paymentProof!.isNotEmpty) ...[
+              _buildPaymentProofCard(),
             ],
           ],
         ),
@@ -237,7 +90,447 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusChip(TransactionStatus status) {
+  Widget _buildStatusCard() {
+    return Card(
+      elevation: 4,
+      color: AppTheme.white,
+      shadowColor: AppTheme.mediumGray.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Order Status',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.darkGray,
+                  ),
+                ),
+                _buildStatusChip(transaction.status),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildOrderTimeline(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderInfoCard() {
+    return Card(
+      elevation: 4,
+      color: AppTheme.white,
+      shadowColor: AppTheme.mediumGray.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Order Information',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkGray,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildInfoRow('Order ID', '#${transaction.id ?? "N/A"}'),
+            _buildInfoRow(
+              'Date',
+              transaction.createdAt?.toString().substring(0, 16) ?? 'N/A',
+            ),
+            _buildInfoRow(
+              'Order Type',
+              _getOrderTypeDisplay(transaction.orderType),
+            ),
+            if (transaction.customerName?.isNotEmpty == true)
+              _buildInfoRow('Customer', transaction.customerName!),
+            if (transaction.customerPhone?.isNotEmpty == true)
+              _buildInfoRow('Phone', transaction.customerPhone!),
+            if (transaction.notes?.isNotEmpty == true)
+              _buildInfoRow('Notes', transaction.notes!),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOrderItemsCard() {
+    return Card(
+      elevation: 4,
+      color: AppTheme.white,
+      shadowColor: AppTheme.mediumGray.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Order Items',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkGray,
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (transaction.items?.isNotEmpty == true) ...[
+              ...transaction.items!.map((item) => _buildOrderItem(item)),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.darkGray,
+                    ),
+                  ),
+                  Text(
+                    'Rp ${transaction.totalPrice.toStringAsFixed(0)}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.goldenPoppy,
+                    ),
+                  ),
+                ],
+              ),
+            ] else ...[
+              Text(
+                'No items found',
+                style: TextStyle(color: AppTheme.mediumGray),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentInfoCard() {
+    if (transaction.payment == null) return const SizedBox.shrink();
+
+    return Card(
+      elevation: 4,
+      color: AppTheme.white,
+      shadowColor: AppTheme.mediumGray.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Informasi Pembayaran',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkGray,
+              ),
+            ),
+            const SizedBox(height: 12),
+            _buildInfoRow('Method', transaction.payment!.method),
+            _buildInfoRow(
+              'Amount',
+              'Rp ${transaction.payment!.amount.toStringAsFixed(0)}',
+            ),
+            if (transaction.payment!.paidAt != null)
+              _buildInfoRow(
+                'Paid At',
+                transaction.payment!.paidAt!.toString().substring(0, 16),
+              ),
+            if (transaction.payment!.proof?.isNotEmpty == true) ...[
+              const SizedBox(height: 8),
+              const Text(
+                'Payment Proof:',
+                style: TextStyle(fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 4),
+              _buildPaymentProofImage(transaction.payment!.proof!),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentProofCard() {
+    return Card(
+      margin: EdgeInsets.zero,
+      elevation: 4,
+      color: AppTheme.white,
+      shadowColor: AppTheme.mediumGray.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: AppTheme.white,
+          gradient: LinearGradient(
+            colors: [AppTheme.green.withOpacity(0.05), AppTheme.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.receipt_long,
+                      color: AppTheme.green,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Bukti Pembayaran',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.darkGray,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Diunggah',
+                      style: TextStyle(
+                        color: AppTheme.green,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Payment proof preview
+              GestureDetector(
+                onTap: () {
+                  Get.to(
+                    () => PaymentProofViewerScreen(
+                      transaction: transaction,
+                      userRole: 'buyer',
+                    ),
+                  );
+                },
+                child: _buildPaymentProofPreview(),
+              ),
+
+              const SizedBox(height: 8),
+              Text(
+                'Tap untuk melihat bukti pembayaran lengkap',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppTheme.mediumGray,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+
+              if (transaction.updatedAt != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.schedule, size: 14, color: AppTheme.mediumGray),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Diunggah pada ${transaction.updatedAt.toString().substring(0, 16)}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppTheme.mediumGray,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentProofImage(String imageUrl) {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(child: Text('Gagal memuat gambar'));
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentProofPreview() {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppTheme.mediumGray.withOpacity(0.3)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Stack(
+          children: [
+            Image.network(
+              transaction.paymentProof!,
+              width: double.infinity,
+              height: 120,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.lightGray,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppTheme.royalBlueDark,
+                      ),
+                    ),
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.lightGray,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: AppTheme.mediumGray,
+                          size: 24,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Gagal memuat',
+                          style: TextStyle(
+                            color: AppTheme.mediumGray,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // Overlay with view button
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.visibility,
+                          size: 16,
+                          color: AppTheme.royalBlueDark,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Lihat Detail',
+                          style: TextStyle(
+                            color: AppTheme.royalBlueDark,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(TransactionStatus? status) {
+    if (status == null) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey),
+        ),
+        child: const Text(
+          'Unknown',
+          style: TextStyle(
+            color: Colors.grey,
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+          ),
+        ),
+      );
+    }
+
     final color = AppTheme.getStatusColorFromEnum(status);
     String text;
 
@@ -294,7 +587,7 @@ class OrderDetailScreen extends StatelessWidget {
     return Row(
       children: statuses.asMap().entries.map((entry) {
         final index = entry.key;
-        final isActive = index <= currentIndex;
+        final isActive = index <= currentIndex && currentIndex >= 0;
         final isLast = index == statuses.length - 1;
 
         return Expanded(
@@ -367,14 +660,14 @@ class OrderDetailScreen extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  'Qty: ${item.quantity}',
+                  'Qty: ${item.quantity ?? 0}',
                   style: TextStyle(color: Colors.grey[600], fontSize: 12),
                 ),
               ],
             ),
           ),
           Text(
-            'Rp ${(item.price * item.quantity).toStringAsFixed(0)}',
+            'Rp ${((item.unitPrice ?? 0) * (item.quantity ?? 0)).toStringAsFixed(0)}',
             style: const TextStyle(fontWeight: FontWeight.w500),
           ),
         ],
@@ -382,7 +675,9 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  String _getOrderTypeDisplay(OrderType orderType) {
+  String _getOrderTypeDisplay(OrderType? orderType) {
+    if (orderType == null) return 'Unknown';
+
     switch (orderType) {
       case OrderType.dineIn:
         return 'Dine In';

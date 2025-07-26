@@ -25,7 +25,7 @@ class PaymentController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();    
+    super.onInit();
     fetchPaymentMethods();
   }
 
@@ -221,7 +221,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchPaymentMethods(); 
+        await fetchPaymentMethods();
         Get.snackbar('Success', 'Payment method created successfully');
         return true;
       } else {
@@ -266,7 +266,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchPaymentMethods(); 
+        await fetchPaymentMethods();
         Get.snackbar('Success', 'Payment method updated successfully');
         return true;
       } else {
@@ -300,7 +300,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchPaymentMethods(); 
+        await fetchPaymentMethods();
         Get.snackbar('Success', 'Payment method deleted successfully');
         return true;
       } else {
@@ -388,7 +388,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchMerchantPaymentMethods(); 
+        await fetchMerchantPaymentMethods();
         Get.snackbar(
           'Success',
           'Payment method configuration updated successfully',
@@ -426,7 +426,7 @@ class PaymentController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchMerchantPaymentMethods(); 
+        await fetchMerchantPaymentMethods();
         Get.snackbar(
           'Success',
           'Payment method configuration deleted successfully',
@@ -515,7 +515,7 @@ class PaymentController extends GetxController {
         token: token,
       );
 
-      if (response['success'] == true) {
+      if (response['message'] == "Bukti pembayaran berhasil diupload") {
         final message =
             response['message'] ?? 'Bukti pembayaran berhasil diupload';
         final proofUrl = response['proof_url'];
@@ -556,8 +556,8 @@ class PaymentController extends GetxController {
 
       print('PaymentController: uploadPaymentProofUrl response: $response');
 
-      if (response['success'] == true) {
-        final apiResponse = response['data']; 
+      if (response['message'] == "Bukti pembayaran berhasil diupload") {
+        final apiResponse = response['data'];
         final message =
             apiResponse['message'] ?? 'Bukti pembayaran berhasil diupload';
 

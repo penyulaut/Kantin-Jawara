@@ -100,7 +100,7 @@ class AdminDashboardScreen extends StatelessWidget {
                                     'Dashboard Admin',
                                     style: TextStyle(
                                       color: AppTheme.white,
-                                      fontSize: 28,
+                                      fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: -0.5,
                                     ),
@@ -109,7 +109,7 @@ class AdminDashboardScreen extends StatelessWidget {
                                     'Manajemen Kantin Jawara',
                                     style: TextStyle(
                                       color: AppTheme.white.withOpacity(0.85),
-                                      fontSize: 15,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

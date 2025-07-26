@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '../../controllers/auth_controller.dart';
 import '../../utils/app_theme.dart';
 
@@ -18,7 +20,6 @@ class ProfileScreen extends StatelessWidget {
         foregroundColor: AppTheme.white,
         automaticallyImplyLeading: false,
         elevation: 0,
-        centerTitle: true,
       ),
       body: Obx(() {
         final user = authController.currentUser;
@@ -31,7 +32,6 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Profile Header
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -130,7 +130,6 @@ class ProfileScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Menu Items
               _buildMenuItem(
                 icon: Icons.edit,
                 title: 'Edit Profile',
@@ -147,23 +146,21 @@ class ProfileScreen extends StatelessWidget {
                 icon: Icons.help_outline,
                 title: 'Bantuan & Dukungan',
                 subtitle: 'Dapatkan bantuan dan hubungi dukungan',
-                onTap: () => _showComingSoon(),
+                onTap: () => _showSupportDialog(),
               ),
               _buildMenuItem(
                 icon: Icons.info_outline,
                 title: 'Tentang',
                 subtitle: 'Versi Aplikasi dan Informasi',
-                onTap: () => _showComingSoon(),
+                onTap: () => _showAppInfoDialog(),
               ),
               const SizedBox(height: 32),
 
-              // Action Buttons
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   children: [
-                    // Delete Account Button
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton.icon(
@@ -190,8 +187,6 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-
-                    // Logout Button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -207,7 +202,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         icon: const Icon(Icons.logout),
                         label: const Text(
-                          'Logout',
+                          'Keluar',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -298,12 +293,330 @@ class ProfileScreen extends StatelessWidget {
     }
   }
 
-  void _showComingSoon() {
-    Get.snackbar(
-      'Segera Hadir',
-      'Fitur ini akan tersedia pada pembaruan berikutnya',
-      snackPosition: SnackPosition.BOTTOM,
+  void _showAppInfoDialog() async {
+    try {
+      // Debug: pastikan method dipanggil
+      print('_showAppInfoDialog called');
+
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+      // Debug: pastikan packageInfo berhasil didapat
+      print('Package info loaded: ${packageInfo.appName}');
+
+      Get.dialog(
+        AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.royalBlueDark.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.info_outline,
+                  color: AppTheme.royalBlueDark,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Tentang Aplikasi',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: Container(
+            constraints: const BoxConstraints(maxWidth: 300),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.royalBlueDark.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      Icons.restaurant_menu,
+                      size: 48,
+                      color: AppTheme.royalBlueDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                _buildInfoItem('Nama Aplikasi', packageInfo.appName),
+                _buildInfoItem('Versi', packageInfo.version),
+                _buildInfoItem('Build Number', packageInfo.buildNumber),
+                _buildInfoItem('Package Name', packageInfo.packageName),
+
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 16),
+
+                const Text(
+                  'Deskripsi',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Aplikasi manajemen restoran yang memudahkan proses pemesanan, pembayaran, dan pengelolaan menu.',
+                  style: TextStyle(
+                    color: AppTheme.mediumGray,
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+                const Center(
+                  child: Text(
+                    'Dikembangkan dengan ❤️ menggunakan Flutter',
+                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.royalBlueDark,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              child: const Text(
+                'Tutup',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      print('Error in _showAppInfoDialog: $e');
+
+      Get.dialog(
+        AlertDialog(
+          title: const Text('Tentang Aplikasi'),
+          content: const Text('Aplikasi Kantin Jawara'),
+          actions: [
+            TextButton(onPressed: () => Get.back(), child: const Text('Tutup')),
+          ],
+        ),
+      );
+    }
+  }
+
+  void _showSupportDialog() {
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.help_outline, color: AppTheme.green, size: 24),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Bantuan & Dukungan',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Container(
+          constraints: const BoxConstraints(maxWidth: 300),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Butuh bantuan? Hubungi kami melalui:',
+                style: TextStyle(fontSize: 16, color: AppTheme.mediumGray),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              _buildSupportOption(
+                icon: Icons.chat,
+                title: 'WhatsApp',
+                subtitle: 'Chat langsung dengan tim support',
+                color: const Color(0xFF25D366),
+                onTap: () => _launchWhatsApp(),
+              ),
+
+              const SizedBox(height: 12),
+
+              _buildSupportOption(
+                icon: Icons.email,
+                title: 'Email',
+                subtitle: 'Kirim email ke tim support',
+                color: AppTheme.royalBlueDark,
+                onTap: () => _launchEmail(),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.mediumGray,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildInfoItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(color: AppTheme.mediumGray, fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+          borderRadius: BorderRadius.circular(12),
+          color: color.withOpacity(0.05),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: TextStyle(color: AppTheme.mediumGray, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: color, size: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _launchWhatsApp() async {
+    const phoneNumber = "+6281212571925";
+    const message = "Halo, saya butuh bantuan dengan aplikasi.";
+
+    final whatsappUrl =
+        "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}";
+
+    try {
+      if (await canLaunchUrl(Uri.parse(whatsappUrl))) {
+        await launchUrl(
+          Uri.parse(whatsappUrl),
+          mode: LaunchMode.externalApplication,
+        );
+        Get.back();
+      } else {
+        throw 'Could not launch WhatsApp';
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Tidak dapat membuka WhatsApp. Pastikan WhatsApp sudah terinstall.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void _launchEmail() async {
+    const emailAddress = "3337230039@untirta.ac.id";
+    const subject = "Bantuan Aplikasi";
+    const body = "Halo tim support, saya butuh bantuan dengan aplikasi.";
+
+    final emailUrl =
+        "mailto:$emailAddress?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}";
+
+    try {
+      if (await canLaunchUrl(Uri.parse(emailUrl))) {
+        await launchUrl(Uri.parse(emailUrl));
+        Get.back();
+      } else {
+        throw 'Could not launch email';
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Tidak dapat membuka aplikasi email.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   void _showEditProfileDialog() {
@@ -358,8 +671,7 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                       if (success) {
-                        Get.back(); 
-
+                        Get.back();
                         Get.snackbar(
                           'Sukses',
                           'Profil berhasil diperbarui',
@@ -464,8 +776,7 @@ class ProfileScreen extends StatelessWidget {
                       );
 
                       if (success) {
-                        Get.back(); 
-
+                        Get.back();
                         Get.snackbar(
                           'Success',
                           'Password changed successfully. Please login again with your new password.',
@@ -582,7 +893,7 @@ class ProfileScreen extends StatelessWidget {
                           false;
 
                       if (confirmed) {
-                        Get.back();  
+                        Get.back();
                         final success = await authController.deleteAccount();
 
                         if (success) {
@@ -622,7 +933,7 @@ class ProfileScreen extends StatelessWidget {
   void _showLogoutDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Logout'),
+        title: const Text('Keluar'),
         content: const Text('Apakah Anda yakin ingin keluar?'),
         actions: [
           TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
@@ -633,7 +944,7 @@ class ProfileScreen extends StatelessWidget {
               final authController = Get.find<AuthController>();
               authController.logout();
             },
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+            child: const Text('Keluar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -79,7 +79,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
@@ -107,24 +106,23 @@ class _MenuListScreenState extends State<MenuListScreen> {
             ),
           ),
 
-          // Merchants Section
           Obx(() {
             print(
               'Building merchants section. Merchants count: ${menuController.merchants.length}',
             );
             print('Selected merchant ID: ${menuController.selectedMerchantId}');
             return Container(
-              height: 140, 
+              height: 120,
               padding: const EdgeInsets.only(left: 16, bottom: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.only(bottom: 6),
                     child: Text(
                       'Pilih Kantin (${menuController.merchants.length} Tersedia)',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.royalBlueDark,
                       ),
@@ -143,9 +141,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                             imageUrl: null,
                             onTap: () {
                               print('Tapping All Warung card');
-                              menuController.setSelectedMerchant(
-                                0,
-                              );  
+                              menuController.setSelectedMerchant(0);
                             },
                           );
                         }
@@ -173,10 +169,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
             );
           }),
 
-          // Categories Filter
           Obx(
             () => Container(
-              height: 70,
+              height: 55,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,12 +179,12 @@ class _MenuListScreenState extends State<MenuListScreen> {
                   Text(
                     'Kategori',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: AppTheme.royalBlueDark,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Expanded(
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
@@ -228,7 +223,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                 menuController.selectedCategoryId ==
                                 category.id,
                             onSelected: (selected) {
-                              if (category.id != null) {                             
+                              if (category.id != null) {
                                 if (menuController.selectedCategoryId ==
                                     category.id) {
                                   menuController.setSelectedCategory(0);
@@ -259,7 +254,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
             ),
           ),
 
-          // Menu Grid
           Expanded(
             child: Obx(() {
               if (menuController.isLoading) {
@@ -377,7 +371,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
-                    childAspectRatio: 0.8, 
+                    childAspectRatio: 0.75,
                   ),
                   itemCount: menuController.filteredMenus.length,
                   itemBuilder: (context, index) {
@@ -408,9 +402,8 @@ class _MenuListScreenState extends State<MenuListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             Expanded(
-              flex: 3,
+              flex: 2,
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -542,54 +535,49 @@ class _MenuListScreenState extends State<MenuListScreen> {
               ),
             ),
 
-            // Content
             Expanded(
-              flex: 2,
+              flex: 3,
               child: Container(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Menu name
                     Text(
                       menu.name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 13,
                         color: AppTheme.royalBlueDark,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
 
-                    // Price
                     Text(
                       'Rp ${menu.price.toStringAsFixed(0)}',
                       style: TextStyle(
                         color: AppTheme.goldenPoppy,
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
 
-                    // Stock
                     Row(
                       children: [
                         Icon(
                           Icons.inventory_2,
-                          size: 12,
+                          size: 11,
                           color: menu.stock > 0
                               ? AppTheme.usafaBlue
                               : AppTheme.red,
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 3),
                         Text(
                           'Stok: ${menu.stock}',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 10,
                             color: menu.stock > 0
                                 ? AppTheme.usafaBlue
                                 : AppTheme.red,
@@ -598,12 +586,10 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         ),
                       ],
                     ),
-                    const Spacer(),
+                    const SizedBox(height: 6),
 
-                    // Action buttons
                     Row(
                       children: [
-                        // Add to Cart button
                         Expanded(
                           child: OutlinedButton(
                             onPressed: menu.stock > 0
@@ -614,16 +600,17 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                 color: menu.stock > 0
                                     ? AppTheme.royalBlueDark
                                     : AppTheme.mediumGray,
+                                width: 1,
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              minimumSize: const Size(0, 28),
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              minimumSize: const Size(0, 32),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),
                             ),
                             child: Icon(
                               Icons.add_shopping_cart,
-                              size: 14,
+                              size: 16,
                               color: menu.stock > 0
                                   ? AppTheme.royalBlueDark
                                   : AppTheme.mediumGray,
@@ -632,7 +619,6 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         ),
                         const SizedBox(width: 6),
 
-                        // Buy Now button
                         Expanded(
                           child: ElevatedButton(
                             onPressed: menu.stock > 0
@@ -643,8 +629,9 @@ class _MenuListScreenState extends State<MenuListScreen> {
                                   ? AppTheme.royalBlueDark
                                   : AppTheme.mediumGray,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              minimumSize: const Size(0, 28),
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              minimumSize: const Size(0, 32),
+                              elevation: 2,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(6),
                               ),
@@ -686,7 +673,13 @@ class _MenuListScreenState extends State<MenuListScreen> {
     }
 
     final buyNowCartItems = <Map<String, dynamic>>[
-      {'menu_id': menu.id, 'menu': menu, 'quantity': 1, 'price': menu.price},
+      {
+        'menu_id': menu.id,
+        'menu': menu,
+        'quantity': 1,
+        'price': menu.price,
+        'merchant_id': menu.penjualId,
+      },
     ].obs;
 
     Get.to(() => CheckoutScreen(cartItems: buyNowCartItems));
@@ -702,7 +695,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 120,
+        width: 110,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -729,23 +722,23 @@ class _MenuListScreenState extends State<MenuListScreen> {
           ],
         ),
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(6),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                width: 36, 
-                height: 36,
+                width: 30,
+                height: 30,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(15),
                   color: isSelected
                       ? Colors.white.withOpacity(0.2)
                       : AppTheme.royalBlueDark.withOpacity(0.1),
                 ),
                 child: imageUrl != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BorderRadius.circular(15),
                         child: Image.network(
                           imageUrl,
                           fit: BoxFit.cover,
@@ -755,7 +748,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                               color: isSelected
                                   ? Colors.white
                                   : AppTheme.royalBlueDark,
-                              size: 20,
+                              size: 16,
                             );
                           },
                         ),
@@ -765,16 +758,16 @@ class _MenuListScreenState extends State<MenuListScreen> {
                         color: isSelected
                             ? Colors.white
                             : AppTheme.royalBlueDark,
-                        size: 20,
+                        size: 16,
                       ),
               ),
-              const SizedBox(height: 6), 
+              const SizedBox(height: 4),
               Flexible(
                 child: Text(
                   name,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 11,
                     color: isSelected ? Colors.white : AppTheme.royalBlueDark,
                   ),
                   maxLines: 1,
@@ -785,7 +778,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                 child: Text(
                   description,
                   style: TextStyle(
-                    fontSize: 9, 
+                    fontSize: 8,
                     color: isSelected
                         ? Colors.white.withOpacity(0.8)
                         : AppTheme.mediumGray,

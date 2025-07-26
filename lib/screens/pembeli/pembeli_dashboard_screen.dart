@@ -5,6 +5,7 @@ import '../../controllers/pembeli_controller.dart';
 import '../../controllers/menu_controller.dart' as menu_ctrl;
 import '../../controllers/chat_controller.dart';
 import '../../controllers/cart_controller.dart';
+import '../../models/transaction.dart';
 import '../../utils/app_theme.dart';
 import 'menu_list_screen.dart';
 import 'my_orders_screen.dart';
@@ -122,15 +123,26 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
               // Fetch data when specific tabs are selected
               if (index == 1) {
                 // My Orders tab - fetch transactions
+                print(
+                  'PembeliDashboard: Orders tab selected, fetching transactions...',
+                );
                 pembeliController.fetchTransactions();
               } else if (index == 0) {
                 // Menu tab - fetch menus and cart
+                print('PembeliDashboard: Menu tab selected, fetching data...');
                 menuController.fetchMenus();
                 cartController.fetchCart();
               } else if (index == 2) {
                 // Chat tab - fetch chat list and unread count
+                print('PembeliDashboard: Chat tab selected, fetching data...');
                 chatController.fetchChatList();
                 chatController.fetchUnreadCount();
+              } else if (index == 3) {
+                // Profile tab - fetch profile data
+                print(
+                  'PembeliDashboard: Profile tab selected, fetching profile...',
+                );
+                authController.fetchProfile();
               }
             },
             type: BottomNavigationBarType.fixed,
@@ -172,9 +184,38 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
               BottomNavigationBarItem(
                 icon: Container(
                   padding: const EdgeInsets.all(6),
-                  child: Icon(
-                    Icons.shopping_bag_outlined,
-                    size: _currentIndex == 1 ? 26 : 24,
+                  child: Badge(
+                    isLabelVisible: pembeliController.transactions
+                        .where(
+                          (t) =>
+                              t.status == TransactionStatus.pending ||
+                              t.status == TransactionStatus.paid ||
+                              t.status == TransactionStatus.confirmed ||
+                              t.status == TransactionStatus.ready,
+                        )
+                        .isNotEmpty,
+                    label: Text(
+                      pembeliController.transactions
+                          .where(
+                            (t) =>
+                                t.status == TransactionStatus.pending ||
+                                t.status == TransactionStatus.paid ||
+                                t.status == TransactionStatus.confirmed ||
+                                t.status == TransactionStatus.ready,
+                          )
+                          .length
+                          .toString(),
+                      style: const TextStyle(
+                        color: AppTheme.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    backgroundColor: AppTheme.red,
+                    child: Icon(
+                      Icons.shopping_bag_outlined,
+                      size: _currentIndex == 1 ? 26 : 24,
+                    ),
                   ),
                 ),
                 activeIcon: Container(
@@ -183,13 +224,42 @@ class _PembeliDashboardScreenState extends State<PembeliDashboardScreen>
                     color: AppTheme.royalBlueDark.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.shopping_bag,
-                    size: 26,
-                    color: AppTheme.royalBlueDark,
+                  child: Badge(
+                    isLabelVisible: pembeliController.transactions
+                        .where(
+                          (t) =>
+                              t.status == TransactionStatus.pending ||
+                              t.status == TransactionStatus.paid ||
+                              t.status == TransactionStatus.confirmed ||
+                              t.status == TransactionStatus.ready,
+                        )
+                        .isNotEmpty,
+                    label: Text(
+                      pembeliController.transactions
+                          .where(
+                            (t) =>
+                                t.status == TransactionStatus.pending ||
+                                t.status == TransactionStatus.paid ||
+                                t.status == TransactionStatus.confirmed ||
+                                t.status == TransactionStatus.ready,
+                          )
+                          .length
+                          .toString(),
+                      style: const TextStyle(
+                        color: AppTheme.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    backgroundColor: AppTheme.red,
+                    child: const Icon(
+                      Icons.shopping_bag,
+                      size: 26,
+                      color: AppTheme.royalBlueDark,
+                    ),
                   ),
                 ),
-                label: 'Orders',
+                label: 'Pesanan',
               ),
               BottomNavigationBarItem(
                 icon: Container(

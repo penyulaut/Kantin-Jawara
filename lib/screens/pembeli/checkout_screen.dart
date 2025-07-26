@@ -571,12 +571,20 @@ class CheckoutScreen extends StatelessWidget {
     if (cartItems.isNotEmpty) {
       // Extract merchant_id from first cart item since all items should be from same merchant
       final firstItem = cartItems.first;
-      if (firstItem.containsKey('merchant_id')) {
-        merchantId = firstItem['merchant_id'] ?? 1;
-      } else if (firstItem.containsKey('menu') && firstItem['menu'] is Map) {
-        // Check if merchant_id is nested in menu data
-        final menuData = firstItem['menu'] as Map<String, dynamic>;
-        merchantId = menuData['merchant_id'] ?? 1;
+      if (firstItem.containsKey('merchant_id') &&
+          firstItem['merchant_id'] != null) {
+        merchantId = firstItem['merchant_id'];
+        print('CheckoutScreen: Found merchant_id directly: $merchantId');
+      } else if (firstItem.containsKey('menu')) {
+        // Extract from menu.penjualId
+        final menu = firstItem['menu'];
+        if (menu is Menu && menu.penjualId != null) {
+          merchantId = menu.penjualId!;
+          print('CheckoutScreen: Using penjualId from menu: $merchantId');
+        } else if (menu is Map && menu['penjual_id'] != null) {
+          merchantId = int.tryParse(menu['penjual_id'].toString()) ?? 1;
+          print('CheckoutScreen: Using penjual_id from menu map: $merchantId');
+        }
       }
     }
 

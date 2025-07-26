@@ -415,28 +415,97 @@ class CategoriesScreen extends StatelessWidget {
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (nameController.text.trim().isNotEmpty) {
-                final success = await controller.createCategory(
-                  nameController.text.trim(),
-                );
-                if (success) {
-                  Get.back();
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.goldenPoppy,
-              foregroundColor: AppTheme.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          Obx(
+            () => ElevatedButton(
+              onPressed: controller.isLoading
+                  ? null
+                  : () async {
+                      if (nameController.text.trim().isNotEmpty) {
+                        try {
+                          final success = await controller.createCategory(
+                            nameController.text.trim(),
+                          );
+
+                          // Gunakan Navigator.pop() sebagai alternatif
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+
+                          if (success) {
+                            Get.snackbar(
+                              'Berhasil',
+                              'Kategori "${nameController.text.trim()}" berhasil ditambahkan',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: AppTheme.green,
+                              colorText: AppTheme.white,
+                              duration: const Duration(seconds: 2),
+                              margin: const EdgeInsets.all(16),
+                              borderRadius: 12,
+                              icon: Icon(
+                                Icons.check_circle,
+                                color: AppTheme.white,
+                              ),
+                            );
+                          } else {
+                            Get.snackbar(
+                              'Gagal',
+                              'Gagal menambahkan kategori. Silakan coba lagi.',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: AppTheme.red,
+                              colorText: AppTheme.white,
+                              duration: const Duration(seconds: 2),
+                              margin: const EdgeInsets.all(16),
+                              borderRadius: 12,
+                              icon: Icon(Icons.error, color: AppTheme.white),
+                            );
+                          }
+                        } catch (e) {
+                          // Handle error
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                          Get.snackbar(
+                            'Error',
+                            'Terjadi kesalahan: $e',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: AppTheme.red,
+                            colorText: AppTheme.white,
+                          );
+                        }
+                      } else {
+                        Get.snackbar(
+                          'Peringatan',
+                          'Nama kategori tidak boleh kosong',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: AppTheme.goldenPoppy,
+                          colorText: AppTheme.white,
+                        );
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.goldenPoppy,
+                foregroundColor: AppTheme.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Text(
-              'Tambah',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              child: controller.isLoading
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: AppTheme.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Tambah',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
             ),
           ),
         ],
@@ -503,30 +572,86 @@ class CategoriesScreen extends StatelessWidget {
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              if (nameController.text.trim().isNotEmpty &&
-                  category.id != null) {
-                final success = await controller.updateCategory(
-                  category.id!,
-                  nameController.text.trim(),
-                );
-                if (success) {
-                  Get.back();
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.royalBlueDark,
-              foregroundColor: AppTheme.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          Obx(
+            () => ElevatedButton(
+              onPressed: controller.isLoading
+                  ? null
+                  : () async {
+                      if (nameController.text.trim().isNotEmpty &&
+                          category.id != null) {
+                        final success = await controller.updateCategory(
+                          category.id!,
+                          nameController.text.trim(),
+                        );
+                        if (success) {
+                          Get.back(); // Tutup dialog
+
+                          // Tampilkan snackbar sukses
+                          Get.snackbar(
+                            'Berhasil',
+                            'Kategori "${nameController.text.trim()}" berhasil diperbarui',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: AppTheme.green,
+                            colorText: AppTheme.white,
+                            duration: const Duration(seconds: 2),
+                            margin: const EdgeInsets.all(16),
+                            borderRadius: 12,
+                            icon: Icon(
+                              Icons.check_circle,
+                              color: AppTheme.white,
+                            ),
+                          );
+                        } else {
+                          // Jika gagal, tampilkan error tapi jangan tutup dialog
+                          Get.snackbar(
+                            'Gagal',
+                            'Gagal memperbarui kategori. Silakan coba lagi.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: AppTheme.red,
+                            colorText: AppTheme.white,
+                            duration: const Duration(seconds: 2),
+                            margin: const EdgeInsets.all(16),
+                            borderRadius: 12,
+                            icon: Icon(Icons.error, color: AppTheme.white),
+                          );
+                        }
+                      } else {
+                        Get.snackbar(
+                          'Peringatan',
+                          'Nama kategori tidak boleh kosong',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: AppTheme.goldenPoppy,
+                          colorText: AppTheme.white,
+                          duration: const Duration(seconds: 2),
+                          margin: const EdgeInsets.all(16),
+                          borderRadius: 12,
+                        );
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.royalBlueDark,
+                foregroundColor: AppTheme.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Text(
-              'Perbarui',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              child: controller.isLoading
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: AppTheme.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Perbarui',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
             ),
           ),
         ],
@@ -593,26 +718,73 @@ class CategoriesScreen extends StatelessWidget {
               ),
             ),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.red,
-              foregroundColor: AppTheme.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          Obx(
+            () => ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.red,
+                foregroundColor: AppTheme.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            onPressed: () async {
-              if (category.id != null) {
-                final success = await controller.deleteCategory(category.id!);
-                if (success) {
-                  Get.back();
-                }
-              }
-            },
-            child: const Text(
-              'Hapus',
-              style: TextStyle(fontWeight: FontWeight.w600),
+              onPressed: controller.isLoading
+                  ? null
+                  : () async {
+                      if (category.id != null) {
+                        final success = await controller.deleteCategory(
+                          category.id!,
+                        );
+                        if (success) {
+                          Get.back(); // Tutup dialog
+
+                          // Tampilkan snackbar sukses
+                          Get.snackbar(
+                            'Berhasil',
+                            'Kategori "${category.name}" berhasil dihapus',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: AppTheme.green,
+                            colorText: AppTheme.white,
+                            duration: const Duration(seconds: 2),
+                            margin: const EdgeInsets.all(16),
+                            borderRadius: 12,
+                            icon: Icon(
+                              Icons.check_circle,
+                              color: AppTheme.white,
+                            ),
+                          );
+                        } else {
+                          // Jika gagal, tampilkan error tapi jangan tutup dialog
+                          Get.snackbar(
+                            'Gagal',
+                            'Gagal menghapus kategori. Silakan coba lagi.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: AppTheme.red,
+                            colorText: AppTheme.white,
+                            duration: const Duration(seconds: 2),
+                            margin: const EdgeInsets.all(16),
+                            borderRadius: 12,
+                            icon: Icon(Icons.error, color: AppTheme.white),
+                          );
+                        }
+                      }
+                    },
+              child: controller.isLoading
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: AppTheme.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Hapus',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
             ),
           ),
         ],

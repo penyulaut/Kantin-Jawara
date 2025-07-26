@@ -148,8 +148,12 @@ class AuthController extends GetxController {
           'Success',
           'Registration successful!',
           snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 2),
         );
-        Get.offAllNamed('/');
+
+        Future.delayed(const Duration(milliseconds: 2500), () {
+          _navigateBasedOnRole(user.role ?? role);
+        });
       } else {
         _errorMessage.value = result['message'];
 
@@ -198,6 +202,39 @@ class AuthController extends GetxController {
         'Error during logout',
         snackPosition: SnackPosition.TOP,
       );
+    } finally {
+      _isLoading.value = false;
+    }
+  }
+
+  Future<void> fetchProfile() async {
+    try {
+      _isLoading.value = true;
+      _errorMessage.value = '';
+
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage.value = 'User not authenticated';
+        return;
+      }
+
+      final result = await _apiService.getProfile(token: token);
+
+      if (result['success']) {
+        final userData = result['data'];
+        final updatedUser = User.fromJson(userData['user'] ?? userData);
+
+        await _authService.saveUser(updatedUser);
+        _currentUser.value = updatedUser;
+
+        print('AuthController: Profile fetched and updated successfully');
+      } else {
+        _errorMessage.value = result['message'];
+        print('AuthController: Failed to fetch profile: ${result['message']}');
+      }
+    } catch (e) {
+      _errorMessage.value = 'An unexpected error occurred';
+      print('AuthController: Error fetching profile: $e');
     } finally {
       _isLoading.value = false;
     }

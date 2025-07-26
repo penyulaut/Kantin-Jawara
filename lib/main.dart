@@ -8,6 +8,7 @@ import 'screens/penjual/penjual_dashboard_screen.dart';
 import 'screens/penjual/merchant_payment_list_screen.dart';
 import 'screens/shared/chat_screen.dart';
 import 'screens/pembeli/payment_proof_screen.dart';
+import 'screens/shared/payment_proof_viewer_screen.dart';
 import 'bindings/app_binding.dart';
 import 'utils/app_theme.dart';
 
@@ -48,6 +49,13 @@ class MyApp extends StatelessWidget {
             transaction: Get.arguments?['transaction'],
             paymentMethod: Get.arguments?['paymentMethod'],
             merchantPaymentMethod: Get.arguments?['merchantPaymentMethod'],
+          ),
+        ),
+        GetPage(
+          name: '/payment-proof-viewer',
+          page: () => PaymentProofViewerScreen(
+            transaction: Get.arguments?['transaction'],
+            userRole: Get.arguments?['userRole'] ?? 'buyer',
           ),
         ),
       ],
