@@ -51,7 +51,7 @@ class SellerAnalyticsScreen extends StatelessWidget {
                       color: AppTheme.royalBlueDark,
                     ),
                     _buildSummaryCard(
-                      title: 'Today\'s Sales',
+                      title: 'Transaksi Hari Ini',
                       value:
                           'Rp ${controller.getTodaysSales().toStringAsFixed(0)}',
                       icon: Icons.today,
@@ -94,7 +94,7 @@ class SellerAnalyticsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Today\'s Transactions',
+                    'Transaksi Hari Ini',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Obx(

@@ -281,6 +281,7 @@ class MenuDetailScreen extends StatelessWidget {
         'menu': menu,
         'quantity': quantity.value,
         'price': menu.price,
+        'merchant_id': menu.penjualId, // Add merchant_id from menu.penjualId
       },
     ].obs;
 

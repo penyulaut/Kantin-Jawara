@@ -38,11 +38,29 @@ class PenjualController extends GetxController {
         '/penjual/transactions',
         token: token,
       );
+
+      print('PenjualController: Fetch transactions response: $response');
+
       if (response['success']) {
         final List<dynamic> transactionData = response['data'];
-        _transactions.value = transactionData
-            .map((json) => Transaction.fromJson(json))
-            .toList();
+        print(
+          'PenjualController: Processing ${transactionData.length} transactions',
+        );
+
+        _transactions.value = transactionData.map((json) {
+          try {
+            print('PenjualController: Processing transaction: $json');
+            return Transaction.fromJson(json);
+          } catch (e) {
+            print('PenjualController: Error parsing transaction: $e');
+            print('PenjualController: Problematic JSON: $json');
+            rethrow;
+          }
+        }).toList();
+
+        print(
+          'PenjualController: Successfully loaded ${_transactions.length} transactions',
+        );
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch transactions';
@@ -144,11 +162,18 @@ class PenjualController extends GetxController {
     return getTransactionsByStatus(TransactionStatus.completed);
   }
 
-  // Sales analytics
   double getTotalSales() {
-    return _transactions
-        .where((t) => t.status == TransactionStatus.completed)
-        .fold(0.0, (sum, transaction) => sum + transaction.totalPrice);
+    double total = 0.0;
+    try {
+      for (var transaction in _transactions) {
+        if (transaction.status != TransactionStatus.pending) {
+          total += transaction.totalPrice;
+        }
+      }
+    } catch (e) {
+      print('PenjualController: Error calculating total sales: $e');
+    }
+    return total;
   }
 
   int getTotalOrders() {
@@ -180,9 +205,9 @@ class PenjualController extends GetxController {
   }
 
   double getTodaysSales() {
-    return getTodaysTransactions()
+    return _transactions
         .where((t) => t.status == TransactionStatus.completed)
-        .fold(0.0, (sum, transaction) => sum + transaction.totalPrice);
+        .fold(0.0, (sum, t) => sum + t.totalPrice);
   }
 
   // Status filter methods

@@ -139,6 +139,28 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getProfile({required String token}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/profile'),
+        headers: _getHeaders(token: token),
+      );
+
+      if (response.statusCode == 200) {
+        return {'success': true, 'data': jsonDecode(response.body)};
+      } else if (response.statusCode == 401) {
+        return {'success': false, 'message': 'Unauthorized access'};
+      } else {
+        return {
+          'success': false,
+          'message': 'Failed to fetch profile. Status: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Network error: ${e.toString()}'};
+    }
+  }
+
   Future<Map<String, dynamic>> updateProfile({
     required String token,
     required Map<String, dynamic> data,
@@ -610,7 +632,7 @@ class ApiService {
         'ApiService: Uploading payment proof for transaction $transactionId',
       );
 
-      final uri = Uri.parse('$_baseUrl/api/payments/proof');
+      final uri = Uri.parse('$_baseUrl/payments/proof');
       final request = http.MultipartRequest('POST', uri);
 
       // Add headers

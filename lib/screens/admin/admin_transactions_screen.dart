@@ -678,7 +678,7 @@ class _AdminTransactionsScreenState extends State<AdminTransactionsScreen> {
                               ),
                               Expanded(
                                 child: Text(
-                                  '${item.menu?.name ?? 'Menu Tidak Diketahui'} x${item.quantity} - Rp ${_formatCurrency(item.price)}',
+                                  '${item.menu?.name ?? 'Menu Tidak Diketahui'} x${item.quantity} - Rp ${_formatCurrency(item.unitPrice)}',
                                   style: TextStyle(
                                     color: AppTheme.darkGray,
                                     fontSize: 14,

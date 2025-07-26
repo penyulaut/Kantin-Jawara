@@ -479,83 +479,92 @@ class PaymentProofUploadScreen extends StatelessWidget {
               ),
             ],
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
 
             // Upload Button
-            Obx(
-              () => Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient:
-                      ((!useUrl.value && selectedImage.value != null) ||
-                              (useUrl.value && proofUrl.value.isNotEmpty)) &&
-                          !isUploading.value
-                      ? LinearGradient(
-                          colors: [AppTheme.usafaBlue, AppTheme.royalBlueDark],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        )
-                      : null,
-                  color:
-                      ((useUrl.value && proofUrl.value.isEmpty) ||
-                          (!useUrl.value && selectedImage.value == null) ||
-                          isUploading.value)
-                      ? AppTheme.lightGray
-                      : null,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap:
+            Center(
+              child: Obx(
+                () => Container(
+                  width: 250, // Limit width instead of full width
+                  decoration: BoxDecoration(
+                    gradient:
                         ((!useUrl.value && selectedImage.value != null) ||
                                 (useUrl.value && proofUrl.value.isNotEmpty)) &&
                             !isUploading.value
-                        ? _uploadProof
+                        ? LinearGradient(
+                            colors: [
+                              AppTheme.usafaBlue,
+                              AppTheme.royalBlueDark,
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          )
+                        : null,
+                    color:
+                        ((useUrl.value && proofUrl.value.isEmpty) ||
+                            (!useUrl.value && selectedImage.value == null) ||
+                            isUploading.value)
+                        ? AppTheme.lightGray
                         : null,
                     borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Center(
-                        child: isUploading.value
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap:
+                          ((!useUrl.value && selectedImage.value != null) ||
+                                  (useUrl.value &&
+                                      proofUrl.value.isNotEmpty)) &&
+                              !isUploading.value
+                          ? _uploadProof
+                          : null,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ), // Reduced padding
+                        child: Center(
+                          child: isUploading.value
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 16, // Smaller spinner
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.white,
+                                            ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Text(
-                                    'Uploading...',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Uploading...',
+                                      style: TextStyle(
+                                        fontSize: 14, // Smaller font
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
                                     ),
+                                  ],
+                                )
+                              : Text(
+                                  'Upload Payment Proof',
+                                  style: TextStyle(
+                                    fontSize: 14, // Smaller font
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                        ((!useUrl.value &&
+                                                selectedImage.value != null) ||
+                                            (useUrl.value &&
+                                                proofUrl.value.isNotEmpty))
+                                        ? Colors.white
+                                        : AppTheme.mediumGray,
                                   ),
-                                ],
-                              )
-                            : Text(
-                                'Upload Payment Proof',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      ((!useUrl.value &&
-                                              selectedImage.value != null) ||
-                                          (useUrl.value &&
-                                              proofUrl.value.isNotEmpty))
-                                      ? Colors.white
-                                      : AppTheme.mediumGray,
                                 ),
-                              ),
+                        ),
                       ),
                     ),
                   ),
@@ -609,30 +618,34 @@ class PaymentProofUploadScreen extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Mark as Paid Button
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppTheme.goldenPoppy, Colors.orange.shade600],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _markAsPaid,
+            Center(
+              child: Container(
+                width: 200, // Limit width instead of full width
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppTheme.goldenPoppy, Colors.orange.shade600],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
                   borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Center(
-                      child: Text(
-                        'Mark as Paid',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _markAsPaid,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                      ), // Reduced padding
+                      child: Center(
+                        child: Text(
+                          'Mark as Paid',
+                          style: TextStyle(
+                            fontSize: 14, // Smaller font
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -820,17 +833,44 @@ class PaymentProofUploadScreen extends StatelessWidget {
       print('PaymentProofUploadScreen: Upload result: $result');
 
       if (result['success'] == true) {
-        // Show success message from API
+        // Get message from API response or use default
+        String successMessage =
+            result['message'] ??
+            'Bukti pembayaran berhasil diupload dan sedang diproses';
+
         Get.snackbar(
-          'Sukses',
-          result['message'] ?? 'Bukti pembayaran berhasil diupload',
-          backgroundColor: Colors.green,
+          '✅ Upload Berhasil!',
+          successMessage,
+          backgroundColor: AppTheme.green,
           colorText: Colors.white,
-          icon: Icon(Icons.check_circle, color: Colors.white),
-          duration: Duration(seconds: 3),
+          icon: Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Icon(
+              Icons.check_circle_outline,
+              color: Colors.white,
+              size: 20,
+            ),
+          ),
+          duration: Duration(seconds: 4),
           snackPosition: SnackPosition.TOP,
           margin: EdgeInsets.all(16),
           borderRadius: 12,
+          boxShadows: [
+            BoxShadow(
+              color: AppTheme.green.withOpacity(0.3),
+              blurRadius: 10,
+              offset: Offset(0, 5),
+            ),
+          ],
+          shouldIconPulse: true,
+          barBlur: 20,
+          isDismissible: true,
+          dismissDirection: DismissDirection.horizontal,
+          forwardAnimationCurve: Curves.easeOutBack,
         );
 
         // Go back to previous screen with success result
@@ -970,18 +1010,37 @@ class PaymentProofUploadScreen extends StatelessWidget {
                 Get.back();
 
                 if (result['success'] == true) {
-                  // Show success message from API
+                  // Show beautiful success snackbar
                   Get.snackbar(
-                    'Sukses',
+                    '🎉 Pembayaran Dikonfirmasi!',
                     result['message'] ??
-                        'Transaksi berhasil ditandai sebagai sudah dibayar',
-                    backgroundColor: Colors.green,
+                        'Transaksi berhasil ditandai sebagai sudah dibayar. Pesanan Anda akan segera diproses.',
+                    backgroundColor: AppTheme.green,
                     colorText: Colors.white,
-                    icon: Icon(Icons.check_circle, color: Colors.white),
-                    duration: Duration(seconds: 3),
+                    icon: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Icon(Icons.payment, color: Colors.white, size: 20),
+                    ),
+                    duration: Duration(seconds: 4),
                     snackPosition: SnackPosition.TOP,
                     margin: EdgeInsets.all(16),
                     borderRadius: 12,
+                    boxShadows: [
+                      BoxShadow(
+                        color: AppTheme.green.withOpacity(0.3),
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                    shouldIconPulse: true,
+                    barBlur: 20,
+                    isDismissible: true,
+                    dismissDirection: DismissDirection.horizontal,
+                    forwardAnimationCurve: Curves.easeOutBack,
                   );
 
                   // Navigate to orders screen

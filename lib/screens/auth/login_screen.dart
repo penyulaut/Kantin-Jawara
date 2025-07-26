@@ -107,31 +107,20 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Logo/Icon
-              Container(
-                width: 100,
-                height: 100,
-                margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(
-                  color: AppTheme.royalBlueDark,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.royalBlueDark.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.restaurant,
-                  size: 50,
-                  color: AppTheme.white,
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Image.asset(
+                  '/image/logokantinjawara.png',
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                  color: Colors.transparent,
+                  colorBlendMode: BlendMode.multiply,
                 ),
               ),
 
               const Text(
-                'Selamat Datang',
+                'Selamat Datang di Kantin Jawara',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
@@ -144,19 +133,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
               ),
-              const SizedBox(height: 32),
-
-              // Social Login
-              Row(
-                children: [
-                  socialButton('Google', Icons.g_mobiledata),
-                  socialButton('Facebook', Icons.facebook),
-                ],
-              ),
-
               const SizedBox(height: 24),
 
-              // Email & Password Fields
               inputField(hint: 'Email', controller: emailCtrl),
               inputField(
                 hint: 'Password',
@@ -170,7 +148,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              // Login Button
               Obx(
                 () => SizedBox(
                   width: double.infinity,
@@ -223,7 +200,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 16),
 
-              // Error message
               Obx(
                 () => _authController.errorMessage.isNotEmpty
                     ? Container(

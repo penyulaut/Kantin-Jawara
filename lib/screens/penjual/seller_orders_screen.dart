@@ -476,7 +476,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                         (item) => Padding(
                           padding: const EdgeInsets.only(left: 16, bottom: 2),
                           child: Text(
-                            '• ${item.quantity ?? 1}x ${item.menu?.name ?? 'Unknown Menu'} - Rp ${((item.price ?? 0) * (item.quantity ?? 1)).toStringAsFixed(0)}',
+                            '• ${item.quantity ?? 1}x ${item.menu?.name ?? 'Unknown Menu'} - Rp ${((item.unitPrice ?? 0) * (item.quantity ?? 1)).toStringAsFixed(0)}',
                             style: const TextStyle(fontSize: 13),
                           ),
                         ),
@@ -679,266 +679,20 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes == 0) {
-          return 'Just now';
+          return 'Baru saja';
         }
-        return '${difference.inMinutes}m ago';
+        return '${difference.inMinutes} menit lalu';
       }
-      return '${difference.inHours}h ago';
+      return '${difference.inHours} jam lalu';
     } else if (difference.inDays == 1) {
-      return 'Yesterday';
+      return 'Kemarin';
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return '${difference.inDays} hari lalu';
     } else {
       return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
     }
   }
 }
-
-// Widget _buildFilterChip(
-//   String label,
-//   TransactionStatus? status,
-//   PenjualController controller,
-// ) {
-//   return Obx(
-//     () => FilterChip(
-//       label: Text(label),
-//       selected: controller.selectedStatus.value == status,
-//       onSelected: (selected) {
-//         controller.setStatusFilter(selected ? status : null);
-//       },
-//       selectedColor: AppTheme.royalBlueDark.withOpacity(0.2),
-//       checkmarkColor: AppTheme.royalBlueDark,
-//       labelStyle: TextStyle(
-//         color: controller.selectedStatus.value == status
-//             ? AppTheme.royalBlueDark
-//             : AppTheme.mediumGray,
-//       ),
-//     ),
-//   );
-// }
-
-// Widget _buildOrderCard(
-//   dynamic order,
-//   PenjualController controller,
-//   ChatController chatController,
-// ) {
-//   return Card(
-//     margin: const EdgeInsets.only(bottom: 12),
-//     elevation: 3,
-//     shadowColor: AppTheme.royalBlueDark.withOpacity(0.1),
-//     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//     child: InkWell(
-//       onTap: () => _showOrderDetails(order, controller),
-//       borderRadius: BorderRadius.circular(12),
-//       child: Container(
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(12),
-//           gradient: LinearGradient(
-//             colors: [AppTheme.white, AppTheme.lightGray.withOpacity(0.3)],
-//             begin: Alignment.topLeft,
-//             end: Alignment.bottomRight,
-//           ),
-//         ),
-//         child: Padding(
-//           padding: const EdgeInsets.all(16),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               // Order Header (already modified above)
-//               const SizedBox(height: 8),
-
-//               // Customer Info
-//               Row(
-//                 children: [
-//                   Icon(Icons.person, size: 16, color: AppTheme.mediumGray),
-//                   const SizedBox(width: 4),
-//                   Text(
-//                     'Customer: ${order.customerName ?? order.userId?.toString() ?? 'Unknown'}',
-//                     style: TextStyle(color: AppTheme.mediumGray),
-//                   ),
-//                 ],
-//               ),
-//               const SizedBox(height: 4),
-
-//               // Order Time
-//               Row(
-//                 children: [
-//                   Icon(Icons.access_time, size: 16, color: AppTheme.mediumGray),
-//                   const SizedBox(width: 4),
-//                   Text(
-//                     order.createdAt != null
-//                         ? _formatDate(order.createdAt!)
-//                         : 'Unknown time',
-//                     style: TextStyle(color: AppTheme.mediumGray),
-//                   ),
-//                 ],
-//               ),
-//               const SizedBox(height: 8),
-
-//               // Order Items
-//               if (order.items != null && order.items!.isNotEmpty) ...[
-//                 const Text(
-//                   'Items:',
-//                   style: TextStyle(fontWeight: FontWeight.w500),
-//                 ),
-//                 const SizedBox(height: 4),
-//                 ...order.items!
-//                     .map<Widget>(
-//                       (item) => Padding(
-//                         padding: const EdgeInsets.only(left: 16, bottom: 2),
-//                         child: Text(
-//                           '• ${item.quantity ?? 1}x ${item.menu?.name ?? 'Unknown Menu'} - Rp ${((item.price ?? 0) * (item.quantity ?? 1)).toStringAsFixed(0)}',
-//                           style: const TextStyle(fontSize: 13),
-//                         ),
-//                       ),
-//                     )
-//                     .toList(),
-//                 const SizedBox(height: 8),
-//               ],
-
-//               // Payment Proof Display
-//               if (order.payment?.proof != null &&
-//                   order.payment!.proof!.isNotEmpty) ...[
-//                 Row(
-//                   children: [
-//                     Icon(
-//                       Icons.receipt_long,
-//                       size: 16,
-//                       color: AppTheme.usafaBlue,
-//                     ),
-//                     const SizedBox(width: 4),
-//                     Text(
-//                       'Payment Proof:',
-//                       style: TextStyle(
-//                         fontWeight: FontWeight.w500,
-//                         color: AppTheme.usafaBlue,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 const SizedBox(height: 8),
-//                 GestureDetector(
-//                   onTap: () => _showPaymentProofDialog(order.payment!.proof!),
-//                   child: Container(
-//                     height: 80,
-//                     width: 120,
-//                     decoration: BoxDecoration(
-//                       borderRadius: BorderRadius.circular(8),
-//                       border: Border.all(color: AppTheme.usafaBlue),
-//                       color: AppTheme.lightGray,
-//                     ),
-//                     child: ClipRRect(
-//                       borderRadius: BorderRadius.circular(6),
-//                       child: Image.network(
-//                         order.payment!.proof!,
-//                         fit: BoxFit.cover,
-//                         errorBuilder: (context, error, stackTrace) {
-//                           return Container(
-//                             color: AppTheme.lightGray,
-//                             child: Column(
-//                               mainAxisAlignment: MainAxisAlignment.center,
-//                               children: [
-//                                 Icon(
-//                                   Icons.broken_image,
-//                                   size: 24,
-//                                   color: AppTheme.mediumGray,
-//                                 ),
-//                                 const SizedBox(height: 4),
-//                                 Text(
-//                                   'Failed to load',
-//                                   style: TextStyle(
-//                                     fontSize: 10,
-//                                     color: AppTheme.mediumGray,
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           );
-//                         },
-//                         loadingBuilder: (context, child, loadingProgress) {
-//                           if (loadingProgress == null) return child;
-//                           return Container(
-//                             color: AppTheme.lightGray,
-//                             child: Center(
-//                               child: SizedBox(
-//                                 width: 20,
-//                                 height: 20,
-//                                 child: CircularProgressIndicator(
-//                                   strokeWidth: 2,
-//                                   value:
-//                                       loadingProgress.expectedTotalBytes != null
-//                                       ? loadingProgress.cumulativeBytesLoaded /
-//                                             loadingProgress.expectedTotalBytes!
-//                                       : null,
-//                                   color: AppTheme.usafaBlue,
-//                                 ),
-//                               ),
-//                             ),
-//                           );
-//                         },
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//                 const SizedBox(height: 8),
-//               ],
-
-//               // Total and Actions
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Text(
-//                         'Total: Rp ${(order.totalPrice ?? 0).toStringAsFixed(0)}',
-//                         style: TextStyle(
-//                           fontSize: 16,
-//                           fontWeight: FontWeight.bold,
-//                           color: AppTheme.goldenPoppy,
-//                         ),
-//                       ),
-//                       const SizedBox(height: 4),
-//                       Text(
-//                         'Tap to view details',
-//                         style: TextStyle(
-//                           fontSize: 12,
-//                           color: AppTheme.mediumGray,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                   // Action buttons (already modified above)
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     ),
-//   );
-// }
-
-// String _formatDate(DateTime dateTime) {
-//   final now = DateTime.now();
-//   final difference = now.difference(dateTime);
-
-//   if (difference.inDays == 0) {
-//     if (difference.inHours == 0) {
-//       if (difference.inMinutes == 0) {
-//         return 'Just now';
-//       }
-//       return '${difference.inMinutes}m ago';
-//     }
-//     return '${difference.inHours}h ago';
-//   } else if (difference.inDays == 1) {
-//     return 'Yesterday';
-//   } else if (difference.inDays < 7) {
-//     return '${difference.inDays}d ago';
-//   } else {
-//     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-//   }
-// }
 
 void _showOrderDetails(dynamic order, PenjualController controller) {
   Get.bottomSheet(
@@ -1040,7 +794,7 @@ Widget _buildActionButtons(dynamic order, PenjualController controller) {
               foregroundColor: AppTheme.white,
               minimumSize: const Size(60, 32),
             ),
-            child: const Text('Reject', style: TextStyle(fontSize: 12)),
+            child: const Text('Tolak', style: TextStyle(fontSize: 12)),
           ),
           const SizedBox(width: 8),
           ElevatedButton(
@@ -1053,7 +807,7 @@ Widget _buildActionButtons(dynamic order, PenjualController controller) {
               foregroundColor: AppTheme.white,
               minimumSize: const Size(60, 32),
             ),
-            child: const Text('Accept', style: TextStyle(fontSize: 12)),
+            child: const Text('Setujui', style: TextStyle(fontSize: 12)),
           ),
         ],
       );
@@ -1068,7 +822,7 @@ Widget _buildActionButtons(dynamic order, PenjualController controller) {
           foregroundColor: AppTheme.royalBlueDark,
           minimumSize: const Size(80, 32),
         ),
-        child: const Text('Start Cooking', style: TextStyle(fontSize: 12)),
+        child: const Text('Mulai Memasak', style: TextStyle(fontSize: 12)),
       );
     case TransactionStatus.confirmed:
       return ElevatedButton(
@@ -1081,7 +835,7 @@ Widget _buildActionButtons(dynamic order, PenjualController controller) {
           foregroundColor: AppTheme.white,
           minimumSize: const Size(80, 32),
         ),
-        child: const Text('Mark Ready', style: TextStyle(fontSize: 12)),
+        child: const Text('Tandai Siap', style: TextStyle(fontSize: 12)),
       );
     case TransactionStatus.ready:
       return ElevatedButton(
@@ -1094,7 +848,7 @@ Widget _buildActionButtons(dynamic order, PenjualController controller) {
           foregroundColor: AppTheme.white,
           minimumSize: const Size(80, 32),
         ),
-        child: const Text('Complete', style: TextStyle(fontSize: 12)),
+        child: const Text('Selesai', style: TextStyle(fontSize: 12)),
       );
     default:
       return const SizedBox.shrink();
@@ -1108,10 +862,10 @@ Color _getStatusColor(TransactionStatus status) {
 void _showRejectDialog(dynamic order, PenjualController controller) {
   Get.dialog(
     AlertDialog(
-      title: const Text('Reject Order'),
-      content: const Text('Are you sure you want to reject this order?'),
+      title: const Text('Tolak Pesanan'),
+      content: const Text('Apakah Anda yakin ingin menolak pesanan ini?'),
       actions: [
-        TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+        TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
         ElevatedButton(
           onPressed: () {
             controller.updateTransactionStatus(
@@ -1121,7 +875,7 @@ void _showRejectDialog(dynamic order, PenjualController controller) {
             Get.back();
           },
           style: ElevatedButton.styleFrom(backgroundColor: AppTheme.red),
-          child: Text('Reject', style: TextStyle(color: AppTheme.white)),
+          child: Text('Tolak', style: TextStyle(color: AppTheme.white)),
         ),
       ],
     ),

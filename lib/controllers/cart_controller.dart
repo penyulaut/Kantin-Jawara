@@ -30,7 +30,7 @@ class CartController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();    
+    super.onInit();
   }
 
   Future<void> fetchCart() async {

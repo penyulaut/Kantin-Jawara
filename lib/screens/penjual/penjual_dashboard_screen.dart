@@ -71,14 +71,25 @@ class _PenjualDashboardScreenState extends State<PenjualDashboardScreen> {
                 _currentIndex = index;
               });
 
-              // Fetch data when specific tabs are selected
               if (index == 2) {
-                // Menus tab - fetch menu data
+                print('PenjualDashboard: Menus tab selected, fetching data...');
                 menuController.fetchMyMenus();
               } else if (index == 1) {
-                // Orders tab - fetch transaction and chat data
+                print(
+                  'PenjualDashboard: Orders tab selected, fetching data...',
+                );
                 penjualController.fetchTransactions();
                 chatController.fetchChatList();
+              } else if (index == 0) {
+                print(
+                  'PenjualDashboard: Dashboard tab selected, fetching data...',
+                );
+                penjualController.fetchTransactions();
+              } else if (index == 3) {
+                print(
+                  'PenjualDashboard: Profile tab selected, fetching profile...',
+                );
+                authController.fetchProfile();
               }
             },
             type: BottomNavigationBarType.fixed,
@@ -131,7 +142,13 @@ class _PenjualDashboardScreenState extends State<PenjualDashboardScreen> {
                           .getPendingTransactions()
                           .length
                           .toString(),
+                      style: const TextStyle(
+                        color: AppTheme.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    backgroundColor: AppTheme.red,
                     child: Icon(
                       Icons.shopping_bag,
                       color: _currentIndex == 1
@@ -140,7 +157,7 @@ class _PenjualDashboardScreenState extends State<PenjualDashboardScreen> {
                     ),
                   ),
                 ),
-                label: 'Orders',
+                label: 'Transaksi',
               ),
               BottomNavigationBarItem(
                 icon: Container(
@@ -158,7 +175,7 @@ class _PenjualDashboardScreenState extends State<PenjualDashboardScreen> {
                         : AppTheme.mediumGray,
                   ),
                 ),
-                label: 'Menus',
+                label: 'Menu',
               ),
               BottomNavigationBarItem(
                 icon: Container(
@@ -283,9 +300,8 @@ class SellerDashboardHome extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Stats Cards
                 const Text(
-                  'Today\'s Overview',
+                  'Transaksi Hari Ini',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -294,54 +310,75 @@ class SellerDashboardHome extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Obx(
-                  () => GridView.count(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 12,
-                    mainAxisSpacing: 12,
-                    childAspectRatio: 1.6,
-                    children: [
-                      _buildStatCard(
-                        title: 'Total Penjualan',
-                        value:
-                            'Rp ${controller.getTodaysSales().toStringAsFixed(0)}',
-                        icon: Icons.monetization_on,
-                        color: AppTheme.goldenPoppy,
-                      ),
-                      _buildStatCard(
-                        title: 'Pesanan Hari Ini',
-                        value: controller
-                            .getTodaysTransactions()
-                            .length
-                            .toString(),
-                        icon: Icons.shopping_bag,
-                        color: AppTheme.royalBlueDark,
-                      ),
-                      _buildStatCard(
-                        title: 'Pesanan Tertunda',
-                        value: controller
-                            .getPendingTransactions()
-                            .length
-                            .toString(),
-                        icon: Icons.pending,
-                        color: AppTheme.goldenPoppy,
-                      ),
-                      _buildStatCard(
-                        title: 'Selesai',
-                        value: controller
-                            .getCompletedTransactions()
-                            .length
-                            .toString(),
-                        icon: Icons.check_circle,
-                        color: AppTheme.usafaBlue,
-                      ),
-                    ],
-                  ),
+                  () => controller.isLoading
+                      ? Container(
+                          height: 200,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: AppTheme.royalBlueDark,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Memuat data transaksi...',
+                                  style: TextStyle(
+                                    color: AppTheme.mediumGray,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : GridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 1.6,
+                          children: [
+                            _buildStatCard(
+                              title: 'Total Penjualan',
+                              value:
+                                  'Rp ${controller.getTodaysSales().toStringAsFixed(0)}',
+                              icon: Icons.monetization_on,
+                              color: AppTheme.goldenPoppy,
+                            ),
+                            _buildStatCard(
+                              title: 'Pesanan Hari Ini',
+                              value: controller
+                                  .getTodaysTransactions()
+                                  .length
+                                  .toString(),
+                              icon: Icons.shopping_bag,
+                              color: AppTheme.royalBlueDark,
+                            ),
+                            _buildStatCard(
+                              title: 'Pesanan Tertunda',
+                              value: controller
+                                  .getPendingTransactions()
+                                  .length
+                                  .toString(),
+                              icon: Icons.pending,
+                              color: AppTheme.goldenPoppy,
+                            ),
+                            _buildStatCard(
+                              title: 'Selesai',
+                              value: controller
+                                  .getCompletedTransactions()
+                                  .length
+                                  .toString(),
+                              icon: Icons.check_circle,
+                              color: AppTheme.usafaBlue,
+                            ),
+                          ],
+                        ),
                 ),
                 const SizedBox(height: 24),
 
-                // Quick Actions
                 const Text(
                   'Tindakan Cepat',
                   style: TextStyle(
@@ -416,8 +453,7 @@ class SellerDashboardHome extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: InkWell(
-                          onTap: () {
-                          },
+                          onTap: () {},
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
                             decoration: BoxDecoration(
@@ -443,8 +479,7 @@ class SellerDashboardHome extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: InkWell(
-                          onTap: () {
-                          },
+                          onTap: () {},
                           borderRadius: BorderRadius.circular(16),
                           child: Container(
                             decoration: BoxDecoration(
@@ -493,6 +528,32 @@ class SellerDashboardHome extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
                 Obx(() {
+                  if (controller.isLoading) {
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              CircularProgressIndicator(
+                                color: AppTheme.royalBlueDark,
+                                strokeWidth: 2,
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Memuat pesanan terbaru...',
+                                style: TextStyle(
+                                  color: AppTheme.mediumGray,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
                   final recentOrders = controller.transactions.take(5).toList();
 
                   if (recentOrders.isEmpty) {
@@ -620,7 +681,7 @@ class SellerDashboardHome extends StatelessWidget {
             ),
           ),
           title: Text(
-            'Order #${order.id}',
+            'Order #${order.id ?? 'N/A'}',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: AppTheme.darkGray,
