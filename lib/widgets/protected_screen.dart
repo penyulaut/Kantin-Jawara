@@ -3,16 +3,11 @@ import 'package:get/get.dart';
 import '../utils/route_guard.dart';
 import '../utils/enums.dart';
 
-/// Mixin yang dapat digunakan oleh StatefulWidget untuk menambahkan
-/// route protection secara otomatis
 mixin RouteProtectionMixin<T extends StatefulWidget> on State<T> {
-  /// Override method ini untuk menentukan role yang diizinkan mengakses widget ini
   List<UserRole> get allowedRoles;
 
-  /// Override untuk custom redirect route
   String? get customRedirectRoute => null;
 
-  /// Override untuk custom access denied message
   String get accessDeniedMessage =>
       'You don\'t have permission to access this page';
 
@@ -20,7 +15,6 @@ mixin RouteProtectionMixin<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
 
-    // Check access permission after widget is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkRouteAccess();
     });
@@ -33,29 +27,21 @@ mixin RouteProtectionMixin<T extends StatefulWidget> on State<T> {
     );
 
     if (!hasAccess) {
-      // Additional handling if needed
       onAccessDenied();
     }
   }
 
-  /// Called when access is denied
-  /// Override untuk custom behavior
   void onAccessDenied() {
-    // Default implementation - you can override this
-    print('RouteProtectionMixin: Access denied for ${T.toString()}');
   }
 
-  /// Helper method untuk check permission dalam widget
   bool hasPermission() {
     return RouteGuard.hasAnyRole(allowedRoles);
   }
 
-  /// Helper method untuk check specific role
   bool hasRole(UserRole role) {
     return RouteGuard.hasRole(role);
   }
 
-  /// Show access denied message
   void showAccessDeniedMessage() {
     Get.snackbar(
       'Access Denied',
@@ -67,18 +53,14 @@ mixin RouteProtectionMixin<T extends StatefulWidget> on State<T> {
   }
 }
 
-/// Base class untuk screen yang memerlukan protection
 abstract class ProtectedScreen extends StatefulWidget {
   const ProtectedScreen({super.key});
 
-  /// Tentukan role yang diizinkan mengakses screen ini
   List<UserRole> get allowedRoles;
 
-  /// Custom redirect route jika akses ditolak
   String? get customRedirectRoute => null;
 }
 
-/// Base State untuk ProtectedScreen
 abstract class ProtectedScreenState<T extends ProtectedScreen> extends State<T>
     with RouteProtectionMixin {
   @override
@@ -87,15 +69,11 @@ abstract class ProtectedScreenState<T extends ProtectedScreen> extends State<T>
   @override
   String? get customRedirectRoute => widget.customRedirectRoute;
 
-  /// Build method untuk screen content
-  /// Override method ini di child class
   Widget buildScreenContent(BuildContext context);
 
   @override
   Widget build(BuildContext context) {
-    // Check permission first
     if (!hasPermission()) {
-      // Return loading atau access denied widget
       return Scaffold(
         appBar: AppBar(
           title: const Text('Access Denied'),
@@ -127,7 +105,6 @@ abstract class ProtectedScreenState<T extends ProtectedScreen> extends State<T>
   }
 }
 
-/// Example usage screen untuk Pembeli
 class ExamplePembeliScreen extends ProtectedScreen {
   const ExamplePembeliScreen({super.key});
 
@@ -153,7 +130,6 @@ class _ExamplePembeliScreenState
   }
 }
 
-/// Example usage screen untuk Penjual
 class ExamplePenjualScreen extends ProtectedScreen {
   const ExamplePenjualScreen({super.key});
 
@@ -179,7 +155,6 @@ class _ExamplePenjualScreenState
   }
 }
 
-/// Example usage screen untuk Admin
 class ExampleAdminScreen extends ProtectedScreen {
   const ExampleAdminScreen({super.key});
 

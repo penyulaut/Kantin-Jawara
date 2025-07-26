@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import '../utils/enums.dart';
 
-/// Simple helper untuk validasi role di existing screens
 class RoleValidator {
-  /// Check if current user has required role and redirect if not
   static bool validateRole(
     List<UserRole> allowedRoles, {
     String? customMessage,
@@ -14,16 +12,13 @@ class RoleValidator {
       final authController = Get.find<AuthController>();
       final currentUser = authController.currentUser;
 
-      // Check if user is logged in
       if (currentUser == null) {
         _redirectToLogin('Please login to access this page');
         return false;
       }
 
-      // Get user role
       final userRole = UserRole.fromString(currentUser.role ?? 'pembeli');
 
-      // Check if user has required role
       if (!allowedRoles.contains(userRole)) {
         _showAccessDenied(
           customMessage ?? 'You don\'t have permission to access this page',
@@ -34,28 +29,23 @@ class RoleValidator {
 
       return true;
     } catch (e) {
-      print('RoleValidator: Error - $e');
       _redirectToLogin('Authentication error, please login again');
       return false;
     }
   }
 
-  /// Quick check for admin only
   static bool adminOnly({String? customMessage}) {
     return validateRole([UserRole.admin], customMessage: customMessage);
   }
 
-  /// Quick check for penjual only
   static bool penjualOnly({String? customMessage}) {
     return validateRole([UserRole.penjual], customMessage: customMessage);
   }
 
-  /// Quick check for pembeli only
   static bool pembeliOnly({String? customMessage}) {
     return validateRole([UserRole.pembeli], customMessage: customMessage);
   }
 
-  /// Check if user has any of these roles
   static bool hasAnyRole(List<UserRole> roles) {
     try {
       final authController = Get.find<AuthController>();
@@ -70,7 +60,6 @@ class RoleValidator {
     }
   }
 
-  /// Get current user role
   static UserRole? getCurrentRole() {
     try {
       final authController = Get.find<AuthController>();
@@ -84,7 +73,6 @@ class RoleValidator {
     }
   }
 
-  /// Private helper methods
   static void _redirectToLogin(String message) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Get.snackbar(

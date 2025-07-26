@@ -5,7 +5,6 @@ import '../utils/app_theme.dart';
 enum SnackbarType { success, error, info }
 
 class CustomSnackbar {
-  /// Show success snackbar with green background
   static void showSuccess({
     required String title,
     required String message,
@@ -41,7 +40,6 @@ class CustomSnackbar {
     );
   }
 
-  /// Show error snackbar with red background
   static void showError({
     required String title,
     required String message,
@@ -77,7 +75,6 @@ class CustomSnackbar {
     );
   }
 
-  /// Show info snackbar with blue background
   static void showInfo({
     required String title,
     required String message,
@@ -113,7 +110,6 @@ class CustomSnackbar {
     );
   }
 
-  /// Show warning snackbar with orange background
   static void showWarning({
     required String title,
     required String message,
@@ -153,7 +149,6 @@ class CustomSnackbar {
     );
   }
 
-  /// Generic method to show snackbar based on type
   static void show({
     required SnackbarType type,
     required String title,
@@ -193,22 +188,18 @@ class CustomSnackbar {
     }
   }
 
-  /// Quick success message
   static void success(String message) {
     showSuccess(title: 'Success', message: message);
   }
 
-  /// Quick error message
   static void error(String message) {
     showError(title: 'Error', message: message);
   }
 
-  /// Quick info message
   static void info(String message) {
     showInfo(title: 'Info', message: message);
   }
 
-  /// Quick warning message
   static void warning(String message) {
     showWarning(title: 'Warning', message: message);
   }

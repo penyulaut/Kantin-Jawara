@@ -16,7 +16,6 @@ class PaymentMethodsScreen extends StatelessWidget {
     );
     final PaymentController paymentController = Get.put(PaymentController());
 
-    // Load data when screen builds
     WidgetsBinding.instance.addPostFrameCallback((_) {
       merchantController.fetchMerchantPaymentMethods();
       paymentController.fetchPaymentMethods();
@@ -70,7 +69,6 @@ class PaymentMethodsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 const Text(
                   'Manage Your Payment Methods',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -82,14 +80,12 @@ class PaymentMethodsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
 
-                // Available Payment Methods
                 const Text(
                   'Available Payment Methods',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 16),
 
-                // Payment Methods List
                 ...paymentController.paymentMethods.map((paymentMethod) {
                   final isEnabled = merchantController.merchantPaymentMethods
                       .any((m) => m.paymentMethodId == paymentMethod.id);
@@ -130,7 +126,6 @@ class PaymentMethodsScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                // Payment Method Icon
                 Container(
                   width: 48,
                   height: 48,
@@ -146,7 +141,6 @@ class PaymentMethodsScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
 
-                // Payment Method Info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +166,6 @@ class PaymentMethodsScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Enable/Disable Switch
                 Switch(
                   value: isEnabled,
                   onChanged: (value) async {
@@ -191,7 +184,6 @@ class PaymentMethodsScreen extends StatelessWidget {
               ],
             ),
 
-            // Account Details (if enabled)
             if (isEnabled && merchantPaymentMethod != null) ...[
               const SizedBox(height: 12),
               Container(
@@ -353,7 +345,6 @@ class PaymentMethodsScreen extends StatelessWidget {
               if (success) {
                 Get.back(); // Close dialog
 
-                // Show success message
                 Get.snackbar(
                   'Success',
                   existingMethod != null

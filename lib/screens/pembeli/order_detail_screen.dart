@@ -56,30 +56,24 @@ class OrderDetailScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        // Remove the dark gradient container wrapper
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Status Card
             _buildStatusCard(),
             const SizedBox(height: 16),
 
-            // Order Info
             _buildOrderInfoCard(),
             const SizedBox(height: 16),
 
-            // Items
             _buildOrderItemsCard(),
             const SizedBox(height: 16),
 
-            // Payment Info (if exists)
             if (transaction.payment != null) ...[
               _buildPaymentInfoCard(),
               const SizedBox(height: 16),
             ],
 
-            // Payment Proof Section (if exists)
             if (transaction.paymentProof != null &&
                 transaction.paymentProof!.isNotEmpty) ...[
               _buildPaymentProofCard(),
@@ -336,7 +330,6 @@ class OrderDetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Payment proof preview
               GestureDetector(
                 onTap: () {
                   Get.to(
@@ -465,7 +458,6 @@ class OrderDetailScreen extends StatelessWidget {
                 );
               },
             ),
-            // Overlay with view button
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(

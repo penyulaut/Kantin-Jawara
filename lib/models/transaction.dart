@@ -52,12 +52,10 @@ class Transaction {
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
     try {
-      // Parse payment first to potentially get payment proof
       Payment? payment = json['payment'] != null
           ? Payment.fromJson(json['payment'])
           : null;
 
-      // Get payment proof from multiple possible sources
       String? paymentProof;
       if (json.containsKey('payment_proof') && json['payment_proof'] != null) {
         paymentProof = json['payment_proof'];
@@ -103,10 +101,7 @@ class Transaction {
         paymentProof: paymentProof,
       );
     } catch (e) {
-      print('Transaction.fromJson error: $e');
-      print('Transaction JSON keys: ${json.keys.toList()}');
       if (json['items'] != null) {
-        print('Items data: ${json['items']}');
       }
       rethrow;
     }
@@ -218,22 +213,18 @@ class TransactionItem {
 
   factory TransactionItem.fromJson(Map<String, dynamic> json) {
     try {
-      // Handle different field names from API
       double unitPrice = 0.0;
       double totalPrice = 0.0;
 
-      // Try to get unit price from different possible field names
       if (json.containsKey('unit_price')) {
         unitPrice = double.tryParse(json['unit_price'].toString()) ?? 0.0;
       } else if (json.containsKey('price')) {
         unitPrice = double.tryParse(json['price'].toString()) ?? 0.0;
       }
 
-      // Try to get total price from different possible field names
       if (json.containsKey('total_price')) {
         totalPrice = double.tryParse(json['total_price'].toString()) ?? 0.0;
       } else {
-        // If no total_price, calculate it from unit_price * quantity
         int quantity = int.tryParse(json['quantity'].toString()) ?? 0;
         totalPrice = unitPrice * quantity;
       }
@@ -248,9 +239,6 @@ class TransactionItem {
         menu: json['menu'] != null ? Menu.fromJson(json['menu']) : null,
       );
     } catch (e) {
-      print('TransactionItem.fromJson error: $e');
-      print('TransactionItem JSON: $json');
-      print('Available keys: ${json.keys.toList()}');
       rethrow;
     }
   }

@@ -26,7 +26,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
     controller = Get.find<PenjualController>();
     chatController = Get.find<ChatController>();
 
-    // Fetch initial data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refreshData();
     });
@@ -62,7 +61,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
         ),
         child: Column(
           children: [
-            // Filter Tabs
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -121,14 +119,12 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
               ),
             ),
 
-            // Orders List
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _refreshData,
                 color: AppTheme.royalBlueDark,
                 backgroundColor: Colors.white,
                 child: Obx(() {
-                  // Show loading state
                   if (controller.isLoading && controller.transactions.isEmpty) {
                     return Center(
                       child: Column(
@@ -154,7 +150,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                     );
                   }
 
-                  // Show error state
                   if (controller.errorMessage.isNotEmpty &&
                       controller.transactions.isEmpty) {
                     return Center(
@@ -335,7 +330,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Order Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -350,7 +344,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                             ),
                           ),
                           const SizedBox(width: 8),
-                          // Enhanced unread chat badge
                           Obx(() {
                             final unreadCount = chatController
                                 .getUnreadCountForTransaction(order.id ?? 0);
@@ -432,7 +425,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                 ),
                 const SizedBox(height: 8),
 
-                // Customer Info
                 Row(
                   children: [
                     Icon(Icons.person, size: 16, color: AppTheme.mediumGray),
@@ -445,7 +437,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                 ),
                 const SizedBox(height: 4),
 
-                // Order Time
                 Row(
                   children: [
                     Icon(
@@ -464,7 +455,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                 ),
                 const SizedBox(height: 8),
 
-                // Order Items
                 if (order.items != null && order.items!.isNotEmpty) ...[
                   const Text(
                     'Items:',
@@ -485,7 +475,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                   const SizedBox(height: 8),
                 ],
 
-                // Payment Proof Display
                 if (order.payment?.proof != null &&
                     order.payment!.proof!.isNotEmpty) ...[
                   Row(
@@ -575,7 +564,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                   const SizedBox(height: 8),
                 ],
 
-                // Total and Actions
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -603,7 +591,6 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Enhanced chat button
                         Obx(() {
                           final unreadCount = chatController
                               .getUnreadCountForTransaction(order.id ?? 0);
@@ -623,12 +610,10 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                             ),
                             child: IconButton(
                               onPressed: () {
-                                // Navigate to chat and mark as read
                                 Get.toNamed(
                                   '/chat',
                                   arguments: {'transactionId': order.id},
                                 );
-                                // Refresh chat list to update unread count
                                 chatController.fetchChatList();
                               },
                               icon: Badge(
@@ -706,7 +691,6 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -725,7 +709,6 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
           ),
           const SizedBox(height: 16),
 
-          // Customer Info
           Text(
             'Customer Details',
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -736,7 +719,6 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
           Text('Order Type: ${order.orderType.toString().split('.').last}'),
           const SizedBox(height: 16),
 
-          // Notes
           if (order.notes != null && order.notes!.isNotEmpty) ...[
             Text(
               'Notes',
@@ -747,7 +729,6 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
             const SizedBox(height: 16),
           ],
 
-          // Action Buttons
           Row(
             children: [
               Expanded(

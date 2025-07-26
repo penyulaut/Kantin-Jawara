@@ -78,7 +78,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Login Sosial
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -89,13 +88,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 24),
 
-                // Form Fields
                 inputField("Nama", nameCtrl),
                 inputField("Email", emailCtrl),
                 passwordField(),
                 inputField("Konfirmasi Password", confirmPassCtrl), // ✅ Tambahan
 
-                // Dropdown Role
                 DropdownButtonFormField<String>(
                   value: selectedRole == 'Pilih Role' ? null : selectedRole,
                   decoration: const InputDecoration(labelText: 'Role'),
@@ -133,7 +130,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 12),
 
-                // Register Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

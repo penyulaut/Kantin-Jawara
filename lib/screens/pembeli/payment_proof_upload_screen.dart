@@ -35,7 +35,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Transaction Info
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -126,7 +125,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // Upload Section
             Text(
               'Upload Payment Proof',
               style: TextStyle(
@@ -142,7 +140,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Toggle between Image Upload and URL
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
@@ -238,7 +235,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // Image Picker Container or URL Input
             Obx(
               () => !useUrl.value
                   ? Container(
@@ -481,7 +477,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            // Upload Button
             Center(
               child: Obx(
                 () => Container(
@@ -574,7 +569,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Payment Note Section
             Text(
               'Payment Note (Optional)',
               style: TextStyle(
@@ -617,7 +611,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Mark as Paid Button
             Center(
               child: Container(
                 width: 200, // Limit width instead of full width
@@ -656,7 +649,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Instructions
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -718,7 +710,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
       if (image != null) {
         final file = File(image.path);
 
-        // Check file size (2MB = 2 * 1024 * 1024 bytes)
         final fileSize = await file.length();
         if (fileSize > 2 * 1024 * 1024) {
           Get.snackbar(
@@ -751,7 +742,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
     try {
       isUploading.value = true;
 
-      // Show beautiful loading dialog
       Get.dialog(
         WillPopScope(
           onWillPop: () async => false, // Prevent dismissing while uploading
@@ -814,26 +804,21 @@ class PaymentProofUploadScreen extends StatelessWidget {
       Map<String, dynamic> result;
 
       if (useUrl.value) {
-        // Upload using URL
         result = await paymentController.uploadPaymentProofUrl(
           transactionId: transaction.id!,
           proofUrl: proofUrl.value,
         );
       } else {
-        // Upload using file
         result = await paymentController.uploadPaymentProof(
           transactionId: transaction.id!,
           proofFile: selectedImage.value!,
         );
       }
 
-      // Close loading dialog
       Get.back();
 
-      print('PaymentProofUploadScreen: Upload result: $result');
 
       if (result['success'] == true) {
-        // Get message from API response or use default
         String successMessage =
             result['message'] ??
             'Bukti pembayaran berhasil diupload dan sedang diproses';
@@ -873,7 +858,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
           forwardAnimationCurve: Curves.easeOutBack,
         );
 
-        // Go back to previous screen with success result
         Get.back(result: true);
       } else {
         Get.snackbar(
@@ -888,7 +872,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
         );
       }
     } catch (e) {
-      // Close loading dialog if still open
       if (Get.isDialogOpen == true) Get.back();
 
       Get.snackbar(
@@ -929,7 +912,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
             onPressed: () async {
               Get.back(); // Close dialog
 
-              // Show beautiful loading dialog
               Get.dialog(
                 WillPopScope(
                   onWillPop: () async =>
@@ -1002,15 +984,10 @@ class PaymentProofUploadScreen extends StatelessWidget {
                       : paymentNoteController.text.trim(),
                 );
 
-                print(
-                  'PaymentProofUploadScreen: markTransactionAsPaid result: $result',
-                );
 
-                // Close loading dialog
                 Get.back();
 
                 if (result['success'] == true) {
-                  // Show beautiful success snackbar
                   Get.snackbar(
                     '🎉 Pembayaran Dikonfirmasi!',
                     result['message'] ??
@@ -1043,15 +1020,9 @@ class PaymentProofUploadScreen extends StatelessWidget {
                     forwardAnimationCurve: Curves.easeOutBack,
                   );
 
-                  // Navigate to orders screen
-                  print('PaymentProofUploadScreen: Navigating to /orders');
                   try {
                     Get.offAllNamed('/orders'); // Navigate to orders page
                   } catch (e) {
-                    print(
-                      'PaymentProofUploadScreen: Failed to navigate to /orders, trying fallback: $e',
-                    );
-                    // Fallback: go back to previous screen multiple times to get to orders
                     Get.until((route) => route.isFirst);
                   }
                 } else {
@@ -1068,7 +1039,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
                   );
                 }
               } catch (e) {
-                // Close loading dialog if still open
                 if (Get.isDialogOpen == true) Get.back();
 
                 Get.snackbar(

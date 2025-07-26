@@ -2,15 +2,12 @@ import 'package:get/get.dart';
 import '../utils/enums.dart';
 import '../utils/route_guard.dart';
 
-/// Helper class untuk navigasi yang aman berdasarkan role
 class NavigationHelper {
-  /// Navigate to route with permission check
   static Future<void> navigateTo(
     String route, {
     List<UserRole>? requiredRoles,
     bool clearStack = false,
   }) async {
-    // If no required roles specified, just navigate
     if (requiredRoles == null || requiredRoles.isEmpty) {
       if (clearStack) {
         Get.offAllNamed(route);
@@ -20,7 +17,6 @@ class NavigationHelper {
       return;
     }
 
-    // Check permission
     final hasAccess = await RouteGuard.checkAccess(allowedRoles: requiredRoles);
 
     if (hasAccess) {
@@ -30,10 +26,8 @@ class NavigationHelper {
         Get.toNamed(route);
       }
     }
-    // If no access, RouteGuard.checkAccess will handle the redirect
   }
 
-  /// Navigate to user dashboard based on their role
   static void navigateToDashboard() {
     final userRole = RouteGuard.getCurrentUserRole();
 
@@ -53,7 +47,6 @@ class NavigationHelper {
     }
   }
 
-  /// Navigate to admin dashboard (with permission check)
   static Future<void> navigateToAdmin() async {
     await navigateTo(
       '/admin',
@@ -62,7 +55,6 @@ class NavigationHelper {
     );
   }
 
-  /// Navigate to penjual dashboard (with permission check)
   static Future<void> navigateToPenjual() async {
     await navigateTo(
       '/penjual',
@@ -71,7 +63,6 @@ class NavigationHelper {
     );
   }
 
-  /// Navigate to pembeli dashboard (with permission check)
   static Future<void> navigateToPembeli() async {
     await navigateTo(
       '/pembeli',
@@ -80,19 +71,15 @@ class NavigationHelper {
     );
   }
 
-  /// Check if current route is accessible and redirect if not
   static Future<void> validateCurrentRoute() async {
     final currentRoute = Get.currentRoute;
-    print('NavigationHelper: Validating current route: $currentRoute');
 
-    // Define route permissions
     final Map<String, List<UserRole>> routePermissions = {
       '/admin': [UserRole.admin],
       '/penjual': [UserRole.penjual],
       '/pembeli': [UserRole.pembeli],
     };
 
-    // Check if current route needs permission
     if (routePermissions.containsKey(currentRoute)) {
       final requiredRoles = routePermissions[currentRoute]!;
       final hasAccess = await RouteGuard.checkAccess(
@@ -100,15 +87,10 @@ class NavigationHelper {
       );
 
       if (!hasAccess) {
-        print(
-          'NavigationHelper: Access denied for current route, redirecting...',
-        );
-        // RouteGuard.checkAccess will handle the redirect
       }
     }
   }
 
-  /// Navigate back with fallback to dashboard
   static void navigateBack() {
     if (Get.previousRoute.isNotEmpty && Get.previousRoute != Get.currentRoute) {
       Get.back();
@@ -117,7 +99,6 @@ class NavigationHelper {
     }
   }
 
-  /// Get appropriate dashboard route for user role
   static String getDashboardRoute(UserRole? role) {
     switch (role) {
       case UserRole.admin:
@@ -131,7 +112,6 @@ class NavigationHelper {
     }
   }
 
-  /// Check if user can access a specific route
   static bool canAccessRoute(String route, UserRole? userRole) {
     final routePermissions = {
       '/admin': [UserRole.admin],
@@ -142,13 +122,11 @@ class NavigationHelper {
     };
 
     if (!routePermissions.containsKey(route)) {
-      // Unknown route, allow access for authenticated users
       return userRole != null;
     }
 
     final allowedRoles = routePermissions[route]!;
 
-    // If empty list, accessible by everyone
     if (allowedRoles.isEmpty) {
       return true;
     }

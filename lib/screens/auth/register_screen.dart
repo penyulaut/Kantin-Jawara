@@ -1,4 +1,3 @@
-// import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/auth_controller.dart';
@@ -22,6 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   UserRole _selectedRole = UserRole.pembeli;
   bool _agreed = false;
   bool _passwordVisible = false;
+  bool _confirmPasswordVisible = false;
+
 
   @override
   void dispose() {
@@ -105,7 +106,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Image.asset(
-                    '/image/logokantinjawara.png',
+                    'assets/image/logokantinjawara.png',
                     width: 120,
                     height: 120,
                     fit: BoxFit.contain,
@@ -115,9 +116,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 const Text(
                   'Selamat Datang di Kantin Jawara',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 24,
+                    fontSize: 16,
                     color: AppTheme.royalBlueDark,
                   ),
                 ),
@@ -136,12 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   keyboardType: TextInputType.emailAddress,
                 ),
                 _passwordField(),
-                _inputField(
-                  "Konfirmasi Password",
-                  _confirmPasswordController,
-                  _validateConfirmPassword,
-                  obscure: true,
-                ),
+                _confirmPasswordField(),
 
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 6),
@@ -453,6 +450,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
     );
   }
+
+  Widget _confirmPasswordField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppTheme.mediumGray.withOpacity(0.3)),
+        ),
+        child: TextFormField(
+          controller: _confirmPasswordController,
+          obscureText: !_confirmPasswordVisible,
+          validator: _validateConfirmPassword,
+          decoration: InputDecoration(
+            labelText: 'Konfirmasi Password',
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            labelStyle: const TextStyle(color: AppTheme.mediumGray),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: AppTheme.mediumGray,
+              ),
+              onPressed: () =>
+                  setState(() => _confirmPasswordVisible = !_confirmPasswordVisible),
+            ),
+          ),
+        ),
+      ),
+    );
+  }  
 
   String _getRoleDisplayName(UserRole role) {
     switch (role) {

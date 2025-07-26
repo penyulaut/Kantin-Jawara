@@ -3,19 +3,15 @@ import 'package:get/get.dart';
 import '../utils/enums.dart';
 import '../utils/route_guard.dart';
 
-/// Mixin untuk widget yang membutuhkan permission checking
 mixin PermissionMixin {
-  /// Check if current user has permission to access this widget/page
   bool hasPermission(List<UserRole> allowedRoles) {
     return RouteGuard.hasAnyRole(allowedRoles);
   }
 
-  /// Check if current user has specific role
   bool hasRole(UserRole role) {
     return RouteGuard.hasRole(role);
   }
 
-  /// Show access denied dialog
   void showAccessDenied() {
     Get.dialog(
       AlertDialog(
@@ -30,7 +26,6 @@ mixin PermissionMixin {
     );
   }
 
-  /// Redirect to user dashboard based on their role
   void redirectToDashboard() {
     final userRole = RouteGuard.getCurrentUserRole();
 
@@ -50,7 +45,6 @@ mixin PermissionMixin {
     }
   }
 
-  /// Check permission and show appropriate message if denied
   bool checkPermissionWithMessage(
     List<UserRole> allowedRoles, {
     String? customMessage,
@@ -69,9 +63,7 @@ mixin PermissionMixin {
   }
 }
 
-/// Helper class untuk UI permissions
 class PermissionHelper {
-  /// Widget builder that only shows content if user has permission
   static Widget conditionalWidget({
     required List<UserRole> allowedRoles,
     required Widget child,
@@ -86,7 +78,6 @@ class PermissionHelper {
     return fallback ?? const SizedBox.shrink();
   }
 
-  /// Show widget only for specific role
   static Widget forRole({
     required UserRole role,
     required Widget child,
@@ -99,22 +90,18 @@ class PermissionHelper {
     );
   }
 
-  /// Show widget only for admin
   static Widget adminOnly({required Widget child, Widget? fallback}) {
     return forRole(role: UserRole.admin, child: child, fallback: fallback);
   }
 
-  /// Show widget only for penjual
   static Widget penjualOnly({required Widget child, Widget? fallback}) {
     return forRole(role: UserRole.penjual, child: child, fallback: fallback);
   }
 
-  /// Show widget only for pembeli
   static Widget pembeliOnly({required Widget child, Widget? fallback}) {
     return forRole(role: UserRole.pembeli, child: child, fallback: fallback);
   }
 
-  /// Show different widgets based on user role
   static Widget roleBasedWidget({
     Widget? adminWidget,
     Widget? penjualWidget,
@@ -135,7 +122,6 @@ class PermissionHelper {
     }
   }
 
-  /// Get current user role display name
   static String getCurrentUserRoleDisplay() {
     final userRole = RouteGuard.getCurrentUserRole();
 
@@ -151,11 +137,9 @@ class PermissionHelper {
     }
   }
 
-  /// Check if URL/route should be accessible by current user
   static bool canAccessRoute(String route) {
     final userRole = RouteGuard.getCurrentUserRole();
 
-    // Define route permissions
     final Map<String, List<UserRole>> routePermissions = {
       '/admin': [UserRole.admin],
       '/penjual': [UserRole.penjual],
@@ -164,19 +148,16 @@ class PermissionHelper {
       '/splash': [], // Accessible by everyone
     };
 
-    // If route not defined, allow access for authenticated users
     if (!routePermissions.containsKey(route)) {
       return userRole != null;
     }
 
     final allowedRoles = routePermissions[route]!;
 
-    // If empty list, accessible by everyone (including guests)
     if (allowedRoles.isEmpty) {
       return true;
     }
 
-    // Check if user has required role
     return userRole != null && allowedRoles.contains(userRole);
   }
 }

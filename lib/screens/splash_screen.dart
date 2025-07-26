@@ -24,11 +24,8 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 2));
 
     if (isLoggedIn && authController.currentUser != null) {
-      print('User already logged in: ${authController.currentUser?.name}');
-      print('User role: ${authController.currentUser?.role}');
       NavigationHelper.navigateToDashboard();
     } else {
-      print('User not logged in, redirecting to login');
       Get.offAllNamed('/login');
     }
   }
@@ -52,11 +49,9 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // App Name dengan font stylish
               Text(
                 'Kantin',
                 style: GoogleFonts.dancingScript(
-                  // atau bisa pakai font lain
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
@@ -72,7 +67,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 50),
 
-              // Loading Indicator (opsional, bisa dihilangkan)
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.black54),
               ),

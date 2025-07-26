@@ -23,22 +23,18 @@ class PembeliController extends GetxController {
 
   Future<void> fetchTransactions() async {
     try {
-      print('PembeliController: Starting fetchTransactions...');
       _isLoading.value = true;
       _errorMessage.value = '';
 
       final token = await _authService.getToken();
-      print('PembeliController: Token exists: ${token != null}');
 
       if (token == null) {
         _errorMessage.value = 'User not authenticated';
         return;
       }
 
-      print('PembeliController: Making API call to /pembeli/transactions');
       final response = await _apiService.getPembeliTransactions(token);
 
-      print('PembeliController: Response: $response');
 
       if (response['success']) {
         final responseData = response['data'];
@@ -49,36 +45,24 @@ class PembeliController extends GetxController {
         } else if (responseData is List) {
           transactionData = responseData;
         } else {
-          print('PembeliController: Unexpected response format: $responseData');
           transactionData = [];
         }
 
-        print(
-          'PembeliController: Found ${transactionData.length} transactions',
-        );
         _transactions.value = transactionData
             .map((json) => Transaction.fromJson(json))
             .toList();
-        print(
-          'PembeliController: Successfully loaded ${_transactions.length} transactions',
-        );
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch transactions';
-        print('PembeliController: Error - ${_errorMessage.value}');
 
         if (response['message']?.contains('Unauthenticated') == true ||
             response['message']?.contains('401') == true) {
-          print(
-            'PembeliController: Authentication failed, redirecting to login',
-          );
           await _authService.clearUserData();
           Get.offAllNamed('/login'); 
         }
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      print('PembeliController: Exception - $e');
     } finally {
       _isLoading.value = false;
     }
@@ -292,7 +276,6 @@ class PembeliController extends GetxController {
         paymentNote: paymentNote,
       );
 
-      print('PembeliController: markTransactionAsPaid response: $response');
 
       if (response['success'] == true) {
         final apiResponse = response['data']; 
@@ -300,7 +283,6 @@ class PembeliController extends GetxController {
             apiResponse['message'] ??
             'Transaksi berhasil ditandai sebagai sudah dibayar';
 
-        print('PembeliController: Extracted message: $message');
 
         await fetchTransactions();
 

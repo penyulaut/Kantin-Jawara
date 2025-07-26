@@ -14,7 +14,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
       MerchantPaymentMethodController(),
     );
 
-    // Load data when screen builds
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchMerchantPaymentMethods();
     });
@@ -34,7 +33,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
             onPressed: () async {
               final result = await Get.to(() => const AddPaymentMethodScreen());
               if (result == true) {
-                // Refresh list when coming back from add screen
                 controller.fetchMerchantPaymentMethods();
               }
             },
@@ -183,7 +181,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Payment Method Icon
                   Container(
                     width: 48,
                     height: 48,
@@ -204,7 +201,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
 
-                  // Payment Method Info
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +227,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
                     ),
                   ),
 
-                  // Status Badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -259,7 +254,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Account Details
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -310,7 +304,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              // Action Buttons
               Row(
                 children: [
                   Expanded(
@@ -423,7 +416,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 return;
               }
 
-              // Show loading
               Get.dialog(
                 const Center(
                   child: CircularProgressIndicator(
@@ -445,11 +437,9 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 isActive: paymentMethod.isActive,
               );
 
-              // Close loading dialog
               Get.back();
 
               if (success) {
-                // Close edit dialog
                 Get.back();
                 Get.snackbar(
                   'Sukses',
@@ -459,7 +449,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
                   colorText: AppTheme.royalBlueDark,
                 );
               } else {
-                // Show error, keep dialog open
                 Get.snackbar(
                   'Error',
                   'Gagal memperbarui metode pembayaran',
@@ -494,7 +483,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
           TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
           ElevatedButton(
             onPressed: () async {
-              // Show loading
               Get.dialog(
                 const Center(
                   child: CircularProgressIndicator(
@@ -510,11 +498,9 @@ class MerchantPaymentListScreen extends StatelessWidget {
                 paymentMethod.id!,
               );
 
-              // Close loading dialog
               Get.back();
 
               if (success) {
-                // Close delete dialog
                 Get.back();
                 Get.snackbar(
                   'Sukses',
@@ -524,7 +510,6 @@ class MerchantPaymentListScreen extends StatelessWidget {
                   colorText: AppTheme.royalBlueDark,
                 );
               } else {
-                // Show error, keep dialog open
                 Get.snackbar(
                   'Error',
                   'Gagal menghapus metode pembayaran',

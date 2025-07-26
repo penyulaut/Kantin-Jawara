@@ -7,16 +7,12 @@ import '../controllers/payment_controller.dart';
 class AppBinding extends Bindings {
   @override
   void dependencies() {
-    // Initialize AuthController as permanent dependency
     Get.put<AuthController>(AuthController(), permanent: true);
-    // Initialize CartController as permanent dependency
     Get.put<CartController>(CartController(), permanent: true);
-    // Initialize MerchantPaymentMethodController as permanent dependency
     Get.put<MerchantPaymentMethodController>(
       MerchantPaymentMethodController(),
       permanent: true,
     );
-    // Initialize PaymentController as permanent dependency
     Get.put<PaymentController>(PaymentController(), permanent: true);
   }
 }

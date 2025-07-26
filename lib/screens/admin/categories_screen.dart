@@ -426,7 +426,6 @@ class CategoriesScreen extends StatelessWidget {
                             nameController.text.trim(),
                           );
 
-                          // Gunakan Navigator.pop() sebagai alternatif
                           if (Navigator.canPop(context)) {
                             Navigator.pop(context);
                           }
@@ -460,7 +459,6 @@ class CategoriesScreen extends StatelessWidget {
                             );
                           }
                         } catch (e) {
-                          // Handle error
                           if (Navigator.canPop(context)) {
                             Navigator.pop(context);
                           }
@@ -586,7 +584,6 @@ class CategoriesScreen extends StatelessWidget {
                         if (success) {
                           Get.back(); // Tutup dialog
 
-                          // Tampilkan snackbar sukses
                           Get.snackbar(
                             'Berhasil',
                             'Kategori "${nameController.text.trim()}" berhasil diperbarui',
@@ -602,7 +599,6 @@ class CategoriesScreen extends StatelessWidget {
                             ),
                           );
                         } else {
-                          // Jika gagal, tampilkan error tapi jangan tutup dialog
                           Get.snackbar(
                             'Gagal',
                             'Gagal memperbarui kategori. Silakan coba lagi.',
@@ -741,7 +737,6 @@ class CategoriesScreen extends StatelessWidget {
                         if (success) {
                           Get.back(); // Tutup dialog
 
-                          // Tampilkan snackbar sukses
                           Get.snackbar(
                             'Berhasil',
                             'Kategori "${category.name}" berhasil dihapus',
@@ -757,7 +752,6 @@ class CategoriesScreen extends StatelessWidget {
                             ),
                           );
                         } else {
-                          // Jika gagal, tampilkan error tapi jangan tutup dialog
                           Get.snackbar(
                             'Gagal',
                             'Gagal menghapus kategori. Silakan coba lagi.',

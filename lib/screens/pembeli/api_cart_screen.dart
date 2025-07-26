@@ -10,18 +10,15 @@ class ApiCartScreen extends StatelessWidget {
 
   ApiCartScreen({super.key});
 
-  // Helper function to build proper image URL
   String _buildImageUrl(String? imageUrl) {
     if (imageUrl == null || imageUrl.isEmpty) {
       return '';
     }
 
-    // If it's already a full URL, return as is
     if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
       return imageUrl;
     }
 
-    // If it's a relative URL, append to base URL
     const String baseUrl = 'https://semenjana.biz.id/kaja';
     return '$baseUrl/$imageUrl';
   }
@@ -83,16 +80,8 @@ class ApiCartScreen extends StatelessWidget {
           );
         }
 
-        // Group items by merchant if needed
         final groupedItems = cartController.cartItemsByMerchant;
 
-        // Debug log to check grouped items
-        print(
-          'ApiCartScreen: Grouped items keys: ${groupedItems.keys.toList()}',
-        );
-        print(
-          'ApiCartScreen: Total grouped merchants: ${groupedItems.keys.length}',
-        );
 
         return Column(
           children: [
@@ -101,7 +90,6 @@ class ApiCartScreen extends StatelessWidget {
                   ? _buildGroupedCart(groupedItems)
                   : _buildSimpleCart(),
             ),
-            // Total and Checkout
             _buildCheckoutSection(),
           ],
         );
@@ -133,12 +121,7 @@ class ApiCartScreen extends StatelessWidget {
         final merchantId = groupedItems.keys.elementAt(merchantIndex);
         final merchantItems = groupedItems[merchantId]!;
 
-        print(
-          'ApiCartScreen: Building UI for merchant $merchantId with ${merchantItems.length} items',
-        );
 
-        // Get merchant name - for now using merchant ID
-        // In the future, you might want to add merchant info to Menu model or fetch it separately
         String merchantName = 'Merchant $merchantId';
 
         return Card(
@@ -146,7 +129,6 @@ class ApiCartScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Merchant Header
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -191,7 +173,6 @@ class ApiCartScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              // Merchant Items
               ...merchantItems.map((item) {
                 final Menu? menu = item['menu'];
                 final int quantity =
@@ -233,7 +214,6 @@ class ApiCartScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Image
             Container(
               width: 70,
               height: 70,
@@ -277,9 +257,6 @@ class ApiCartScreen extends StatelessWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-                          print(
-                            'CartScreen: Error loading image: ${menu.imageUrl}',
-                          );
                           return Container(
                             width: 70,
                             height: 70,
@@ -312,7 +289,6 @@ class ApiCartScreen extends StatelessWidget {
             ),
             const SizedBox(width: 12),
 
-            // Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,7 +303,6 @@ class ApiCartScreen extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  // Show description if available
                   if (menu?.description != null &&
                       menu!.description!.isNotEmpty) ...[
                     Text(
@@ -350,7 +325,6 @@ class ApiCartScreen extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  // Show stock warning if stock is low
                   if (menu != null && menu.stock <= 5 && menu.stock > 0) ...[
                     const SizedBox(height: 4),
                     Row(
@@ -448,7 +422,6 @@ class ApiCartScreen extends StatelessWidget {
               ),
             ),
 
-            // Price
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -492,7 +465,6 @@ class ApiCartScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Summary section
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -697,7 +669,6 @@ class ApiCartScreen extends StatelessWidget {
               Get.back(); // Close dialog first
               await cartController.clearCart();
 
-              // Show success message
               Get.snackbar(
                 'Success',
                 'Keranjang berhasil dikosongkan',
@@ -724,7 +695,6 @@ class ApiCartScreen extends StatelessWidget {
   }
 
   void _proceedToCheckout() {
-    // Convert to the format expected by CheckoutScreen
     final cartItems = cartController.cartItems.obs;
     Get.to(() => CheckoutScreen(cartItems: cartItems));
   }

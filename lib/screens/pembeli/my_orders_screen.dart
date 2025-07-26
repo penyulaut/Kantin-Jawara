@@ -14,7 +14,6 @@ class MyOrdersScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final PembeliController controller = Get.put(PembeliController());
 
-    // Ensure data is fetched when screen builds
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.fetchTransactions();
     });
@@ -212,7 +211,6 @@ class MyOrdersScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -257,7 +255,6 @@ class MyOrdersScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
 
-                // Date and Order Type
                 Row(
                   children: [
                     Icon(
@@ -291,7 +288,6 @@ class MyOrdersScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Items Summary
                 if (transaction.items != null &&
                     transaction.items!.isNotEmpty) ...[
                   Container(
@@ -318,7 +314,6 @@ class MyOrdersScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                 ],
 
-                // Customer Info
                 if (transaction.customerName != null) ...[
                   Row(
                     children: [
@@ -341,7 +336,6 @@ class MyOrdersScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                 ],
 
-                // Total Price
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -383,7 +377,6 @@ class MyOrdersScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Action Buttons
                 if (transaction.status == TransactionStatus.pending) ...[
                   const SizedBox(height: 16),
                   Row(
@@ -426,7 +419,6 @@ class MyOrdersScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Upload Proof Button
                   SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
@@ -589,7 +581,6 @@ class MyOrdersScreen extends StatelessWidget {
   }
 
   void _uploadProof(Transaction transaction) {
-    // Get merchant_id from transaction items
     int merchantId = 1; // Default fallback
     if (transaction.items != null && transaction.items!.isNotEmpty) {
       final firstItem = transaction.items!.first;
@@ -598,17 +589,12 @@ class MyOrdersScreen extends StatelessWidget {
       }
     }
 
-    print(
-      'MyOrdersScreen: Navigating to upload proof for transaction ${transaction.id}',
-    );
 
-    // Navigate to payment selection screen first to choose payment method
     Get.to(
       () => PaymentSelectionScreen(
         merchantId: merchantId,
         totalAmount: transaction.totalPrice,
         onPaymentSelected: (paymentMethod, merchantPaymentMethod) {
-          // Navigate to payment proof screen
           if (merchantPaymentMethod != null) {
             Get.to(
               () => PaymentProofScreen(
@@ -631,7 +617,6 @@ class MyOrdersScreen extends StatelessWidget {
   }
 
   void _payOrder(Transaction transaction) {
-    // Get merchant_id from transaction items
     int merchantId = 1; // Default fallback
     if (transaction.items != null && transaction.items!.isNotEmpty) {
       final firstItem = transaction.items!.first;
@@ -640,15 +625,12 @@ class MyOrdersScreen extends StatelessWidget {
       }
     }
 
-    print('MyOrdersScreen: Using merchant_id: $merchantId for payment methods');
 
-    // Navigate to payment selection screen
     Get.to(
       () => PaymentSelectionScreen(
         merchantId: merchantId,
         totalAmount: transaction.totalPrice,
         onPaymentSelected: (paymentMethod, merchantPaymentMethod) {
-          // After payment method is selected, show payment instructions or upload proof
           Get.snackbar(
             'Payment Method Selected',
             'Selected ${paymentMethod.name}. Please make the payment and upload proof.',
