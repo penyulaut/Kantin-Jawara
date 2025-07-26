@@ -4,6 +4,7 @@ import '../../models/transaction.dart';
 import '../../controllers/chat_controller.dart';
 import '../../utils/app_theme.dart';
 import '../shared/payment_proof_viewer_screen.dart';
+import '../shared/chat_screen.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Transaction transaction;
@@ -14,9 +15,7 @@ class OrderDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.lightGray.withOpacity(
-        0.1,
-      ), // Light background instead of white
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
           'Order #${transaction.id ?? "Unknown"}',
@@ -39,10 +38,9 @@ class OrderDetailScreen extends StatelessWidget {
             Container(
               margin: const EdgeInsets.only(right: 8),
               child: IconButton(
-                onPressed: () => Get.toNamed(
-                  '/chat',
-                  arguments: {'transactionId': transaction.id!},
-                ),
+                onPressed: () {
+                  Get.to(() => ChatScreen(transactionId: transaction.id!));
+                },
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(

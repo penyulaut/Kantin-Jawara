@@ -19,7 +19,7 @@ class MyOrdersScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: AppTheme.lightGray.withOpacity(0.1),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Pesanan Saya',
@@ -39,141 +39,141 @@ class MyOrdersScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: Obx(() {
-        if (controller.isLoading) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppTheme.royalBlueDark,
-                  ),
-                  strokeWidth: 3,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Memuat pesanan Anda...',
-                  style: TextStyle(
-                    color: AppTheme.mediumGray,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (controller.errorMessage.isNotEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 64, color: AppTheme.red),
-                const SizedBox(height: 16),
-                Text(
-                  'Oops! Something went wrong',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.royalBlueDark,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  controller.errorMessage,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () => controller.fetchTransactions(),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.royalBlueDark,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [AppTheme.lightGray.withOpacity(0.3), Colors.white],
+          ),
+        ),
+        child: Obx(() {
+          if (controller.isLoading) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppTheme.royalBlueDark,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    strokeWidth: 3,
                   ),
-                  child: const Text(
-                    'Try Again',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        if (controller.transactions.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.receipt_long_outlined,
-                  size: 80,
-                  color: AppTheme.mediumGray,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'No orders yet',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppTheme.royalBlueDark,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Your order history will appear here',
-                  style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.goldenPoppy.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppTheme.goldenPoppy.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Text(
-                    '🛒 Start ordering from your favorite kantins!',
+                  const SizedBox(height: 16),
+                  Text(
+                    'Memuat pesanan Anda...',
                     style: TextStyle(
-                      fontSize: 12,
-                      color: AppTheme.royalBlueDark,
+                      color: AppTheme.mediumGray,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () => controller.fetchTransactions(),
-          color: AppTheme.royalBlueDark,
-          backgroundColor: Colors.white,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [AppTheme.lightGray.withOpacity(0.3), Colors.white],
+                ],
               ),
-            ),
+            );
+          }
+
+          if (controller.errorMessage.isNotEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 64, color: AppTheme.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Oops! Something went wrong',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.royalBlueDark,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    controller.errorMessage,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => controller.fetchTransactions(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.royalBlueDark,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Try Again',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (controller.transactions.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 80,
+                    color: AppTheme.mediumGray,
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'No orders yet',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.royalBlueDark,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Your order history will appear here',
+                    style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.goldenPoppy.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppTheme.goldenPoppy.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Text(
+                      '🛒 Start ordering from your favorite kantins!',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.royalBlueDark,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => controller.fetchTransactions(),
+            color: AppTheme.royalBlueDark,
+            backgroundColor: Colors.white,
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: controller.transactions.length,
@@ -182,9 +182,9 @@ class MyOrdersScreen extends StatelessWidget {
                 return _buildOrderCard(context, transaction);
               },
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 
@@ -589,7 +589,6 @@ class MyOrdersScreen extends StatelessWidget {
       }
     }
 
-
     Get.to(
       () => PaymentSelectionScreen(
         merchantId: merchantId,
@@ -624,7 +623,6 @@ class MyOrdersScreen extends StatelessWidget {
         merchantId = firstItem.menu!.penjualId!;
       }
     }
-
 
     Get.to(
       () => PaymentSelectionScreen(

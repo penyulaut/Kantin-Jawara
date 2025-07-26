@@ -66,35 +66,45 @@ class MenuController extends GetxController {
   void onInit() {
     super.onInit();
     fetchMenus();
-    fetchMerchants(); 
+    fetchMerchants();
     _testImageConnectivity();
   }
 
   void _testImageConnectivity() async {
-    try {
-    } catch (e) {
-    }
+    try {} catch (e) {}
   }
 
   void setSearchQuery(String query) {
-    _searchQuery.value = query;
+    if (_searchQuery.value != query) {
+      _searchQuery.value = query;
+    }
   }
 
   void setSelectedCategory(int categoryId) {
-    _selectedCategoryId.value = categoryId;
-    _selectedMerchantId.value =
-        0; 
+    if (_selectedCategoryId.value != categoryId) {
+      _selectedCategoryId.value = categoryId;
+    }
   }
 
   void setSelectedMerchant(int merchantId) {
+    // Prevent unnecessary updates if the same merchant is already selected
+    if (_selectedMerchantId.value == merchantId) {
+      return;
+    }
+
+    print('Setting selected merchant to: $merchantId'); // Debug print
+    print(
+      'Current selected merchant: $_selectedMerchantId.value',
+    ); // Debug print
+
     _selectedMerchantId.value = merchantId;
-    _selectedCategoryId.value =
-        0; 
+
+    print('New selected merchant: $_selectedMerchantId.value'); // Debug print
 
     if (merchantId > 0) {
       fetchMenusByMerchant(merchantId);
     } else {
-      fetchMenus(); 
+      fetchMenus();
     }
   }
 
@@ -164,7 +174,6 @@ class MenuController extends GetxController {
       final currentUser = await _authService.getUser();
       final token = await _authService.getToken();
 
-
       if (currentUser == null || token == null) {
         _errorMessage.value = 'User not authenticated';
         return;
@@ -191,8 +200,7 @@ class MenuController extends GetxController {
               .toList();
           return;
         }
-      } catch (e) {
-      }
+      } catch (e) {}
 
       final response = await _apiService.get('/menus', token: token);
 
@@ -249,7 +257,6 @@ class MenuController extends GetxController {
           !imageUrl.startsWith('https://') &&
           File(imageUrl).existsSync();
 
-
       if (isLocalFile) {
         final fields = {
           'name': name,
@@ -278,7 +285,6 @@ class MenuController extends GetxController {
 
         response = await _apiService.post('/menus', data: data, token: token);
       }
-
 
       if (response['success']) {
         await fetchMyMenus();
@@ -347,7 +353,6 @@ class MenuController extends GetxController {
           !imageUrl.startsWith('https://') &&
           File(imageUrl).existsSync();
 
-
       if (isLocalFile) {
         final fields = {
           '_method': 'PUT',
@@ -381,7 +386,6 @@ class MenuController extends GetxController {
           token: token,
         );
       }
-
 
       if (response['success']) {
         await fetchMyMenus();
@@ -476,7 +480,6 @@ class MenuController extends GetxController {
 
   Future<void> fetchMerchants() async {
     try {
-
       final response = await _apiService.get('/merchants');
 
       if (response['success']) {
@@ -494,9 +497,6 @@ class MenuController extends GetxController {
         _merchants.value = merchantData
             .map((data) => Merchant.fromJson(data as Map<String, dynamic>))
             .toList();
-
-        for (var merchant in _merchants) {
-        }
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to load merchants';
 
@@ -517,7 +517,7 @@ class MenuController extends GetxController {
         if (menu.penjualId != null) {
           merchantMap[menu.penjualId!] = Merchant(
             id: menu.penjualId!,
-            name: 'Kantin ${menu.penjualId}', 
+            name: 'Kantin ${menu.penjualId}',
             description: 'Delicious food from our kitchen',
             imageUrl: null,
           );
@@ -552,7 +552,6 @@ class MenuController extends GetxController {
         _menus.value = menuData
             .map((data) => Menu.fromJson(data as Map<String, dynamic>))
             .toList();
-
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to load merchant menus';

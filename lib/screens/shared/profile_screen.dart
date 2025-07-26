@@ -362,7 +362,7 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Aplikasi manajemen restoran yang memudahkan proses pemesanan, pembayaran, dan pengelolaan menu.',
+                  'Aplikasi manajemen kantin yang memudahkan proses pemesanan, pembayaran, dan pengelolaan menu.',
                   style: TextStyle(
                     color: AppTheme.mediumGray,
                     fontSize: 14,

@@ -43,3 +43,17 @@ android {
 flutter {
     source = "../.."
 }
+
+// tasks.whenTaskAdded {
+//     if (name.startsWith("assemble")) {
+//         doLast {
+//             val buildType = name.removePrefix("assemble").lowercase()
+//             val apkDir = file("$buildDir/outputs/apk/$buildType")
+//             apkDir.listFiles()?.forEach { file ->
+//                 if (file.name.endsWith(".apk")) {
+//                     file.renameTo(File(file.parent, "kantin-jawara-$buildType.apk"))
+//                 }
+//             }
+//         }
+//     }
+// }

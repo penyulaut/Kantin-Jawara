@@ -49,15 +49,11 @@ class ChatController extends GetxController {
             final chatsData = responseData['chats'];
             if (chatsData is List) {
               chatListData = chatsData;
-            } else {
-            }
-          } else {
-          }
+            } else {}
+          } else {}
         } else if (responseData is List) {
           chatListData = responseData;
-        } else {
-        }
-
+        } else {}
 
         try {
           _chatList.value = chatListData
@@ -72,8 +68,7 @@ class ChatController extends GetxController {
               .cast<ChatItem>()
               .toList();
 
-          for (var item in _chatList) {
-          }
+          for (var item in _chatList) {}
         } catch (e) {
           _errorMessage.value = 'Error parsing chat data: $e';
         }
@@ -120,7 +115,6 @@ class ChatController extends GetxController {
         '/transactions/$transactionId/chats',
         token: token,
       );
-
 
       if (response['success']) {
         final responseData = response['data'];
@@ -231,15 +225,16 @@ class ChatController extends GetxController {
         }
 
         await fetchChatList();
+        _chatsByTransaction.refresh();
         return true;
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to send message';
-        Get.snackbar('Error', _errorMessage.value);
+        print('Send message error: ${response['message']}'); // Debug
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      Get.snackbar('Error', _errorMessage.value);
+      print('Send message exception: $e'); // Debug
       return false;
     }
   }
