@@ -41,7 +41,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Payment Method'),
+        title: const Text('Pilih Metode Pembayaran'),
         backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -62,7 +62,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
             child: Column(
               children: [
                 const Text(
-                  'Total Amount',
+                  'Jumlah Total',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white70,
@@ -98,7 +98,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Loading payment methods...',
+                        'Memuat Metode Pembayaran...',
                         style: TextStyle(
                           color: AppTheme.mediumGray,
                           fontSize: 14,
@@ -118,7 +118,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       Icon(Icons.error_outline, size: 64, color: AppTheme.red),
                       const SizedBox(height: 16),
                       Text(
-                        'Oops! Something went wrong',
+                        'Ups! Terjadi kesalahan',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -150,7 +150,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                           ),
                         ),
                         child: const Text(
-                          'Try Again',
+                          'Coba lagi',
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                       ),
@@ -171,7 +171,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'No payment methods available',
+                        'Tidak ada metode pembayaran yang tersedia',
                         style: TextStyle(
                           fontSize: 18,
                           color: AppTheme.royalBlueDark,
@@ -180,7 +180,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'The merchant hasn\'t set up payment methods yet',
+                        'Pedagang belum menyiapkan metode pembayaran',
                         style: TextStyle(
                           fontSize: 14,
                           color: AppTheme.mediumGray,
@@ -298,7 +298,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                     if (merchantPaymentMethod.details['account_number'] !=
                         null) ...[
                       Text(
-                        'Account: ${merchantPaymentMethod.details['account_number']}',
+                        'Akun: ${merchantPaymentMethod.details['account_number']}',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -310,7 +310,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                         null) ...[
                       const SizedBox(height: 2),
                       Text(
-                        'Name: ${merchantPaymentMethod.details['account_name']}',
+                        'Nama: ${merchantPaymentMethod.details['account_name']}',
                         style: TextStyle(
                           fontSize: 12,
                           color: AppTheme.mediumGray,
@@ -422,7 +422,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
 
             // Payment Details
             Text(
-              'Payment Details',
+              'Detail Pembayaran',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -466,7 +466,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       ),
                     ),
                     child: Text(
-                      'Cancel',
+                      'Batal',
                       style: TextStyle(
                         color: AppTheme.royalBlueDark,
                         fontWeight: FontWeight.w600,
@@ -501,7 +501,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       ),
                     ),
                     child: const Text(
-                      'Pay Now',
+                      'Bayar Sekarang',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -558,7 +558,7 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
                       // Copy to clipboard functionality
                       Get.snackbar(
                         'Copied',
-                        'Account number copied to clipboard',
+                        'Nomor akun disalin ke papan klip',
                         snackPosition: SnackPosition.BOTTOM,
                         duration: const Duration(seconds: 2),
                         backgroundColor: AppTheme.royalBlueDark,
@@ -593,8 +593,8 @@ class _PaymentSelectionScreenState extends State<PaymentSelectionScreen> {
   ) {
     // This would navigate to a payment proof upload screen
     Get.snackbar(
-      'Payment Selected',
-      'Selected ${paymentMethod.name}. Payment proof upload feature coming soon!',
+      'Pembayaran Dipilih',
+      'Terpilih ${paymentMethod.name}. Fitur unggah bukti pembayaran akan segera hadir!',
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: AppTheme.royalBlueDark,
       colorText: Colors.white,

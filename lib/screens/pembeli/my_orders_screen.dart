@@ -54,7 +54,7 @@ class MyOrdersScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Loading your orders...',
+                  'Memuat pesanan Anda...',
                   style: TextStyle(
                     color: AppTheme.mediumGray,
                     fontSize: 14,

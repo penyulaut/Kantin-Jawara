@@ -96,7 +96,7 @@ class CheckoutScreen extends StatelessWidget {
 
             // Customer Information
             Text(
-              'Customer Information',
+              'Informasi Pembeli  ',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -107,7 +107,7 @@ class CheckoutScreen extends StatelessWidget {
             TextField(
               controller: customerNameController,
               decoration: InputDecoration(
-                labelText: 'Customer Name',
+                labelText: 'Nama Pembeli',
                 labelStyle: TextStyle(color: AppTheme.darkGray),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -126,7 +126,7 @@ class CheckoutScreen extends StatelessWidget {
             TextField(
               controller: customerPhoneController,
               decoration: InputDecoration(
-                labelText: 'Phone Number',
+                labelText: 'Nomor Telepon',
                 labelStyle: TextStyle(color: AppTheme.darkGray),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -146,7 +146,7 @@ class CheckoutScreen extends StatelessWidget {
 
             // Order Type
             Text(
-              'Order Type',
+              'Tipe Pesanan',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -180,7 +180,7 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        'Eat at the restaurant',
+                        'Makan disini',
                         style: TextStyle(color: AppTheme.darkGray),
                       ),
                       value: 'dine_in',
@@ -198,7 +198,7 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        'Take your order to go',
+                        'Bawa pergi',
                         style: TextStyle(color: AppTheme.darkGray),
                       ),
                       value: 'takeaway',
@@ -216,7 +216,7 @@ class CheckoutScreen extends StatelessWidget {
                         ),
                       ),
                       subtitle: Text(
-                        'Deliver to your location',
+                        'Antar ke lokasi',
                         style: TextStyle(color: AppTheme.darkGray),
                       ),
                       value: 'delivery',
@@ -232,7 +232,7 @@ class CheckoutScreen extends StatelessWidget {
 
             // Payment Method
             Text(
-              'Payment Method',
+              'Metode Pembayaran',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -291,7 +291,7 @@ class CheckoutScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   selectedPaymentMethod.value?.name ??
-                                      'Select Payment Method',
+                                      'Pilih Metode Pembayaran',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
@@ -331,7 +331,7 @@ class CheckoutScreen extends StatelessWidget {
 
             // Notes
             Text(
-              'Notes (Optional)',
+              'Catatan (Opsional)',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -342,7 +342,7 @@ class CheckoutScreen extends StatelessWidget {
             TextField(
               controller: notesController,
               decoration: InputDecoration(
-                labelText: 'Add any special instructions...',
+                labelText: 'Tambahkan instruksi khusus apa pun...',
                 labelStyle: TextStyle(color: AppTheme.darkGray),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -414,7 +414,7 @@ class CheckoutScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Place Order',
+                                  'Tempatkan Pesanan',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
@@ -501,7 +501,7 @@ class CheckoutScreen extends StatelessWidget {
     if (customerNameController.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
-        'Please enter customer name',
+        'Silakan masukkan nama anda',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         icon: Icon(Icons.error, color: Colors.white),
@@ -512,7 +512,7 @@ class CheckoutScreen extends StatelessWidget {
     if (customerPhoneController.text.trim().isEmpty) {
       Get.snackbar(
         'Error',
-        'Please enter phone number',
+        'Silakan masukkan nomor telepon',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         icon: Icon(Icons.error, color: Colors.white),
@@ -523,7 +523,7 @@ class CheckoutScreen extends StatelessWidget {
     if (selectedPaymentMethod.value == null) {
       Get.snackbar(
         'Error',
-        'Please select a payment method',
+        'Silakan pilih metode pembayaran',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         icon: Icon(Icons.error, color: Colors.white),

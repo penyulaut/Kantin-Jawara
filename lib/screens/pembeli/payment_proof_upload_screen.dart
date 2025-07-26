@@ -25,7 +25,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Payment Proof'),
+        title: Text('Unggah Bukti Pembayaran'),
         backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -56,7 +56,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Transaction Details',
+                    'Detail Transaksi',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -853,7 +853,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
       Get.snackbar(
         'Error',
-        'Failed to upload: $e',
+        'Gagal mengunggah: $e',
         backgroundColor: Colors.red,
         colorText: Colors.white,
         icon: Icon(Icons.error, color: Colors.white),
@@ -870,20 +870,20 @@ class PaymentProofUploadScreen extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         title: Text(
-          'Confirm Payment',
+          'Konfirmasi Pembayaran',
           style: TextStyle(
             color: AppTheme.royalBlueDark,
             fontWeight: FontWeight.bold,
           ),
         ),
         content: Text(
-          'Are you sure you have completed the payment for Order #${transaction.id}?',
+          'Apakah Anda yakin telah menyelesaikan pembayaran untuk Pesanan? #${transaction.id}?',
           style: TextStyle(color: AppTheme.darkGray),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: TextStyle(color: AppTheme.mediumGray)),
+            child: Text('Batal', style: TextStyle(color: AppTheme.mediumGray)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -1014,7 +1014,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
                 Get.snackbar(
                   'Error',
-                  'Failed to process: $e',
+                  'Gagal memproses: $e',
                   backgroundColor: Colors.red,
                   colorText: Colors.white,
                   icon: Icon(Icons.error, color: Colors.white),
@@ -1028,7 +1028,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
               backgroundColor: AppTheme.goldenPoppy,
               foregroundColor: Colors.white,
             ),
-            child: Text('Confirm'),
+            child: Text('Konfirmasi'),
           ),
         ],
       ),

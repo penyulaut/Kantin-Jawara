@@ -177,7 +177,7 @@ class OrderDetailScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Payment Information',
+                        'Informasi Pembayaran',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -218,7 +218,7 @@ class OrderDetailScreen extends StatelessWidget {
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return const Center(
-                                  child: Text('Failed to load image'),
+                                  child: Text('Gagal memuat gambar'),
                                 );
                               },
                             ),

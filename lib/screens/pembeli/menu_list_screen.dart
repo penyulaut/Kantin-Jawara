@@ -275,7 +275,7 @@ class _MenuListScreenState extends State<MenuListScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Loading delicious menus...',
+                        'Yakin deh menu nya enak-enak...',
                         style: TextStyle(
                           color: AppTheme.mediumGray,
                           fontSize: 14,
