@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../models/transaction.dart';
 import '../../controllers/penjual_controller.dart';
@@ -6,10 +7,40 @@ import '../../utils/app_theme.dart';
 import '../shared/chat_screen.dart';
 import '../shared/payment_proof_viewer_screen.dart';
 
-class SellerOrderDetailScreen extends StatelessWidget {
+class SellerOrderDetailScreen extends StatefulWidget {
   final Transaction transaction;
 
   const SellerOrderDetailScreen({super.key, required this.transaction});
+
+  @override
+  State<SellerOrderDetailScreen> createState() =>
+      _SellerOrderDetailScreenState();
+}
+
+class _SellerOrderDetailScreenState extends State<SellerOrderDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Android 15 specific setup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _setupSystemUI();
+    });
+  }
+
+  void _setupSystemUI() {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
+        systemNavigationBarIconBrightness: Brightness.dark,
+        systemNavigationBarContrastEnforced: false,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,402 +48,570 @@ class SellerOrderDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      extendBody: true,
+      extendBodyBehindAppBar: false,
       appBar: AppBar(
-        title: Text('Detail Pesanan #${transaction.id ?? 'N/A'}'),
+        title: Text('Detail Pesanan #${widget.transaction.id ?? 'N/A'}'),
         backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
         elevation: 2,
         shadowColor: AppTheme.royalBlueDark.withOpacity(0.3),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+        ),
         actions: [
-          if (transaction.id != null)
+          if (widget.transaction.id != null)
             IconButton(
               onPressed: () {
-                Get.to(() => ChatScreen(transactionId: transaction.id!));
+                Get.to(() => ChatScreen(transactionId: widget.transaction.id!));
               },
               icon: const Icon(Icons.chat_bubble_outline),
               tooltip: 'Chat dengan Pelanggan',
             ),
         ],
       ),
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.royalBlueDark.withOpacity(0.05),
-                      AppTheme.white,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Status Pesanan',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.darkGray,
-                            ),
-                          ),
-                          _buildStatusChip(transaction.status),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      _buildInfoRow('Order ID', '#${transaction.id ?? 'N/A'}'),
-                      _buildInfoRow(
-                        'Total',
-                        'Rp ${transaction.totalPrice.toStringAsFixed(0)}',
-                      ),
-                      if (transaction.customerName != null)
-                        _buildInfoRow(
-                          'Nama Pelanggan',
-                          transaction.customerName!,
-                        ),
-                      if (transaction.customerPhone != null)
-                        _buildInfoRow(
-                          'No. Telepon',
-                          transaction.customerPhone!,
-                        ),
-                      _buildInfoRow(
-                        'Tipe Pesanan',
-                        transaction.orderType == OrderType.dineIn
-                            ? 'Makan di Tempat'
-                            : 'Bungkus',
-                      ),
-                      if (transaction.notes != null &&
-                          transaction.notes!.isNotEmpty)
-                        _buildInfoRow('Catatan', transaction.notes!),
-                    ],
-                  ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Status Card
+                    _buildStatusCard(),
+                    const SizedBox(height: 16),
+
+                    // Payment Proof Card
+                    if (widget.transaction.paymentProof != null &&
+                        widget.transaction.paymentProof!.isNotEmpty)
+                      _buildPaymentProofCard(),
+
+                    // Items Card
+                    if (widget.transaction.items != null &&
+                        widget.transaction.items!.isNotEmpty)
+                      _buildItemsCard(),
+
+                    // Action Buttons Card
+                    _buildActionButtons(controller),
+                  ],
                 ),
               ),
             ),
+          ),
 
-            const SizedBox(height: 16),
+          // Bottom safe area - CRUCIAL for Android 15
+          Container(
+            height: MediaQuery.of(context).viewPadding.bottom,
+            color: Colors.grey[50],
+          ),
+        ],
+      ),
+    );
+  }
 
-            if (transaction.paymentProof != null &&
-                transaction.paymentProof!.isNotEmpty) ...[
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppTheme.green.withOpacity(0.05),
-                        AppTheme.white,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+  Widget _buildStatusCard() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: [AppTheme.royalBlueDark.withOpacity(0.05), AppTheme.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Status Pesanan',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.darkGray,
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppTheme.green.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.receipt_long,
-                                color: AppTheme.green,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'Bukti Pembayaran',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.darkGray,
-                                ),
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppTheme.green.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                'Sudah Upload',
-                                style: TextStyle(
-                                  color: AppTheme.green,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(
-                              () => PaymentProofViewerScreen(
-                                transaction: transaction,
-                                userRole: 'seller',
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: double.infinity,
-                            height: 150,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: AppTheme.mediumGray.withOpacity(0.3),
-                              ),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Stack(
-                                children: [
-                                  Image.network(
-                                    transaction.paymentProof!,
-                                    width: double.infinity,
-                                    height: 150,
-                                    fit: BoxFit.cover,
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                          if (loadingProgress == null)
-                                            return child;
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                              color: AppTheme.lightGray,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Center(
-                                              child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                      Color
-                                                    >(AppTheme.royalBlueDark),
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.lightGray,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Center(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.error_outline,
-                                                color: AppTheme.mediumGray,
-                                                size: 32,
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Text(
-                                                'Gagal memuat gambar',
-                                                style: TextStyle(
-                                                  color: AppTheme.mediumGray,
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  Positioned.fill(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Center(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: AppTheme.white.withOpacity(
-                                              0.9,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Icon(
-                                                Icons.visibility,
-                                                size: 18,
-                                                color: AppTheme.royalBlueDark,
-                                              ),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                'Verifikasi Pembayaran',
-                                                style: TextStyle(
-                                                  color: AppTheme.royalBlueDark,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 12),
-
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.goldenPoppy.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: AppTheme.goldenPoppy.withOpacity(0.3),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: AppTheme.goldenPoppy,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  'Tap gambar untuk melihat detail dan verifikasi pembayaran',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppTheme.royalBlueDark,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        if (transaction.updatedAt != null) ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                size: 14,
-                                color: AppTheme.mediumGray,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Diunggah pada ${transaction.updatedAt.toString().substring(0, 16)}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppTheme.mediumGray,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
+                  _buildStatusChip(widget.transaction.status),
+                ],
               ),
               const SizedBox(height: 16),
-            ],
-
-            if (transaction.items != null && transaction.items!.isNotEmpty) ...[
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+              _buildInfoRow('Order ID', '#${widget.transaction.id ?? 'N/A'}'),
+              _buildInfoRow(
+                'Total',
+                'Rp ${widget.transaction.totalPrice.toStringAsFixed(0)}',
+              ),
+              if (widget.transaction.customerName != null)
+                _buildInfoRow(
+                  'Nama Pelanggan',
+                  widget.transaction.customerName!,
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: LinearGradient(
-                      colors: [
-                        AppTheme.goldenPoppy.withOpacity(0.05),
-                        AppTheme.white,
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Item Pesanan',
+              if (widget.transaction.customerPhone != null)
+                _buildInfoRow('No. Telepon', widget.transaction.customerPhone!),
+              _buildInfoRow(
+                'Tipe Pesanan',
+                widget.transaction.orderType == OrderType.dineIn
+                    ? 'Makan di Tempat'
+                    : 'Bungkus',
+              ),
+              if (widget.transaction.notes != null &&
+                  widget.transaction.notes!.isNotEmpty)
+                _buildInfoRow('Catatan', widget.transaction.notes!),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentProofCard() {
+    return Column(
+      children: [
+        Card(
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [AppTheme.green.withOpacity(0.05), AppTheme.white],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.receipt_long,
+                          color: AppTheme.green,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Bukti Pembayaran',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.darkGray,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        ...transaction.items!.map(
-                          (item) => _buildOrderItem(item),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          'Sudah Upload',
+                          style: TextStyle(
+                            color: AppTheme.green,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () {
+                      Get.to(
+                        () => PaymentProofViewerScreen(
+                          transaction: widget.transaction,
+                          userRole: 'seller',
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 150,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppTheme.mediumGray.withOpacity(0.3),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Stack(
+                          children: [
+                            Image.network(
+                              widget.transaction.paymentProof!,
+                              width: double.infinity,
+                              height: 150,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.lightGray,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                AppTheme.royalBlueDark,
+                                              ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.lightGray,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.error_outline,
+                                          color: AppTheme.mediumGray,
+                                          size: 32,
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Gagal memuat gambar',
+                                          style: TextStyle(
+                                            color: AppTheme.mediumGray,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.white.withOpacity(0.9),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.visibility,
+                                          size: 18,
+                                          color: AppTheme.royalBlueDark,
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Text(
+                                          'Verifikasi Pembayaran',
+                                          style: TextStyle(
+                                            color: AppTheme.royalBlueDark,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.goldenPoppy.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppTheme.goldenPoppy.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: AppTheme.goldenPoppy,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Tap gambar untuk melihat detail dan verifikasi pembayaran',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.royalBlueDark,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  if (widget.transaction.updatedAt != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 14,
+                          color: AppTheme.mediumGray,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Diunggah pada ${widget.transaction.updatedAt.toString().substring(0, 16)}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: AppTheme.mediumGray,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildItemsCard() {
+    return Column(
+      children: [
+        Card(
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.goldenPoppy.withOpacity(0.05),
+                  AppTheme.white,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Item Pesanan',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.darkGray,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...widget.transaction.items!.map(
+                    (item) => _buildOrderItem(item),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(PenjualController controller) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Aksi Pesanan',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.darkGray,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            if (widget.transaction.status == TransactionStatus.paid) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: widget.transaction.id != null
+                      ? () {
+                          controller.updateTransactionStatus(
+                            transactionId: widget.transaction.id!,
+                            status: TransactionStatus.confirmed,
+                          );
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.green,
+                    foregroundColor: AppTheme.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Konfirmasi Pesanan',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
             ],
 
-            _buildActionButtons(controller),
+            if (widget.transaction.status == TransactionStatus.confirmed) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: widget.transaction.id != null
+                      ? () {
+                          controller.updateTransactionStatus(
+                            transactionId: widget.transaction.id!,
+                            status: TransactionStatus.ready,
+                          );
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.usafaBlue,
+                    foregroundColor: AppTheme.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Tandai Siap',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+
+            if (widget.transaction.status == TransactionStatus.ready) ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: widget.transaction.id != null
+                      ? () {
+                          controller.updateTransactionStatus(
+                            transactionId: widget.transaction.id!,
+                            status: TransactionStatus.completed,
+                          );
+                        }
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.green,
+                    foregroundColor: AppTheme.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Selesaikan Pesanan',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: widget.transaction.id != null
+                    ? () {
+                        Get.to(
+                          () =>
+                              ChatScreen(transactionId: widget.transaction.id!),
+                        );
+                      }
+                    : null,
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppTheme.royalBlueDark),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      color: AppTheme.royalBlueDark,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Chat dengan Pelanggan',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.royalBlueDark,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -568,154 +767,6 @@ class SellerOrderDetailScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActionButtons(PenjualController controller) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Aksi Pesanan',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.darkGray,
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            if (transaction.status == TransactionStatus.paid) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: transaction.id != null
-                      ? () {
-                          controller.updateTransactionStatus(
-                            transactionId: transaction.id!,
-                            status: TransactionStatus.confirmed,
-                          );
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.green,
-                    foregroundColor: AppTheme.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Konfirmasi Pesanan',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-
-            if (transaction.status == TransactionStatus.confirmed) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: transaction.id != null
-                      ? () {
-                          controller.updateTransactionStatus(
-                            transactionId: transaction.id!,
-                            status: TransactionStatus.ready,
-                          );
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.usafaBlue,
-                    foregroundColor: AppTheme.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Tandai Siap',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-
-            if (transaction.status == TransactionStatus.ready) ...[
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: transaction.id != null
-                      ? () {
-                          controller.updateTransactionStatus(
-                            transactionId: transaction.id!,
-                            status: TransactionStatus.completed,
-                          );
-                        }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.green,
-                    foregroundColor: AppTheme.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Selesaikan Pesanan',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ],
-
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: transaction.id != null
-                    ? () {
-                        Get.to(
-                          () => ChatScreen(transactionId: transaction.id!),
-                        );
-                      }
-                    : null,
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppTheme.royalBlueDark),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.chat_bubble_outline,
-                      color: AppTheme.royalBlueDark,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Chat dengan Pelanggan',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.royalBlueDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

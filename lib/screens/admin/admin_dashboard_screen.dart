@@ -662,15 +662,15 @@ class AdminDashboardScreen extends StatelessWidget {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0), // Kurangi padding
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min, // Tambahkan ini
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
                   flex: 2,
                   child: Container(
-                    padding: const EdgeInsets.all(16), // Kurangi padding
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [color, color.withOpacity(0.8)],
@@ -692,7 +692,7 @@ class AdminDashboardScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12), // Kurangi spacing
+                const SizedBox(height: 12),
                 Flexible(
                   flex: 1,
                   child: Column(
@@ -703,7 +703,7 @@ class AdminDashboardScreen extends StatelessWidget {
                         child: Text(
                           title,
                           style: TextStyle(
-                            fontSize: 16, // Kurangi font size
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.darkGray,
                           ),
@@ -717,7 +717,7 @@ class AdminDashboardScreen extends StatelessWidget {
                         child: Text(
                           subtitle,
                           style: TextStyle(
-                            fontSize: 12, // Kurangi font size
+                            fontSize: 12,
                             color: AppTheme.mediumGray,
                             fontWeight: FontWeight.w500,
                           ),

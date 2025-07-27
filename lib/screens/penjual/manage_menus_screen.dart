@@ -174,7 +174,6 @@ class ManageMenusScreen extends StatelessWidget {
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
-
                           return const Icon(
                             Icons.restaurant,
                             size: 40,
@@ -770,7 +769,6 @@ class ManageMenusScreen extends StatelessWidget {
               bool success;
               String? finalImageUrl;
 
-
               if (imageSourceType.value == 0) {
                 if (selectedImagePath.value.isNotEmpty) {
                   finalImageUrl = selectedImagePath.value;
@@ -797,7 +795,6 @@ class ManageMenusScreen extends StatelessWidget {
                 }
               }
 
-
               if (menu == null) {
                 success = await menuController.createMenu(
                   name: nameController.text,
@@ -823,31 +820,31 @@ class ManageMenusScreen extends StatelessWidget {
                 );
               }
 
-              if (success) {
-                Get.snackbar(
-                  'Success',
-                  menu == null
-                      ? 'Menu berhasil ditambahkan!'
-                      : 'Menu berhasil diperbarui!',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.green,
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 2),
-                  icon: const Icon(Icons.check_circle, color: Colors.white),
-                );
-              } else {
-                Get.snackbar(
-                  'Error',
-                  menu == null
-                      ? 'Gagal menambahkan menu. Silakan coba lagi.'
-                      : 'Gagal memperbarui menu. Silakan coba lagi.',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
-                  duration: const Duration(seconds: 3),
-                  icon: const Icon(Icons.error_outline, color: Colors.white),
-                );
-              }
+              // if (success) {
+              //   Get.snackbar(
+              //     'Success',
+              //     menu == null
+              //         ? 'Menu berhasil ditambahkan!'
+              //         : 'Menu berhasil diperbarui!',
+              //     snackPosition: SnackPosition.BOTTOM,
+              //     backgroundColor: Colors.green,
+              //     colorText: Colors.white,
+              //     duration: const Duration(seconds: 2),
+              //     icon: const Icon(Icons.check_circle, color: Colors.white),
+              //   );
+              // } else {
+              //   Get.snackbar(
+              //     'Error',
+              //     menu == null
+              //         ? 'Gagal menambahkan menu. Silakan coba lagi.'
+              //         : 'Gagal memperbarui menu. Silakan coba lagi.',
+              //     snackPosition: SnackPosition.BOTTOM,
+              //     backgroundColor: Colors.red,
+              //     colorText: Colors.white,
+              //     duration: const Duration(seconds: 3),
+              //     icon: const Icon(Icons.error_outline, color: Colors.white),
+              //   );
+              // }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.royalBlueDark,

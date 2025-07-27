@@ -1,15 +1,19 @@
+import java.io.File
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val preferredNdkVersion = "28.2.13676358"
+val fallbackNdkVersion = flutter.ndkVersion
+val ndkDir = File(System.getenv("ANDROID_HOME") + "/ndk/$preferredNdkVersion")
 
 android {
     namespace = "com.example.kantin_jawara"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
-    // ndkVersion = "28.2.13676358"
+    ndkVersion = "28.2.13676358" // Ensure this matches your local.properties or fallback version
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -21,10 +25,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.kantin_jawara"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -33,8 +34,6 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -44,16 +43,8 @@ flutter {
     source = "../.."
 }
 
-// tasks.whenTaskAdded {
-//     if (name.startsWith("assemble")) {
-//         doLast {
-//             val buildType = name.removePrefix("assemble").lowercase()
-//             val apkDir = file("$buildDir/outputs/apk/$buildType")
-//             apkDir.listFiles()?.forEach { file ->
-//                 if (file.name.endsWith(".apk")) {
-//                     file.renameTo(File(file.parent, "kantin-jawara-$buildType.apk"))
-//                 }
-//             }
-//         }
-//     }
-// }
+dependencies {
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation("androidx.activity:activity-compose:1.7.0")
+}

@@ -49,199 +49,201 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
       resizeToAvoidBottomInset: true,
-      body: Column(
-        children: [
-          Expanded(
-            child: Obx(() {
-              final messages = controller.getChatMessages(transactionId);
-
-              if (controller.isLoading && messages.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          AppTheme.royalBlueDark,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Obx(() {
+                final messages = controller.getChatMessages(transactionId);
+        
+                if (controller.isLoading && messages.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppTheme.royalBlueDark,
+                          ),
+                          strokeWidth: 3,
                         ),
-                        strokeWidth: 3,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Loading messages...',
-                        style: TextStyle(
+                        const SizedBox(height: 16),
+                        Text(
+                          'Loading messages...',
+                          style: TextStyle(
+                            color: AppTheme.mediumGray,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Please wait while we fetch the chat',
+                          style: TextStyle(
+                            color: AppTheme.mediumGray,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+        
+                if (messages.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_outlined,
+                          size: 64,
                           color: AppTheme.mediumGray,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Please wait while we fetch the chat',
-                        style: TextStyle(
-                          color: AppTheme.mediumGray,
-                          fontSize: 12,
+                        const SizedBox(height: 16),
+                        Text(
+                          'No messages yet',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: AppTheme.royalBlueDark,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          'Start the conversation!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.mediumGray,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+        
+                return RefreshIndicator(
+                  onRefresh: _refreshMessages,
+                  color: AppTheme.royalBlueDark,
+                  backgroundColor: Colors.white,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      return _buildMessageBubble(message);
+                    },
                   ),
                 );
-              }
-
-              if (messages.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.chat_outlined,
-                        size: 64,
-                        color: AppTheme.mediumGray,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No messages yet',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: AppTheme.royalBlueDark,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Start the conversation!',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppTheme.mediumGray,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return RefreshIndicator(
-                onRefresh: _refreshMessages,
-                color: AppTheme.royalBlueDark,
-                backgroundColor: Colors.white,
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    return _buildMessageBubble(message);
-                  },
-                ),
-              );
-            }),
-          ),
-
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.darkGray.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
+              }),
             ),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.goldenPoppy.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: AppTheme.goldenPoppy.withOpacity(0.5),
-                      width: 1,
-                    ),
+        
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.darkGray.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
                   ),
-                  child: IconButton(
-                    onPressed: _pickAndSendImage,
-                    icon: Icon(
-                      Icons.image,
-                      color: AppTheme.goldenPoppy,
-                      size: 20,
-                    ),
-                    tooltip: 'Send image',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: TextStyle(color: AppTheme.mediumGray),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(color: AppTheme.lightGray),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          color: AppTheme.royalBlueDark,
-                          width: 2,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(color: AppTheme.lightGray),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      filled: true,
-                      fillColor: AppTheme.lightGray.withOpacity(0.3),
-                    ),
-                    maxLines: null,
-                    textCapitalization: TextCapitalization.sentences,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Obx(
-                  () => Container(
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
                     decoration: BoxDecoration(
-                      gradient: controller.isLoading
-                          ? null
-                          : LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppTheme.royalBlueDark,
-                                AppTheme.usafaBlue,
-                              ],
-                            ),
-                      color: controller.isLoading ? AppTheme.mediumGray : null,
+                      color: AppTheme.goldenPoppy.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(25),
+                      border: Border.all(
+                        color: AppTheme.goldenPoppy.withOpacity(0.5),
+                        width: 1,
+                      ),
                     ),
                     child: IconButton(
-                      onPressed: controller.isLoading ? null : _sendMessage,
-                      icon: controller.isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                          : Icon(Icons.send, color: Colors.white),
-                      tooltip: 'Send message',
+                      onPressed: _pickAndSendImage,
+                      icon: Icon(
+                        Icons.image,
+                        color: AppTheme.goldenPoppy,
+                        size: 20,
+                      ),
+                      tooltip: 'Send image',
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      controller: messageController,
+                      decoration: InputDecoration(
+                        hintText: 'Type a message...',
+                        hintStyle: TextStyle(color: AppTheme.mediumGray),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(color: AppTheme.lightGray),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(
+                            color: AppTheme.royalBlueDark,
+                            width: 2,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          borderSide: BorderSide(color: AppTheme.lightGray),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        filled: true,
+                        fillColor: AppTheme.lightGray.withOpacity(0.3),
+                      ),
+                      maxLines: null,
+                      textCapitalization: TextCapitalization.sentences,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Obx(
+                    () => Container(
+                      decoration: BoxDecoration(
+                        gradient: controller.isLoading
+                            ? null
+                            : LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  AppTheme.royalBlueDark,
+                                  AppTheme.usafaBlue,
+                                ],
+                              ),
+                        color: controller.isLoading ? AppTheme.mediumGray : null,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: IconButton(
+                        onPressed: controller.isLoading ? null : _sendMessage,
+                        icon: controller.isLoading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : Icon(Icons.send, color: Colors.white),
+                        tooltip: 'Send message',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -529,20 +531,16 @@ class ChatScreen extends StatelessWidget {
             : null,
       );
 
-      // Close loading dialog
       if (Get.isDialogOpen == true) {
         Get.back();
       }
 
-      // Add a small delay to refresh the chat messages
       await Future.delayed(const Duration(milliseconds: 200));
       await controller.fetchChatMessages(transactionId);
 
       if (success) {
         messageController.clear();
-        // Don't show success snackbar since it's obvious the message was sent
       } else {
-        // Only show error if there was actually an error
         if (controller.errorMessage.isNotEmpty) {
           Get.snackbar(
             'Error',
@@ -555,10 +553,9 @@ class ChatScreen extends StatelessWidget {
         }
       }
     } catch (e) {
-      // Close loading dialog if it's open
       if (Get.isDialogOpen == true) Get.back();
 
-      print('Image picker error: $e'); // Debug
+      print('Image picker error: $e');
       Get.snackbar(
         'Error',
         'Failed to process image: ${e.toString()}',
