@@ -109,7 +109,7 @@ class MyOrdersScreen extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      'Try Again',
+                      'COba lagi',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -130,7 +130,7 @@ class MyOrdersScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'No orders yet',
+                    'Belum ada pesanan',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -139,7 +139,7 @@ class MyOrdersScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Your order history will appear here',
+                    'Riwayat pesanan Anda akan muncul di sini',
                     style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
                     textAlign: TextAlign.center,
                   ),
@@ -157,7 +157,7 @@ class MyOrdersScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      '🛒 Start ordering from your favorite kantins!',
+                      '🛒 Mulailah memesan dari kantin favorit Anda!',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppTheme.royalBlueDark,
@@ -239,7 +239,7 @@ class MyOrdersScreen extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Order #${transaction.id}',
+                              'Pesanan #${transaction.id}',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -456,22 +456,22 @@ class MyOrdersScreen extends StatelessWidget {
 
     switch (status) {
       case TransactionStatus.pending:
-        text = 'Pending';
+        text = 'Menunggu';
         break;
       case TransactionStatus.paid:
-        text = 'Paid';
+        text = 'Dibayar';
         break;
       case TransactionStatus.confirmed:
-        text = 'Confirmed';
+        text = 'Dikonfirmasi';
         break;
       case TransactionStatus.ready:
-        text = 'Ready';
+        text = 'Siap';
         break;
       case TransactionStatus.completed:
-        text = 'Completed';
+        text = 'Selesai';
         break;
       case TransactionStatus.cancelled:
-        text = 'Cancelled';
+        text = 'Dibatalkan';
         break;
     }
 
@@ -509,21 +509,21 @@ class MyOrdersScreen extends StatelessWidget {
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: Text(
-          'Cancel Order',
+          'Batalkan Pesanan',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: AppTheme.royalBlueDark,
           ),
         ),
         content: const Text(
-          'Are you sure you want to cancel this order? This action cannot be undone.',
+          'Yakin ingin membatalkan pesanan ini? Tindakan ini tidak dapat dibatalkan.',
           style: TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
             child: Text(
-              'Keep Order',
+              'Simpan Pesanan',
               style: TextStyle(
                 color: AppTheme.mediumGray,
                 fontWeight: FontWeight.w600,
@@ -571,7 +571,7 @@ class MyOrdersScreen extends StatelessWidget {
               }
             },
             child: const Text(
-              'Yes, Cancel',
+              'Ya, Batal',
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
@@ -605,7 +605,7 @@ class MyOrdersScreen extends StatelessWidget {
           } else {
             Get.snackbar(
               'Error',
-              'Payment method data is incomplete',
+              'Data metode pembayaran tidak lengkap',
               backgroundColor: Colors.red,
               colorText: Colors.white,
             );
@@ -630,8 +630,8 @@ class MyOrdersScreen extends StatelessWidget {
         totalAmount: transaction.totalPrice,
         onPaymentSelected: (paymentMethod, merchantPaymentMethod) {
           Get.snackbar(
-            'Payment Method Selected',
-            'Selected ${paymentMethod.name}. Please make the payment and upload proof.',
+            'Metode Pembayaran Dipilih',
+            'Memilih ${paymentMethod.name}. Silakan lakukan pembayaran dan unggah bukti.',
             snackPosition: SnackPosition.BOTTOM,
             duration: const Duration(seconds: 3),
           );

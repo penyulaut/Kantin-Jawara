@@ -34,7 +34,7 @@ class ManageMenusScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search menus...',
+                hintText: 'Cari Menu...',
                 prefixIcon: Icon(Icons.search, color: AppTheme.royalBlueDark),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

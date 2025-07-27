@@ -80,37 +80,37 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                     _buildFilterChip('All', null, controller),
                     const SizedBox(width: 8),
                     _buildFilterChip(
-                      'Pending',
+                      'Menunggu',
                       TransactionStatus.pending,
                       controller,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
-                      'Accepted',
+                      'Dibayar',
                       TransactionStatus.paid,
                       controller,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
-                      'In Progress',
+                      'Progres',
                       TransactionStatus.confirmed,
                       controller,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
-                      'Ready',
+                      'Siap',
                       TransactionStatus.ready,
                       controller,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
-                      'Completed',
+                      'Selesai',
                       TransactionStatus.completed,
                       controller,
                     ),
                     const SizedBox(width: 8),
                     _buildFilterChip(
-                      'Cancelled',
+                      'Dibatalkan',
                       TransactionStatus.cancelled,
                       controller,
                     ),
@@ -163,7 +163,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Oops! Something went wrong',
+                            'Ups! Terjadi kesalahan',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
@@ -199,7 +199,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                               ),
                             ),
                             child: const Text(
-                              'Try Again',
+                              'Coba Lagi',
                               style: TextStyle(fontWeight: FontWeight.w600),
                             ),
                           ),
@@ -337,7 +337,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                       child: Row(
                         children: [
                           Text(
-                            'Order #${order.id}',
+                            'Pesanan #${order.id}',
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -430,7 +430,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                     Icon(Icons.person, size: 16, color: AppTheme.mediumGray),
                     const SizedBox(width: 4),
                     Text(
-                      'Customer: ${order.customerName ?? order.userId?.toString() ?? 'Unknown'}',
+                      'Pembeli: ${order.customerName ?? order.userId?.toString() ?? 'Tidak dikenal'}',
                       style: TextStyle(color: AppTheme.mediumGray),
                     ),
                   ],
@@ -448,7 +448,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                     Text(
                       order.createdAt != null
                           ? _formatDate(order.createdAt!)
-                          : 'Unknown time',
+                          : 'Waktu tidak diketahui',
                       style: TextStyle(color: AppTheme.mediumGray),
                     ),
                   ],
@@ -466,7 +466,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                         (item) => Padding(
                           padding: const EdgeInsets.only(left: 16, bottom: 2),
                           child: Text(
-                            '• ${item.quantity ?? 1}x ${item.menu?.name ?? 'Unknown Menu'} - Rp ${((item.unitPrice ?? 0) * (item.quantity ?? 1)).toStringAsFixed(0)}',
+                            '• ${item.quantity ?? 1}x ${item.menu?.name ?? 'Menu tidak diketahui'} - Rp ${((item.unitPrice ?? 0) * (item.quantity ?? 1)).toStringAsFixed(0)}',
                             style: const TextStyle(fontSize: 13),
                           ),
                         ),
@@ -486,7 +486,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Payment Proof:',
+                        'Bukti Pembayaran:',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: AppTheme.usafaBlue,
@@ -523,7 +523,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Failed to load',
+                                    'Gagal Memuat',
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: AppTheme.mediumGray,
@@ -580,7 +580,7 @@ class _SellerOrdersScreenState extends State<SellerOrdersScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Tap to view details',
+                          'Ketuk untuk melihat detail',
                           style: TextStyle(
                             fontSize: 12,
                             color: AppTheme.mediumGray,
@@ -695,7 +695,7 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Order #${order.id}',
+                'Pesanan #${order.id}',
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -710,18 +710,18 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
           const SizedBox(height: 16),
 
           Text(
-            'Customer Details',
+            'Detail Pembeli',
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
-          Text('Name: ${order.customerName ?? 'N/A'}'),
-          Text('Phone: ${order.customerPhone ?? 'N/A'}'),
-          Text('Order Type: ${order.orderType.toString().split('.').last}'),
+          Text('Nama: ${order.customerName ?? 'N/A'}'),
+          Text('Telepon: ${order.customerPhone ?? 'N/A'}'),
+          Text('Tipe Pesanan: ${order.orderType.toString().split('.').last}'),
           const SizedBox(height: 16),
 
           if (order.notes != null && order.notes!.isNotEmpty) ...[
             Text(
-              'Notes',
+              'Catatan',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
@@ -741,7 +741,7 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
                     );
                   },
                   icon: const Icon(Icons.chat),
-                  label: const Text('Chat'),
+                  label: const Text('Obrolan'),
                 ),
               ),
               const SizedBox(width: 12),
@@ -751,7 +751,7 @@ void _showOrderDetails(dynamic order, PenjualController controller) {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.royalBlueDark,
                   ),
-                  child: Text('Close', style: TextStyle(color: AppTheme.white)),
+                  child: Text('Tutup', style: TextStyle(color: AppTheme.white)),
                 ),
               ),
             ],
@@ -896,7 +896,7 @@ void _showPaymentProofDialog(String imageUrl) {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Failed to load image',
+                            'Gagal memuat gambar',
                             style: TextStyle(
                               color: AppTheme.mediumGray,
                               fontSize: 12,
@@ -925,7 +925,7 @@ void _showPaymentProofDialog(String imageUrl) {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Loading payment proof...',
+                              'Memuat bukti pembayaran...',
                               style: TextStyle(
                                 color: AppTheme.mediumGray,
                                 fontSize: 14,
@@ -952,7 +952,7 @@ void _showPaymentProofDialog(String imageUrl) {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Text('Close'),
+                child: Text('Tutup'),
               ),
             ),
           ],

@@ -16,7 +16,7 @@ class ChatListScreen extends StatelessWidget {
       backgroundColor: AppTheme.lightGray.withOpacity(0.1),
       appBar: AppBar(
         title: const Text(
-          'Chats',
+          'Obrolan',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
         ),
         backgroundColor: AppTheme.royalBlueDark,
@@ -29,7 +29,7 @@ class ChatListScreen extends StatelessWidget {
             onPressed: () {
               controller.fetchChatList();
             },
-            tooltip: 'Refresh Chats',
+            tooltip: 'Segarkan Obrolan',
           ),
         ],
         flexibleSpace: Container(
@@ -56,7 +56,7 @@ class ChatListScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Loading chats...',
+                  'Memuat obrolan...',
                   style: TextStyle(
                     color: AppTheme.mediumGray,
                     fontSize: 14,
@@ -76,7 +76,7 @@ class ChatListScreen extends StatelessWidget {
                 Icon(Icons.error_outline, size: 64, color: AppTheme.red),
                 const SizedBox(height: 16),
                 Text(
-                  'Oops! Something went wrong',
+                  'Ups! Terjadi kesalahan',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -104,7 +104,7 @@ class ChatListScreen extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Try Again',
+                    'Coba Lagi',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -125,7 +125,7 @@ class ChatListScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'No chats yet',
+                  'Belum ada obrolan',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -134,7 +134,7 @@ class ChatListScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Start chatting when you place an order',
+                  'Mulai mengobrol saat Anda melakukan pemesanan',
                   style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
                   textAlign: TextAlign.center,
                 ),
@@ -152,7 +152,7 @@ class ChatListScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    '💡 Place an order to start chatting with sellers',
+                    '💡 Tempatkan pesanan untuk mulai mengobrol dengan penjual',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppTheme.royalBlueDark,
@@ -221,7 +221,7 @@ class ChatListScreen extends StatelessWidget {
               } catch (e) {
                 Get.snackbar(
                   'Error',
-                  'Failed to open chat: $e',
+                  'Gagal membuka obrolan: $e',
                   backgroundColor: Colors.red,
                   colorText: Colors.white,
                   icon: Icon(Icons.error, color: Colors.white),
@@ -248,7 +248,7 @@ class ChatListScreen extends StatelessWidget {
                 ),
               ),
               title: Text(
-                'Order #${chatItem.transactionId}',
+                'Pesanan #${chatItem.transactionId}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -373,18 +373,18 @@ class ChatListScreen extends StatelessWidget {
 
   String _getStatusText(String status) {
     switch (status.toLowerCase()) {
-      case 'pending':
-        return 'Pending Payment';
-      case 'paid':
-        return 'Payment Confirmed';
-      case 'confirmed':
-        return 'Order Confirmed';
-      case 'ready':
-        return 'Ready for Pickup';
-      case 'completed':
-        return 'Completed';
-      case 'cancelled':
-        return 'Cancelled';
+      case 'Menunggu':
+        return 'Menunggu pembayaran';
+      case 'Dibayar':
+        return 'Sudah dibayar';
+      case 'Dikonfirmasi':
+        return 'Pesanan Dikonfirmasi';
+      case 'Siap':
+        return 'Siap untuk diambil';
+      case 'Selesai':
+        return 'Selesai';
+      case 'Dibatalkan':
+        return 'Dibatalkan';
       default:
         return status.toUpperCase();
     }
@@ -392,17 +392,17 @@ class ChatListScreen extends StatelessWidget {
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending':
+      case 'Menunggu':
         return Colors.orange;
-      case 'paid':
+      case 'Dibayar':
         return AppTheme.usafaBlue;
-      case 'confirmed':
+      case 'Dikonfirmasi':
         return AppTheme.goldenPoppy;
-      case 'ready':
+      case 'Siap':
         return Colors.green;
-      case 'completed':
+      case 'Selesai':
         return AppTheme.royalBlueDark;
-      case 'cancelled':
+      case 'Dibatalkan':
         return Colors.red;
       default:
         return AppTheme.mediumGray;

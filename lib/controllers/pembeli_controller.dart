@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../models/transaction.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
+import 'package:flutter/material.dart';
 
 class PembeliController extends GetxController {
   final ApiService _apiService = ApiService();
@@ -35,7 +36,6 @@ class PembeliController extends GetxController {
 
       final response = await _apiService.getPembeliTransactions(token);
 
-
       if (response['success']) {
         final responseData = response['data'];
         final List<dynamic> transactionData;
@@ -58,7 +58,7 @@ class PembeliController extends GetxController {
         if (response['message']?.contains('Unauthenticated') == true ||
             response['message']?.contains('401') == true) {
           await _authService.clearUserData();
-          Get.offAllNamed('/login'); 
+          Get.offAllNamed('/login');
         }
       }
     } catch (e) {
@@ -103,17 +103,35 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); 
-        Get.snackbar('Success', 'Order created successfully');
+        await fetchTransactions();
+        Get.snackbar(
+          'Success',
+          'Order created successfully',
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return true;
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to create order';
-        Get.snackbar('Error', _errorMessage.value);
+        Get.snackbar(
+          'Error',
+          _errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      Get.snackbar('Error', _errorMessage.value);
+      Get.snackbar(
+        'Error',
+        _errorMessage.value,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       _isLoading.value = false;
@@ -143,17 +161,35 @@ class PembeliController extends GetxController {
       );
       if (response['success']) {
         await fetchTransactions();
-        Get.snackbar('Success', 'Payment proof uploaded successfully');
+        Get.snackbar(
+          'Success',
+          'Payment proof uploaded successfully',
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return true;
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to upload payment proof';
-        Get.snackbar('Error', _errorMessage.value);
+        Get.snackbar(
+          'Error',
+          _errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      Get.snackbar('Error', _errorMessage.value);
+      Get.snackbar(
+        'Error',
+        _errorMessage.value,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       _isLoading.value = false;
@@ -189,17 +225,35 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); 
-        Get.snackbar('Success', 'Payment submitted successfully');
+        await fetchTransactions();
+        Get.snackbar(
+          'Success',
+          'Payment submitted successfully',
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return true;
       } else {
         _errorMessage.value = response['message'] ?? 'Failed to submit payment';
-        Get.snackbar('Error', _errorMessage.value);
+        Get.snackbar(
+          'Error',
+          _errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      Get.snackbar('Error', _errorMessage.value);
+      Get.snackbar(
+        'Error',
+        _errorMessage.value,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       _isLoading.value = false;
@@ -224,18 +278,36 @@ class PembeliController extends GetxController {
         token: token,
       );
       if (response['success']) {
-        await fetchTransactions(); 
-        Get.snackbar('Success', 'Transaction cancelled successfully');
+        await fetchTransactions();
+        Get.snackbar(
+          'Success',
+          'Transaction cancelled successfully',
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return true;
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to cancel transaction';
-        Get.snackbar('Error', _errorMessage.value);
+        Get.snackbar(
+          'Error',
+          _errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return false;
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      Get.snackbar('Error', _errorMessage.value);
+      Get.snackbar(
+        'Error',
+        _errorMessage.value,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
       return false;
     } finally {
       _isLoading.value = false;
@@ -276,24 +348,44 @@ class PembeliController extends GetxController {
         paymentNote: paymentNote,
       );
 
-
       if (response['success'] == true) {
-        final apiResponse = response['data']; 
+        final apiResponse = response['data'];
         final message =
             apiResponse['message'] ??
             'Transaksi berhasil ditandai sebagai sudah dibayar';
 
-
         await fetchTransactions();
+
+        Get.snackbar(
+          'Success',
+          message,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
 
         return {'success': true, 'message': message, 'data': apiResponse};
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to mark transaction as paid';
+        Get.snackbar(
+          'Error',
+          _errorMessage.value,
+          backgroundColor: Colors.red.withOpacity(0.8),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+        );
         return {'success': false, 'message': _errorMessage.value};
       }
     } catch (e) {
       _errorMessage.value = 'Error marking transaction as paid: $e';
+      Get.snackbar(
+        'Error',
+        _errorMessage.value,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+      );
       return {'success': false, 'message': _errorMessage.value};
     } finally {
       _isLoading.value = false;

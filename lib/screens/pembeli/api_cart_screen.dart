@@ -27,7 +27,7 @@ class ApiCartScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
+        title: const Text('Keranjang Belanja'),
         backgroundColor: AppTheme.royalBlueDark,
         foregroundColor: Colors.white,
         actions: [

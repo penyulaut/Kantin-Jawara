@@ -671,7 +671,7 @@ class SellerDashboardHome extends StatelessWidget {
             ),
           ),
           title: Text(
-            'Order #${order.id ?? 'N/A'}',
+            'Pesanan #${order.id ?? 'N/A'}',
             style: TextStyle(
               fontWeight: FontWeight.w600,
               color: AppTheme.darkGray,

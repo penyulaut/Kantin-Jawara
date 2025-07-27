@@ -18,7 +18,7 @@ class OrderDetailScreen extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          'Order #${transaction.id ?? "Unknown"}',
+          'Pesanan #${transaction.id ?? "Tidak dikenal"}',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         backgroundColor: AppTheme.royalBlueDark,
@@ -97,7 +97,7 @@ class OrderDetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Order Status',
+                  'Status Pesanan',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -127,7 +127,7 @@ class OrderDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Order Information',
+              'Informasi Pemesanan',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -135,21 +135,21 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildInfoRow('Order ID', '#${transaction.id ?? "N/A"}'),
+            _buildInfoRow('ID Pesanan', '#${transaction.id ?? "N/A"}'),
             _buildInfoRow(
-              'Date',
+              'Tanggal',
               transaction.createdAt?.toString().substring(0, 16) ?? 'N/A',
             ),
             _buildInfoRow(
-              'Order Type',
+              'Tipe Pesanan',
               _getOrderTypeDisplay(transaction.orderType),
             ),
             if (transaction.customerName?.isNotEmpty == true)
-              _buildInfoRow('Customer', transaction.customerName!),
+              _buildInfoRow('Pembeli', transaction.customerName!),
             if (transaction.customerPhone?.isNotEmpty == true)
-              _buildInfoRow('Phone', transaction.customerPhone!),
+              _buildInfoRow('Telepon', transaction.customerPhone!),
             if (transaction.notes?.isNotEmpty == true)
-              _buildInfoRow('Notes', transaction.notes!),
+              _buildInfoRow('Catatan', transaction.notes!),
           ],
         ),
       ),
@@ -168,7 +168,7 @@ class OrderDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Order Items',
+              'Item Pesanan',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -202,7 +202,7 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ] else ...[
               Text(
-                'No items found',
+                'Tidak ada item yang ditemukan',
                 style: TextStyle(color: AppTheme.mediumGray),
               ),
             ],
@@ -234,20 +234,20 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _buildInfoRow('Method', transaction.payment!.method),
+            _buildInfoRow('Metode', transaction.payment!.method),
             _buildInfoRow(
-              'Amount',
+              'Jumlah',
               'Rp ${transaction.payment!.amount.toStringAsFixed(0)}',
             ),
             if (transaction.payment!.paidAt != null)
               _buildInfoRow(
-                'Paid At',
+                'Dibayar Di',
                 transaction.payment!.paidAt!.toString().substring(0, 16),
               ),
             if (transaction.payment!.proof?.isNotEmpty == true) ...[
               const SizedBox(height: 8),
               const Text(
-                'Payment Proof:',
+                'Bukti Pembayaran:',
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 4),
@@ -646,7 +646,7 @@ class OrderDetailScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.menu?.name ?? 'Unknown Item',
+                  item.menu?.name ?? 'Item Tidak Dikenal',
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 Text(
@@ -666,7 +666,7 @@ class OrderDetailScreen extends StatelessWidget {
   }
 
   String _getOrderTypeDisplay(OrderType? orderType) {
-    if (orderType == null) return 'Unknown';
+    if (orderType == null) return 'Tidak dikenal';
 
     switch (orderType) {
       case OrderType.dineIn:

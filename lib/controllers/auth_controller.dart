@@ -67,6 +67,8 @@ class AuthController extends GetxController {
           'Success',
           'Login successful!',
           snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
         );
 
         if (user.role == 'pembeli') {
@@ -183,6 +185,8 @@ class AuthController extends GetxController {
         'Success',
         'Logged out successfully',
         snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.withOpacity(0.8),
+        colorText: Colors.white,
       );
 
       Get.offAllNamed('/login');

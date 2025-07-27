@@ -41,7 +41,7 @@ class CheckoutScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Order Summary',
+              'Ringkasan Pesanan',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
