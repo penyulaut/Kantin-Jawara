@@ -480,7 +480,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
             Center(
               child: Obx(
                 () => Container(
-                  width: 250, // Limit width instead of full width
+                  width: 250,
                   decoration: BoxDecoration(
                     gradient:
                         ((!useUrl.value && selectedImage.value != null) ||
@@ -515,16 +515,14 @@ class PaymentProofUploadScreen extends StatelessWidget {
                           : null,
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                        ), // Reduced padding
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Center(
                           child: isUploading.value
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     SizedBox(
-                                      width: 16, // Smaller spinner
+                                      width: 16,
                                       height: 16,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
@@ -538,7 +536,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
                                     Text(
                                       'Uploading...',
                                       style: TextStyle(
-                                        fontSize: 14, // Smaller font
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.white,
                                       ),
@@ -548,7 +546,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
                               : Text(
                                   'Upload Payment Proof',
                                   style: TextStyle(
-                                    fontSize: 14, // Smaller font
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                     color:
                                         ((!useUrl.value &&
@@ -613,7 +611,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
             Center(
               child: Container(
-                width: 200, // Limit width instead of full width
+                width: 200,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppTheme.goldenPoppy, Colors.orange.shade600],
@@ -628,14 +626,12 @@ class PaymentProofUploadScreen extends StatelessWidget {
                     onTap: _markAsPaid,
                     borderRadius: BorderRadius.circular(12),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                      ), // Reduced padding
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       child: Center(
                         child: Text(
                           'Mark as Paid',
                           style: TextStyle(
-                            fontSize: 14, // Smaller font
+                            fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
@@ -744,7 +740,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
 
       Get.dialog(
         WillPopScope(
-          onWillPop: () async => false, // Prevent dismissing while uploading
+          onWillPop: () async => false,
           child: Dialog(
             backgroundColor: Colors.transparent,
             child: Container(
@@ -816,7 +812,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
       }
 
       Get.back();
-
 
       if (result['success'] == true) {
         String successMessage =
@@ -910,12 +905,11 @@ class PaymentProofUploadScreen extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              Get.back(); // Close dialog
+              Get.back();
 
               Get.dialog(
                 WillPopScope(
-                  onWillPop: () async =>
-                      false, // Prevent dismissing while processing
+                  onWillPop: () async => false,
                   child: Dialog(
                     backgroundColor: Colors.transparent,
                     child: Container(
@@ -984,7 +978,6 @@ class PaymentProofUploadScreen extends StatelessWidget {
                       : paymentNoteController.text.trim(),
                 );
 
-
                 Get.back();
 
                 if (result['success'] == true) {
@@ -1021,7 +1014,7 @@ class PaymentProofUploadScreen extends StatelessWidget {
                   );
 
                   try {
-                    Get.offAllNamed('/orders'); // Navigate to orders page
+                    Get.offAllNamed('/orders');
                   } catch (e) {
                     Get.until((route) => route.isFirst);
                   }

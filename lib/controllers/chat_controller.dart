@@ -68,7 +68,6 @@ class ChatController extends GetxController {
               .cast<ChatItem>()
               .toList();
 
-          for (var item in _chatList) {}
         } catch (e) {
           _errorMessage.value = 'Error parsing chat data: $e';
         }

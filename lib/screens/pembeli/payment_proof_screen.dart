@@ -817,7 +817,7 @@ class PaymentProofScreen extends StatelessWidget {
 
       Get.dialog(
         WillPopScope(
-          onWillPop: () async => false, // Prevent dismissing while processing
+          onWillPop: () async => false,
           child: Dialog(
             backgroundColor: Colors.transparent,
             child: Container(
@@ -882,7 +882,6 @@ class PaymentProofScreen extends StatelessWidget {
             : paymentNoteController.text.trim(),
       );
 
-
       Get.back();
 
       if (result['success'] == true) {
@@ -900,7 +899,7 @@ class PaymentProofScreen extends StatelessWidget {
         );
 
         try {
-          Get.offAllNamed('/orders'); // Navigate to orders page
+          Get.offAllNamed('/orders');
         } catch (e) {
           Get.until((route) => route.isFirst);
         }
@@ -917,7 +916,7 @@ class PaymentProofScreen extends StatelessWidget {
         );
       }
     } catch (e) {
-      Get.back(); // Close loading dialog if still open
+      Get.back();
       Get.snackbar(
         'Error',
         'Gagal menandai pembayaran: $e',
@@ -954,7 +953,7 @@ class PaymentProofScreen extends StatelessWidget {
     try {
       Get.dialog(
         WillPopScope(
-          onWillPop: () async => false, // Prevent dismissing while uploading
+          onWillPop: () async => false,
           child: Dialog(
             backgroundColor: Colors.transparent,
             child: Container(
@@ -1028,7 +1027,6 @@ class PaymentProofScreen extends StatelessWidget {
 
       Get.back();
 
-
       if (result['success'] == true) {
         Get.snackbar(
           'Sukses',
@@ -1042,7 +1040,7 @@ class PaymentProofScreen extends StatelessWidget {
           borderRadius: 12,
         );
 
-        Get.back(); // Go back to order list
+        Get.back();
       } else {
         Get.snackbar(
           'Error',
@@ -1056,7 +1054,7 @@ class PaymentProofScreen extends StatelessWidget {
         );
       }
     } catch (e) {
-      Get.back(); // Close loading dialog if still open
+      Get.back();
       Get.snackbar(
         'Error',
         'Gagal upload bukti pembayaran: $e',
