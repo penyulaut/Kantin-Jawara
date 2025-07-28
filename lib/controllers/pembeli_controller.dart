@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
 import '../models/transaction.dart';
 import '../services/api_service.dart';
@@ -138,9 +140,9 @@ class PembeliController extends GetxController {
     }
   }
 
-  Future<bool> uploadPaymentProof({
+  Future<Map<String, dynamic>> uploadPaymentProof({
     required int transactionId,
-    required String proofPath,
+    required File proofFile,
   }) async {
     try {
       _isLoading.value = true;
@@ -149,49 +151,35 @@ class PembeliController extends GetxController {
       final token = await _authService.getToken();
       if (token == null) {
         _errorMessage.value = 'User not authenticated';
-        return false;
+        return {'success': false, 'message': 'User not authenticated'};
       }
 
-      final data = {'proof': proofPath};
-
-      final response = await _apiService.post(
-        '/pembeli/transactions/$transactionId/proof',
-        data: data,
+      final response = await _apiService.uploadPaymentProof(
+        transactionId: transactionId,
+        proofFile: proofFile,
         token: token,
       );
-      if (response['success']) {
-        await fetchTransactions();
-        Get.snackbar(
-          'Success',
-          'Payment proof uploaded successfully',
-          backgroundColor: Colors.green.withOpacity(0.8),
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-        );
-        return true;
+
+      if (response['success'] == true) {
+        final message =
+            response['message'] ?? 'Bukti pembayaran berhasil diupload';
+        final proofUrl = response['proof_url'];
+
+        Get.snackbar('Success', message);
+        return {'success': true, 'message': message, 'proof_url': proofUrl};
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to upload payment proof';
-        Get.snackbar(
-          'Error',
-          _errorMessage.value,
-          backgroundColor: Colors.red.withOpacity(0.8),
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-        );
-        return false;
+        Get.snackbar('Error', _errorMessage.value);
+        return {'success': false, 'message': _errorMessage.value};
       }
     } catch (e) {
-      _errorMessage.value = 'Error: $e';
-      Get.snackbar(
-        'Error',
-        _errorMessage.value,
-        backgroundColor: Colors.red.withOpacity(0.8),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-      );
-      return false;
+      print('Exception in uploadPaymentProof: $e');
+      _errorMessage.value = 'Error uploading payment proof: $e';
+      Get.snackbar('Error', _errorMessage.value);
+      return {'success': false, 'message': _errorMessage.value};
     } finally {
+      print('Setting loading to false');
       _isLoading.value = false;
     }
   }

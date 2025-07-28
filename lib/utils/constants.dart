@@ -1,5 +1,6 @@
 class Constants {
   static const String baseUrl = 'https://semenjana.biz.id/kaja/api';
+  // static const String baseUrl = 'http://kaja.test/api';
 
   static const String loginEndpoint = '/login';
   static const String registerEndpoint = '/register';

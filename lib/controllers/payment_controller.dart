@@ -64,8 +64,7 @@ class PaymentController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error: $e';
-      if (response != null) {
-      }
+      if (response != null) {}
     } finally {
       _isLoading.value = false;
     }
@@ -94,7 +93,6 @@ class PaymentController extends GetxController {
         token: token,
       );
 
-
       if (response['success']) {
         final responseData = response['data'];
         final List<dynamic> merchantPaymentMethodData;
@@ -110,7 +108,6 @@ class PaymentController extends GetxController {
         _merchantPaymentMethods.value = merchantPaymentMethodData
             .map((json) => MerchantPaymentMethod.fromJson(json))
             .toList();
-
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to fetch merchant payment methods';
@@ -131,7 +128,6 @@ class PaymentController extends GetxController {
         '/merchants/$merchantId/payment-methods',
         token: token,
       );
-
 
       if (response['success'] && response['data'] is List) {
         final data = response['data'] as List;
@@ -441,7 +437,6 @@ class PaymentController extends GetxController {
       var result = await getAvailablePaymentMethodsForMerchant(merchantId);
 
       if (result.isEmpty) {
-
         final token = await _authService.getToken();
         final fallbackResponse = await _apiService.get(
           '/users/$merchantId/payment-methods',
@@ -453,7 +448,6 @@ class PaymentController extends GetxController {
           result = data
               .map((json) => MerchantPaymentMethod.fromJson(json))
               .toList();
-
 
           CustomSnackbar.showInfo(
             title: 'Info',
@@ -488,7 +482,11 @@ class PaymentController extends GetxController {
         token: token,
       );
 
-      if (response['message'] == "Bukti pembayaran berhasil diupload") {
+      print(
+        'PaymentController uploadPaymentProof response: $response',
+      ); // Debug log
+
+      if (response['success'] == true) {
         final message =
             response['message'] ?? 'Bukti pembayaran berhasil diupload';
         final proofUrl = response['proof_url'];
@@ -501,6 +499,7 @@ class PaymentController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error uploading payment proof: $e';
+      print('PaymentController uploadPaymentProof error: $e'); // Debug log
       return {'success': false, 'message': _errorMessage.value};
     } finally {
       _isLoading.value = false;
@@ -527,14 +526,28 @@ class PaymentController extends GetxController {
         proofUrl: proofUrl,
       );
 
+      print(
+        'PaymentController uploadPaymentProofUrl response: $response',
+      ); // Debug log
 
-      if (response['message'] == "Bukti pembayaran berhasil diupload") {
-        final apiResponse = response['data'];
-        final message =
-            apiResponse['message'] ?? 'Bukti pembayaran berhasil diupload';
+      if (response['success'] == true) {
+        // Handle both direct message and nested data response formats
+        String message;
+        if (response.containsKey('data') && response['data'] is Map) {
+          final apiResponse = response['data'] as Map<String, dynamic>;
+          message =
+              apiResponse['message'] ??
+              response['message'] ??
+              'Bukti pembayaran berhasil diupload';
+        } else {
+          message = response['message'] ?? 'Bukti pembayaran berhasil diupload';
+        }
 
-
-        return {'success': true, 'message': message};
+        return {
+          'success': true,
+          'message': message,
+          'proof_url': response['proof_url'],
+        };
       } else {
         _errorMessage.value =
             response['message'] ?? 'Failed to upload payment proof URL';
@@ -542,6 +555,7 @@ class PaymentController extends GetxController {
       }
     } catch (e) {
       _errorMessage.value = 'Error uploading payment proof URL: $e';
+      print('PaymentController uploadPaymentProofUrl error: $e'); // Debug log
       return {'success': false, 'message': _errorMessage.value};
     } finally {
       _isLoading.value = false;
