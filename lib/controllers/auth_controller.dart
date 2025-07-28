@@ -54,7 +54,6 @@ class AuthController extends GetxController {
         final user = User.fromJson(userData['user'] ?? userData);
         final token = userData['token'] ?? userData['access_token'];
 
-
         await _authService.saveUser(user);
         await _authService.saveToken(token);
 
@@ -79,8 +78,7 @@ class AuthController extends GetxController {
                 cartController.refreshCart();
               });
             }
-          } catch (e) {
-          }
+          } catch (e) {}
         }
 
         _navigateBasedOnRole(user.role ?? 'pembeli');
@@ -138,8 +136,10 @@ class AuthController extends GetxController {
 
         Get.snackbar(
           'Success',
-          'Registration successful!',
+          'Registrasi berhasil!',
           snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.withOpacity(0.8),
+          colorText: Colors.white,
           duration: const Duration(seconds: 2),
         );
 
@@ -220,7 +220,6 @@ class AuthController extends GetxController {
 
         await _authService.saveUser(updatedUser);
         _currentUser.value = updatedUser;
-
       } else {
         _errorMessage.value = result['message'];
       }
@@ -429,7 +428,6 @@ class AuthController extends GetxController {
   Future<void> handleUnauthorizedAccess({
     String reason = 'Unauthorized access',
   }) async {
-
     await clearUserData();
 
     Get.snackbar(

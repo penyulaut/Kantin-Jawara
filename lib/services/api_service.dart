@@ -18,8 +18,7 @@ class ApiService {
 
     if (token != null) {
       headers['Authorization'] = 'Bearer $token';
-    } else {
-    }
+    } else {}
 
     return headers;
   }
@@ -34,7 +33,6 @@ class ApiService {
         headers: _getHeaders(),
         body: jsonEncode({'email': email, 'password': password}),
       );
-
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -74,7 +72,6 @@ class ApiService {
         }),
       );
 
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         return {'success': true, 'data': data};
@@ -111,7 +108,6 @@ class ApiService {
         Uri.parse('$_baseUrl${Constants.logoutEndpoint}'),
         headers: _getHeaders(token: token),
       );
-
 
       if (response.statusCode == 200) {
         return {'success': true, 'message': 'Logged out successfully'};
@@ -240,7 +236,6 @@ class ApiService {
         headers: headers,
       );
 
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         return {'success': true, 'data': data};
@@ -279,7 +274,6 @@ class ApiService {
         headers: _getHeaders(token: token),
         body: data != null ? jsonEncode(data) : null,
       );
-
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
@@ -331,7 +325,6 @@ class ApiService {
         body: data != null ? jsonEncode(data) : null,
       );
 
-
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         return {'success': true, 'data': responseData};
@@ -362,7 +355,6 @@ class ApiService {
         Uri.parse('$_baseUrl$endpoint'),
         headers: _getHeaders(token: token),
       );
-
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
@@ -583,6 +575,9 @@ class ApiService {
     required File proofFile,
   }) async {
     try {
+      print(
+        'ApiService uploadPaymentProof called with transactionId: $transactionId',
+      ); // Debug log
 
       final uri = Uri.parse('$_baseUrl/payments/proof');
       final request = http.MultipartRequest('POST', uri);
@@ -603,6 +598,12 @@ class ApiService {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
+      print(
+        'ApiService uploadPaymentProof statusCode: ${response.statusCode}',
+      ); // Debug log
+      print(
+        'ApiService uploadPaymentProof body: ${response.body}',
+      ); // Debug log
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
@@ -615,6 +616,7 @@ class ApiService {
         };
       }
     } catch (e) {
+      print('ApiService uploadPaymentProof error: $e'); // Debug log
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -625,7 +627,6 @@ class ApiService {
     String? paymentNote,
   }) async {
     try {
-
       final data = <String, dynamic>{};
       if (paymentNote != null && paymentNote.isNotEmpty) {
         data['payment_note'] = paymentNote;
@@ -649,13 +650,21 @@ class ApiService {
     required String proofUrl,
   }) async {
     try {
+      print(
+        'ApiService uploadPaymentProofUrl called with transactionId: $transactionId, proofUrl: $proofUrl',
+      ); // Debug log
 
       final data = {'transaction_id': transactionId, 'proof_url': proofUrl};
 
       final response = await post('/payments/proof', data: data, token: token);
 
+      print(
+        'ApiService uploadPaymentProofUrl response: $response',
+      ); // Debug log
+
       return response;
     } catch (e) {
+      print('ApiService uploadPaymentProofUrl error: $e'); // Debug log
       return {'success': false, 'message': 'Network error: $e'};
     }
   }
@@ -795,10 +804,8 @@ class ApiService {
         request.files.add(file);
       }
 
-
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
-
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -825,13 +832,11 @@ class ApiService {
     required String token,
   }) async {
     try {
-
       final response = await http.post(
         Uri.parse('$_baseUrl/api/payments/mark-paid'),
         headers: _getHeaders(token: token),
         body: jsonEncode({'transaction_id': transactionId}),
       );
-
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);

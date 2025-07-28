@@ -811,53 +811,73 @@ class PaymentProofUploadScreen extends StatelessWidget {
         );
       }
 
-      Get.back();
+      Get.back(); // Close loading dialog
+
+      print('PaymentProofUploadScreen result: $result'); // Debug log
 
       if (result['success'] == true) {
         String successMessage =
             result['message'] ??
             'Bukti pembayaran berhasil diupload dan sedang diproses';
 
-        Get.snackbar(
-          '✅ Upload Berhasil!',
-          successMessage,
-          backgroundColor: AppTheme.green,
-          colorText: Colors.white,
-          icon: Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              Icons.check_circle_outline,
-              color: Colors.white,
-              size: 20,
-            ),
-          ),
-          duration: Duration(seconds: 4),
-          snackPosition: SnackPosition.TOP,
-          margin: EdgeInsets.all(16),
-          borderRadius: 12,
-          boxShadows: [
-            BoxShadow(
-              color: AppTheme.green.withOpacity(0.3),
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-          ],
-          shouldIconPulse: true,
-          barBlur: 20,
-          isDismissible: true,
-          dismissDirection: DismissDirection.horizontal,
-          forwardAnimationCurve: Curves.easeOutBack,
-        );
+        print(
+          'Showing success snackbar with message: $successMessage',
+        ); // Debug log
 
-        Get.back(result: true);
+        // Use SchedulerBinding to ensure snackbar shows after current frame
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar(
+            '✅ Upload Berhasil!',
+            successMessage,
+            backgroundColor: AppTheme.green,
+            colorText: Colors.white,
+            icon: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.check_circle_outline,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            duration: Duration(seconds: 4),
+            snackPosition: SnackPosition.TOP,
+            margin: EdgeInsets.all(16),
+            borderRadius: 12,
+            boxShadows: [
+              BoxShadow(
+                color: AppTheme.green.withOpacity(0.3),
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
+            shouldIconPulse: true,
+            barBlur: 20,
+            isDismissible: true,
+            dismissDirection: DismissDirection.horizontal,
+            forwardAnimationCurve: Curves.easeOutBack,
+          );
+        });
+
+        // Wait a bit before navigating back to ensure snackbar shows
+        await Future.delayed(Duration(milliseconds: 1000));
+
+        if (Get.currentRoute.contains('PaymentProofUploadScreen')) {
+          Get.back(result: true);
+        }
       } else {
+        String errorMessage =
+            result['message'] ?? 'Gagal upload bukti pembayaran';
+        print(
+          'Showing error snackbar with message: $errorMessage',
+        ); // Debug log
+
         Get.snackbar(
           'Error',
-          result['message'] ?? 'Gagal upload bukti pembayaran',
+          errorMessage,
           backgroundColor: Colors.red,
           colorText: Colors.white,
           icon: Icon(Icons.error, color: Colors.white),

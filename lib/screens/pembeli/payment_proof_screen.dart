@@ -1025,12 +1025,20 @@ class PaymentProofScreen extends StatelessWidget {
         );
       }
 
-      Get.back();
+      Get.back(); // Close loading dialog
+
+      print('PaymentProofScreen result: $result'); // Debug log
 
       if (result['success'] == true) {
+        String successMessage =
+            result['message'] ?? 'Bukti pembayaran berhasil diupload';
+        print(
+          'PaymentProofScreen showing success snackbar: $successMessage',
+        ); // Debug log
+
         Get.snackbar(
           'Sukses',
-          result['message'] ?? 'Bukti pembayaran berhasil diupload',
+          successMessage,
           backgroundColor: Colors.green,
           colorText: Colors.white,
           icon: Icon(Icons.check_circle, color: Colors.white),
@@ -1040,11 +1048,22 @@ class PaymentProofScreen extends StatelessWidget {
           borderRadius: 12,
         );
 
-        Get.back();
+        // Wait a bit before navigating back to ensure snackbar shows
+        await Future.delayed(Duration(milliseconds: 1000));
+
+        if (Get.currentRoute.contains('PaymentProofScreen')) {
+          Get.back();
+        }
       } else {
+        String errorMessage =
+            result['message'] ?? 'Gagal upload bukti pembayaran';
+        print(
+          'PaymentProofScreen showing error snackbar: $errorMessage',
+        ); // Debug log
+
         Get.snackbar(
           'Error',
-          result['message'] ?? 'Gagal upload bukti pembayaran',
+          errorMessage,
           backgroundColor: Colors.red,
           colorText: Colors.white,
           icon: Icon(Icons.error, color: Colors.white),
